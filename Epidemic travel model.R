@@ -107,7 +107,7 @@ for (irun in (1:Nruns)){
   init_inf <- sample(V(g)[community==start_comm]$name,num_inf)
   num_asymp <- sum(rbinom(num_inf,1,perc_asymp))
   V(g)[init_inf]$state <- c(rep(3,num_asymp),rep(4,num_inf-num_asymp))
-  V(g)[init_inf]$rec_time <- round(rgamma(length(init_inf),infperiod_shape,infperiod_rate))
+  V(g)[init_inf]$rec_time <- 1 + round(rgamma(length(init_inf),infperiod_shape,infperiod_rate))
   results[1:num_inf,1:4] <- cbind(init_inf,rep(start_comm,num_inf),rep(1,num_inf),V(g)[init_inf]$state)
   
   for (t in 1:num_timesteps){
