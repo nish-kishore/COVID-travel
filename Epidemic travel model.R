@@ -32,7 +32,7 @@ lat_per <- 0.2
 rec_per <- 0.1
 
 # Movement parameters
-alpha_init<-0.001 #moving probability
+alpha_init<-0.01 #moving probability
 beta_init<-0.15 # force of infection
 perc_asymp<-0.5 # % asymptomatic
 
@@ -42,7 +42,7 @@ t_ld_b <- 30 #time lockdown begins
 beta_inc <- 1.5 # amount beta increases after lockdown announced
 beta_dec <- 0.5 # amount beta decreases after lockdown begins (relative to initial beta)
 alpha_inc <- 10 # amount travel increases after lockdown announced
-alpha_dec <- 0.8 # amount travel decreases after lockdown begins (relative to initial travel)
+alpha_dec <- 0.5 # amount travel decreases after lockdown begins (relative to initial travel)
 
 num_timesteps <- 200
 Nruns <- 1
@@ -186,7 +186,27 @@ for (irun in (1:Nruns)){
 
 
 # add summary statistics for results -- time to X # infections, distribution across communities, etc
+#overall
+results %>%
+  filter(!is.na(Community)) %>%
+  group_by(Community) %>%
+  summarise(n=n()) -> community_summary
 
+#pre lockdown announcement summary + lag for inc period
+results %>%
+  filter(!is.na(Community) & DayInfected <25) %>%
+  group_by(Community) %>%
+  summarise(n=n()) -> community_summary_prelockdown
+
+results %>%
+  filter(!is.na(Community) & DayInfected >=25 & DayInfected <=35) %>%
+  group_by(Community) %>%
+  summarise(n=n()) -> community_summary_postlockdown_a
+
+results %>%
+  filter(!is.na(Community) & DayInfected >=35) %>%
+  group_by(Community) %>%
+  summarise(n=n()) -> community_summary_postlockdown_b
 
 
 
