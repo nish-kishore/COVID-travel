@@ -13,14 +13,14 @@ require(tidyverse)
 
 # Connectivity parameters
 community_sizes <- rep(100,100) 
-community_sizes[c(5,20)] <- 1000 # for now make mostly smaller and 2 big "cities"; can scale up later
+community_sizes[c(45,20)] <- 1000 # for now make mostly smaller and 2 big "cities"; can scale up later
 studypop_size <- sum(community_sizes)
 num_communities <- length(community_sizes)
 rate_within <- 1 # connectivity w/in a communiity - for now make well mixed but can cluster later
 rate_between <- 0 # keep separate so only transmit to another community if moved there
 exp_grav <- 2 # exponent for gravity model
 
-start_comm <- 5 # choose community where outbreak will start
+start_comm <- 45 # choose community where outbreak will start
 num_inf <- 5 # choose number of initial infections
 
 # Disease parameters (need to update but for now gamma distribution 5 day latent and 7 day inf. period)
@@ -31,7 +31,7 @@ infperiod_rate<-0.16
 perc_asymp <- 0.5 
 
 # Movement parameters
-alpha_init<-0.01 #moving probability
+alpha_init<-0.1 #moving probability
 beta_init<-0.15 # force of infection
 perc_asymp<-0.5 # % asymptomatic
 
@@ -43,7 +43,7 @@ beta_dec <- 0.5 # amount beta decreases after lockdown begins (relative to initi
 alpha_inc <- 2 # amount travel increases after lockdown announced
 alpha_dec <- 0.3 # amount travel decreases after lockdown begins (relative to initial travel)
 
-num_timesteps <- 100
+num_timesteps <- 200
 Nruns <- 1
 
 # initial mobility network (gravity model)
