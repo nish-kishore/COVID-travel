@@ -36,7 +36,7 @@ beta_init<-0.15 # force of infection
 perc_asymp<-0.5 # % asymptomatic
 
 # Lockdown parameters
-t_ld_a <- 20 #time lockdown announced
+t_ld_a <- 20 #time lockdown announced - I think we should probably link this to # infections instead of being fixed
 t_ld_b <- 30 #time lockdown begins
 beta_inc <- 1.5 # amount beta increases after lockdown announced
 beta_dec <- 0.5 # amount beta decreases after lockdown begins (relative to initial beta)
