@@ -37,12 +37,14 @@ beta_init<-0.15 # force of infection
 perc_asymp<-0.5 # % asymptomatic
 
 # Lockdown parameters
-t_ld_a <- 20 #time lockdown announced - I think we should probably link this to # infections instead of being fixed
-t_ld_b <- 30 #time lockdown begins
-beta_inc <- 1.5 # amount beta increases after lockdown announced
-beta_dec <- 0.5 # amount beta decreases after lockdown begins (relative to initial beta)
-alpha_inc <- 10 # amount travel increases after lockdown announced
-alpha_dec <- 0.5 # amount travel decreases after lockdown begins (relative to initial travel)
+t_ld_a <- 1000 # change below in code once threshold cases reached
+t_ld_b <- 1000 # change below in code once threshold cases reached
+cases_ld_a <- 20 # number of cases when lockdown announced 
+ld_b <- 10 # days after lockdownn announced that it begins
+beta_inc <- 1.5 # relative beta after lockdown announced
+beta_dec <- 0.8 # relative beta after lockdown begins (relative to initial beta)
+alpha_inc <- 1 # relative travel after lockdown announced
+alpha_dec <- 0.5 # relative travel decreases after lockdown begins (relative to initial travel)
 
 num_timesteps <- 200
 Nruns <- 1
@@ -93,12 +95,20 @@ for (irun in (1:Nruns)){
   
   for (t in 1:num_timesteps){
     cat(irun,t,"\n")
-    if (t >=t_ld_b){
-      mob_net <- mob_net_norm2
-    } else if (t>=t_ld_a & t <t_ld_b){
-      mob_net <- mob_net_norm2 # for now leaving same but could have a third one if want
-    } else{
+    
+    # if lockdown hasn't been announced yet check if it should be
+    if (t_ld_a==1000){
+      if (nrow(results[results$Community==start_comm & !is.na(results$Community),])>=cases_ld_a){
+        t_ld_a <- t
+        t_ld_b <- t + ld_b
+      }
       mob_net <- mob_net_norm
+    } else { 
+      if (t >=t_ld_b){
+        mob_net <- mob_net_norm2
+      } else if (t>=t_ld_a & t <t_ld_b){
+        mob_net <- mob_net_norm2 # for now leaving same but could have a third one if want
+      } 
     }
     # move Is --> R and E --> Is
     # recover
@@ -184,29 +194,31 @@ for (irun in (1:Nruns)){
   }
 }
 
-
-# add summary statistics for results -- time to X # infections, distribution across communities, etc
 #overall
 results %>%
   filter(!is.na(Community)) %>%
-  group_by(Community) %>%
+  group_by(Community, Simulation) %>%
   summarise(n=n()) -> community_summary
 
 #pre lockdown announcement summary + lag for inc period
 results %>%
-  filter(!is.na(Community) & DayInfected <25) %>%
-  group_by(Community) %>%
+  filter(!is.na(Community) & DayInfected < (t_ld_a+5)) %>%
+  group_by(Community, Simulation) %>%
   summarise(n=n()) -> community_summary_prelockdown
 
 results %>%
-  filter(!is.na(Community) & DayInfected >=25 & DayInfected <=35) %>%
-  group_by(Community) %>%
+  filter(!is.na(Community) & DayInfected >=(t_ld_a+5) & DayInfected <= (t_ld_b+5)) %>%
+  group_by(Community, Simulation) %>%
   summarise(n=n()) -> community_summary_postlockdown_a
 
 results %>%
-  filter(!is.na(Community) & DayInfected >=35) %>%
+  filter(!is.na(Community) & Simulation & DayInfected >=(t_ld_b+5)) %>%
   group_by(Community) %>%
   summarise(n=n()) -> community_summary_postlockdown_b
+
+# add summary statistics for results -- time to X # infections, distribution across communities, etc
+
+
 
 
 
