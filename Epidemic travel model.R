@@ -100,7 +100,7 @@ make_network <- function(community_sizes,num_communities,studypop_size,rate_with
 
 g <- make_network(community_sizes,num_communities,studypop_size,rate_within, rate_between)
 
-results <- data.frame("Community"=rep(NA,studypop_size),"DayInfected"=rep(NA,studypop_size),"Symptoms"=rep(NA,studypop_size))
+results <- data.frame("InfectedNode"=rep(NA,studypop_size),"Community"=rep(NA,studypop_size),"DayInfected"=rep(NA,studypop_size),"Symptoms"=rep(NA,studypop_size))
 
 for (irun in (1:Nruns)){
   # add infected people in community where starting; choose symptom status based on % asymp
@@ -108,7 +108,7 @@ for (irun in (1:Nruns)){
   num_asymp <- sum(rbinom(num_inf,1,perc_asymp))
   V(g)[init_inf]$state <- c(rep(3,num_asymp),rep(4,num_inf-num_asymp))
   V(g)[init_inf]$rec_time <- round(rgamma(length(init_inf),infperiod_shape,infperiod_rate))
-  results[1:num_inf,1:3] <- cbind(rep(start_comm,num_inf),rep(1,num_inf),V(g)[init_inf]$state)
+  results[1:num_inf,1:4] <- cbind(init_inf,rep(start_comm,num_inf),rep(1,num_inf),V(g)[init_inf]$state)
   
   for (t in 1:num_timesteps){
     cat(irun,t,"\n")
@@ -126,7 +126,7 @@ for (irun in (1:Nruns)){
     N_move_I <- length(V(g)[inf_time==t])
     if (N_move_I > 0){
       V(g)[inf_time==t]$state <- ifelse(rbinom(N_move_I,1,perc_asymp)==1,3,4)
-      results[(num_inf+1):(num_inf+N_move_I),] <- cbind(V(g)[inf_time==t]$community,rep(t,N_move_I), V(g)[inf_time==t]$state)
+      results[(num_inf+1):(num_inf+N_move_I),] <- cbind(V(g)[inf_time==t]$name,V(g)[inf_time==t]$community,rep(t,N_move_I), V(g)[inf_time==t]$state)
       num_inf <- num_inf + N_move_I
     }
     for (iloc in 1:num_communities){
