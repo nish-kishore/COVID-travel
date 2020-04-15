@@ -15,13 +15,21 @@ require(tidyverse)
 # make a list of all communities 
 num_communities <- 100
 size_communities <- 1000
-communities <- vector("list",num_communities)
-communities <- lapply(communities,function(x)x[1:5]=c(size_communities,0,0,0,0)) # start everyone out susceptible
-communities[[25]][1] <- 10000 # make city
-communities[[65]][1] <- 10000 # make city
+communities <- matrix(c(
+  rep(size_communities, num_communities),
+  rep(0, num_communities), 
+  rep(0, num_communities), 
+  rep(0, num_communities), 
+  rep(0, num_communities)
+  ),
+  nrow = num_communities
+  )
+colnames(communities) <- c("S", "E", "A", "I", "R")
+
+communities[c(25,65),"S"] <- 10000
 
 
-studypop_size <- sum(unlist(communities))
+studypop_size <- sum(communities[,1])
 exp_grav <- 2 # exponent for gravity model
 
 start_comm <- 25 # choose community where outbreak will start
@@ -88,9 +96,9 @@ results <- data.frame("Community"=rep(NA,studypop_size),"DayInfected"=rep(NA,stu
 for (irun in (1:Nruns)){
   # add infected people in community where starting; choose symptom status based on % asymp
   num_asymp <- sum(rbinom(num_inf,1,perc_asymp))
-  communities[[start_comm]][[1]] <- communities[[start_comm]][[1]] - num_inf
-  communities[[start_comm]][[3]]  <- num_asymp
-  communities[[start_comm]][[4]] <- num_inf - num_asymp
+  communities[start_comm, "S"] <- communities[start_comm, "S"] - num_inf
+  communities[start_comm, "A"]  <- num_asymp
+  communities[start_comm, "I"] <- num_inf - num_asymp
   results[1:num_inf,] <- cbind(rep(start_comm,num_inf),rep(1,num_inf),rep(irun,num_inf))
   
   for (t in 1:num_timesteps){
@@ -127,18 +135,18 @@ for (irun in (1:Nruns)){
       }
       
       # recover
-      recover_AS <- sum(rbinom(communities[[iloc]][3],1,rec_per))
-      recover_S <- sum(rbinom(communities[[iloc]][4],1,rec_per))
-      communities[[iloc]][3] <- communities[[iloc]][3] - recover_AS
-      communities[[iloc]][4] <- communities[[iloc]][4] - recover_S
-      communities[[iloc]][5] <- communities[[iloc]][5] + recover_AS + recover_S
+      recover_AS <- sum(rbinom(communities[iloc, "A"],1,rec_per))
+      recover_S <- sum(rbinom(communities[iloc, "I"],1,rec_per))
+      communities[iloc, "A"] <- communities[iloc, "A"] - recover_AS
+      communities[iloc, "I"] <- communities[iloc, "I"] - recover_S
+      communities[iloc, "R"] <- communities[iloc, "R"] + recover_AS + recover_S
       
       # exposed --> infected
-      num_new_inf <- sum(rbinom(communities[[iloc]][2],1,lat_per))
+      num_new_inf <- sum(rbinom(communities[iloc, "E"],1,lat_per))
       N_asymp <- sum(rbinom(num_new_inf,1,perc_asymp))
-      communities[[iloc]][2] <- communities[[iloc]][2] - num_new_inf
-      communities[[iloc]][3] <- communities[[iloc]][3] + N_asymp
-      communities[[iloc]][4] <- communities[[iloc]][4] + (num_new_inf - N_asymp)
+      communities[iloc, "E"] <- communities[iloc, "E"] - num_new_inf
+      communities[iloc, "A"] <- communities[iloc, "A"] + N_asymp
+      communities[iloc, "I"] <- communities[iloc, "I"] + (num_new_inf - N_asymp)
       
       if (num_new_inf >0){
         results[(num_inf+1):(num_inf+num_new_inf),] <- cbind(rep(iloc,num_new_inf),rep(t,num_new_inf),rep(irun,num_new_inf))
@@ -146,26 +154,26 @@ for (irun in (1:Nruns)){
       }
       
       # infect
-      if (sum(unlist(lapply(communities,function(x)(x[3]))))>0 |
-          sum(unlist(lapply(communities,function(x)(x[4]))))>0){
-         beta_step <- beta/sum(communities[[iloc]])
-         tot_num_exp <- sum(communities[[iloc]][c(3,4)])
-         N_exp <- sum(rbinom(communities[[iloc]][1],1,1-(1-beta_step)^tot_num_exp))
-         communities[[iloc]][2] <- communities[[iloc]][2] + N_exp
-         communities[[iloc]][1] <- communities[[iloc]][1] - N_exp
+      if (sum(communities[,"A"])>0 |
+          sum(communities[,"I"])>0){
+         beta_step <- beta/sum(communities[iloc,])
+         tot_num_exp <- sum(communities[iloc,c(3,4)])
+         N_exp <- sum(rbinom(communities[iloc, "S"],1,1-(1-beta_step)^tot_num_exp))
+         communities[iloc, "E"] <- communities[iloc, "E"] + N_exp
+         communities[iloc, "S"] <- communities[iloc, "S"] - N_exp
       }
       
       # move
-      N_moveS <- sum(rbinom(sum(communities[[iloc]][1]),1,alpha))
-      N_moveE <- sum(rbinom(sum(communities[[iloc]][2]),1,alpha))
-      N_moveIAS <- sum(rbinom(sum(communities[[iloc]][3]),1,alpha))
-      N_moveR <- sum(rbinom(sum(communities[[iloc]][5]),1,alpha))
+      N_moveS <- sum(rbinom(sum(communities[iloc, "S"]),1,alpha))
+      N_moveE <- sum(rbinom(sum(communities[iloc, "E"]),1,alpha))
+      N_moveIAS <- sum(rbinom(sum(communities[iloc, "A"]),1,alpha))
+      N_moveR <- sum(rbinom(sum(communities[iloc, "R"]),1,alpha))
       
       # remove number moving from community
-      communities[[iloc]][1] <- communities[[iloc]][1] - N_moveS
-      communities[[iloc]][2] <- communities[[iloc]][2] - N_moveE
-      communities[[iloc]][3] <- communities[[iloc]][3] - N_moveIAS
-      communities[[iloc]][5] <- communities[[iloc]][5] - N_moveR
+      communities[iloc, "S"] <- communities[iloc, "S"] - N_moveS
+      communities[iloc, "E"] <- communities[iloc, "E"] - N_moveE
+      communities[iloc, "I"] <- communities[iloc, "I"] - N_moveIAS
+      communities[iloc, "R"] <- communities[iloc, "R"] - N_moveR
       
       # add those moving to new communities
       if (sum(N_moveS+N_moveE+N_moveIAS+N_moveR)>0){
@@ -175,19 +183,19 @@ for (irun in (1:Nruns)){
         destR <- sample(c(1:num_communities),N_moveR,mob_net[iloc,],replace=TRUE)
         
         for (dest in destS){
-          communities[[dest]][1] <-   communities[[dest]][1] +1
+          communities[dest,"S"] <-   communities[dest,"S"] +1
         }
         
         for (dest in destE){
-          communities[[dest]][2] <-   communities[[dest]][2] +1
+          communities[dest,"E"] <-   communities[dest,"E"] +1
         }
         
         for (dest in destIAS){
-          communities[[dest]][3] <-   communities[[dest]][3] +1
+          communities[dest,"A"] <-   communities[dest,"A"] +1
         }
         
         for (dest in destR){
-          communities[[dest]][5] <-   communities[[dest]][5] +1
+          communities[dest,"R"] <-   communities[dest,"R"] +1
         }
         
       }
