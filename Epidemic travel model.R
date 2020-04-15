@@ -9,39 +9,50 @@ require(tidyverse)
 # S+E+IAS+R move freely on a spatial network
 # IS do not move
 
-# states: S=1, E=2, IAS=3, IS=4, R=5
+# position in list: S=1, E=2, IAS=3, IS=4, R=5
 
 # Connectivity parameters
-community_sizes <- rep(100,100) 
-community_sizes[c(45,20)] <- 1000 # for now make mostly smaller and 2 big "cities"; can scale up later
-studypop_size <- sum(community_sizes)
-num_communities <- length(community_sizes)
-rate_within <- 1 # connectivity w/in a communiity - for now make well mixed but can cluster later
-rate_between <- 0 # keep separate so only transmit to another community if moved there
+# make a list of all communities 
+num_communities <- 1000
+size_communities <- 1000
+communities <- matrix(c(
+  rep(size_communities, num_communities),
+  rep(0, num_communities), 
+  rep(0, num_communities), 
+  rep(0, num_communities), 
+  rep(0, num_communities)
+  ),
+  nrow = num_communities
+  )
+colnames(communities) <- c("S", "E", "A", "I", "R")
+
+communities[c(25,65),"S"] <- 1000
+
+
+studypop_size <- sum(communities[,1])
 exp_grav <- 2 # exponent for gravity model
 
-start_comm <- 45 # choose community where outbreak will start
+start_comm <- 25 # choose community where outbreak will start
 num_inf <- 5 # choose number of initial infections
 
-# Disease parameters (need to update but for now gamma distribution 5 day latent and 7 day inf. period)
-latperiod_shape<-5
-latperiod_rate<-0.9
-infperiod_shape<-1.13
-infperiod_rate<-0.16
-perc_asymp <- 0.5 
+# Disease parameters (average 5 day latent and 10 day inf. period)
+lat_per <- 0.2
+rec_per <- 0.1
 
 # Movement parameters
-alpha_init<-0.1 #moving probability
+alpha_init<-0.001 #moving probability
 beta_init<-0.15 # force of infection
 perc_asymp<-0.5 # % asymptomatic
 
 # Lockdown parameters
-t_ld_a <- 20 #time lockdown announced - I think we should probably link this to # infections instead of being fixed
-t_ld_b <- 30 #time lockdown begins
-beta_inc <- 1.5 # amount beta increases after lockdown announced
-beta_dec <- 0.5 # amount beta decreases after lockdown begins (relative to initial beta)
-alpha_inc <- 2 # amount travel increases after lockdown announced
-alpha_dec <- 0.3 # amount travel decreases after lockdown begins (relative to initial travel)
+t_ld_a <- 1000 # change below in code once threshold cases reached
+t_ld_b <- 1000 # change below in code once threshold cases reached
+cases_ld_a <- 10 # number of cases when lockdown announced 
+ld_b <- 10 # days after lockdownn announced that it begins
+beta_inc <- 1.5 # relative beta after lockdown announced
+beta_dec <- 0.8 # relative beta after lockdown begins (relative to initial beta)
+alpha_inc <- 10 # relative travel after lockdown announced
+alpha_dec <- 0.5 # relative travel decreases after lockdown begins (relative to initial travel)
 
 num_timesteps <- 200
 Nruns <- 1
@@ -51,10 +62,15 @@ mob_net <- matrix(0,nrow=num_communities,ncol=num_communities)
 for (i in 1:num_communities){
   for (j in 1:num_communities){
     if (i!=j){
-      mob_net[i,j] <- (community_sizes[i]*community_sizes[j])/abs(i-j)^exp_grav
+      mob_net[i,j] <- (sum(communities[[i]])*sum(communities[[i]]))/abs(i-j)^exp_grav
     }
   }
 }
+
+expand.grid(1:num_communities, 1:num_communities) %>%
+  set_names(c("i", "j")) %>%
+  mutate(val = ifelse(i == j, 0, (sum(communities[i,]*sum(communities[i,])))/(abs(i-j)^exp_grav)))
+
 mob_net_norm <- matrix(0,nrow=num_communities,ncol=num_communities)
 for (i in 1:num_communities){
   for (j in 1:num_communities){
@@ -67,7 +83,7 @@ mob_net2 <- matrix(0,nrow=num_communities,ncol=num_communities)
 for (i in 1:num_communities){
   for (j in 1:num_communities){
     if (i!=j){
-      mob_net2[i,j] <- abs(i-j)/(community_sizes[i]*community_sizes[j])
+      mob_net2[i,j] <- abs(i-j)/(sum(communities[[i]])*sum(communities[[i]]))
     }
   }
 }
@@ -80,55 +96,37 @@ for (i in 1:num_communities){
   }
 }
 
-# Function to make network
-make_network <- function(community_sizes,num_communities,studypop_size,rate_within, rate_between) {
-  within_rates <- diag(nrow=num_communities,ncol=num_communities,x=rate_within)
-  between_rates <- matrix(rate_between,nrow=num_communities,ncol=num_communities) -
-    diag(nrow=num_communities,ncol=num_communities,x=rate_between)
-  rates<-within_rates+between_rates
-  
-  g <- sample_sbm(studypop_size,rates,community_sizes)
-
-  V(g)$name<-1:sum(community_sizes) # Give the nodes a name so that igraph remembers them
-  V(g)$community<-rep(1:num_communities,community_sizes)
-  V(g)$state <- 1 # make everyone susceptible initially
-  V(g)$inf_time <- 1000 # track infection times
-  V(g)$rec_time <- 1000 # track recover times
-  
-  return(g)
-}
-
-g <- make_network(community_sizes,num_communities,studypop_size,rate_within, rate_between)
-
-results <- data.frame("InfectedNode"=rep(NA,studypop_size),"Community"=rep(NA,studypop_size),"DayInfected"=rep(NA,studypop_size),"Symptoms"=rep(NA,studypop_size))
+results <- data.frame("Community"=rep(NA,studypop_size),"DayInfected"=rep(NA,studypop_size),"Simulation"=rep(NA,studypop_size))
 
 for (irun in (1:Nruns)){
   # add infected people in community where starting; choose symptom status based on % asymp
-  init_inf <- sample(V(g)[community==start_comm]$name,num_inf)
   num_asymp <- sum(rbinom(num_inf,1,perc_asymp))
-  V(g)[init_inf]$state <- c(rep(3,num_asymp),rep(4,num_inf-num_asymp))
-  V(g)[init_inf]$rec_time <- 1 + round(rgamma(length(init_inf),infperiod_shape,infperiod_rate))
-  results[1:num_inf,1:4] <- cbind(init_inf,rep(start_comm,num_inf),rep(1,num_inf),V(g)[init_inf]$state)
+  communities[start_comm, "S"] <- communities[start_comm, "S"] - num_inf
+  communities[start_comm, "A"]  <- num_asymp
+  communities[start_comm, "I"] <- num_inf - num_asymp
+  results[1:num_inf,] <- cbind(rep(start_comm,num_inf),rep(1,num_inf),rep(irun,num_inf))
   
   for (t in 1:num_timesteps){
     cat(irun,t,"\n")
-    if (t >=t_ld_b){
-      mob_net <- mob_net_norm2
-    } else if (t>=t_ld_a & t <t_ld_b){
-      mob_net <- mob_net_norm2 # for now leaving same but could have a third one if want
-    } else{
+    
+    # if lockdown hasn't been announced yet check if it should be
+    if (t_ld_a==1000){
+      # should probably track symptomatic infections instead of setting threshold based on % asymp but leaving for now
+      if (nrow(results[results$Community==start_comm & !is.na(results$Community),])>=cases_ld_a/(1-perc_asymp)){
+        t_ld_a <- t
+        t_ld_b <- t + ld_b
+      }
       mob_net <- mob_net_norm
+    } else { 
+      if (t >=t_ld_b){
+        mob_net <- mob_net_norm2
+      } else if (t>=t_ld_a & t <t_ld_b){
+        mob_net <- mob_net_norm2 # for now leaving same but could have a third one if want
+      } 
     }
     # move Is --> R and E --> Is
     # recover
-    V(g)[rec_time==t]$state <- 5
-    # exposed --> infected
-    N_move_I <- length(V(g)[inf_time==t])
-    if (N_move_I > 0){
-      V(g)[inf_time==t]$state <- ifelse(rbinom(N_move_I,1,perc_asymp)==1,3,4)
-      results[(num_inf+1):(num_inf+N_move_I),] <- cbind(V(g)[inf_time==t]$name,V(g)[inf_time==t]$community,rep(t,N_move_I), V(g)[inf_time==t]$state)
-      num_inf <- num_inf + N_move_I
-    }
+    
     for (iloc in 1:num_communities){
       if (iloc==start_comm & t >= t_ld_a & t < t_ld_b){
           alpha <- alpha_init*alpha_inc
@@ -140,31 +138,124 @@ for (irun in (1:Nruns)){
           alpha <- alpha_init
           beta <- beta_init
       }
-      # first move
-      N_move <- sum(rbinom(sum(V(g)$community==iloc)-sum(V(g)[community==iloc]$state==4), 1,alpha))
-      agents_move <- sample(V(g)[state %in% c(1,2,3,5) & community == iloc]$name,N_move,replace=FALSE)
-      if (length(agents_move)>0){
-        dest <- sample(c(1:num_communities),N_move,mob_net[iloc,],replace=TRUE)
-        for (a in 1:length(agents_move)){
-          V(g)[agents_move[a]]$community <- dest[a] # update community
-        }
+      
+      # recover
+      recover_AS <- sum(rbinom(communities[iloc, "A"],1,rec_per))
+      recover_S <- sum(rbinom(communities[iloc, "I"],1,rec_per))
+      communities[iloc, "A"] <- communities[iloc, "A"] - recover_AS
+      communities[iloc, "I"] <- communities[iloc, "I"] - recover_S
+      communities[iloc, "R"] <- communities[iloc, "R"] + recover_AS + recover_S
+      
+      # exposed --> infected
+      num_new_inf <- sum(rbinom(communities[iloc, "E"],1,lat_per))
+      N_asymp <- sum(rbinom(num_new_inf,1,perc_asymp))
+      communities[iloc, "E"] <- communities[iloc, "E"] - num_new_inf
+      communities[iloc, "A"] <- communities[iloc, "A"] + N_asymp
+      communities[iloc, "I"] <- communities[iloc, "I"] + (num_new_inf - N_asymp)
+      
+      if (num_new_inf >0){
+        results[(num_inf+1):(num_inf+num_new_inf),] <- cbind(rep(iloc,num_new_inf),rep(t,num_new_inf),rep(irun,num_new_inf))
+        num_inf <- num_inf + num_new_inf
       }
+      
       # infect
-      if (sum(V(g)[community==iloc]$state %in% c(3,4))){
-         beta_step <- beta/length(V(g)[community==iloc])
-         tot_num_exp <- sum(V(g)[community==iloc]$state %in% c(3,4))
-         N_exp <- sum(rbinom(sum(V(g)[community==iloc]$state==1),1,1-(1-beta_step)^tot_num_exp))
-         new_exp <- sample(V(g)[community==iloc & state==1],N_exp,replace=FALSE)
-         V(g)[new_exp]$state <- 2
-         V(g)[new_exp]$inf_time <- t + round(rgamma(length(new_exp),latperiod_shape,latperiod_rate))
-         V(g)[new_exp]$rec_time <- V(g)[new_exp]$inf_time + round(rgamma(length(new_exp),infperiod_shape,infperiod_rate))
-       }
+      if (sum(communities[,"A"])>0 |
+          sum(communities[,"I"])>0){
+         beta_step <- beta/sum(communities[iloc,])
+         tot_num_exp <- sum(communities[iloc,c(3,4)])
+         N_exp <- sum(rbinom(communities[iloc, "S"],1,1-(1-beta_step)^tot_num_exp))
+         communities[iloc, "E"] <- communities[iloc, "E"] + N_exp
+         communities[iloc, "S"] <- communities[iloc, "S"] - N_exp
+      }
+      
+      # move
+      N_moveS <- sum(rbinom(sum(communities[iloc, "S"]),1,alpha))
+      N_moveE <- sum(rbinom(sum(communities[iloc, "E"]),1,alpha))
+      N_moveIAS <- sum(rbinom(sum(communities[iloc, "A"]),1,alpha))
+      N_moveR <- sum(rbinom(sum(communities[iloc, "R"]),1,alpha))
+      
+      # remove number moving from community
+      communities[iloc, "S"] <- communities[iloc, "S"] - N_moveS
+      communities[iloc, "E"] <- communities[iloc, "E"] - N_moveE
+      communities[iloc, "I"] <- communities[iloc, "I"] - N_moveIAS
+      communities[iloc, "R"] <- communities[iloc, "R"] - N_moveR
+      
+      # add those moving to new communities
+      if (sum(N_moveS+N_moveE+N_moveIAS+N_moveR)>0){
+        destS <- sample(c(1:num_communities),N_moveS,mob_net[iloc,],replace=TRUE)
+        destE <- sample(c(1:num_communities),N_moveE,mob_net[iloc,],replace=TRUE)
+        destIAS <- sample(c(1:num_communities),N_moveIAS,mob_net[iloc,],replace=TRUE)
+        destR <- sample(c(1:num_communities),N_moveR,mob_net[iloc,],replace=TRUE)
+        
+        for (dest in destS){
+          communities[dest,"S"] <-   communities[dest,"S"] +1
+        }
+        
+        for (dest in destE){
+          communities[dest,"E"] <-   communities[dest,"E"] +1
+        }
+        
+        for (dest in destIAS){
+          communities[dest,"A"] <-   communities[dest,"A"] +1
+        }
+        
+        for (dest in destR){
+          communities[dest,"R"] <-   communities[dest,"R"] +1
+        }
+        
+      }
     }
   }
+  results %>% 
+    mutate(t_ld_a=ifelse(t_ld_a==1000,NA,t_ld_a),
+           t_ld_b=ifelse(t_ld_a==1000,NA,t_ld_b),
+           travel_increase = alpha_init*alpha_inc,
+           travel_decrease = alpha_init*alpha_dec,
+           beta_increase = beta_init*beta_inc,
+           beta_decrease = beta_init*beta_dec) -> results_master
 }
 
+#overall
+results_master %>%
+  filter(!is.na(Community)) %>%
+  group_by(Community, Simulation) %>%
+  summarise(n=n()) -> community_summary
 
-# add summary statistics for results -- time to X # infections, distribution across communities, etc
+#pre lockdown announcement summary + lag for inc period
+results_master %>%
+  filter(!is.na(Community) & DayInfected < (t_ld_a+5)) %>%
+  group_by(Community, Simulation) %>%
+  summarise(n=n()) -> community_summary_prelockdown
+
+results_master %>%
+  filter(!is.na(Community) & DayInfected >=(t_ld_a+5) & DayInfected <= (t_ld_b+5)) %>%
+  group_by(Community, Simulation) %>%
+  summarise(n=n()) -> community_summary_postlockdown_a
+
+results_master %>%
+  filter(!is.na(Community) & Simulation & DayInfected >=(t_ld_b+5)) %>%
+  group_by(Community) %>%
+  summarise(n=n()) -> community_summary_postlockdown_b
+
+# add summary statistics for results_master -- time to X # infections, distribution across communities, etc
+
+results_master %>%
+  filter(!is.na(Community)) %>%
+  group_by(DayInfected, Community, Simulation) %>%
+  summarise(n=n()) %>%
+  group_by(Community) %>%
+  mutate(cumulative=cumsum(n)) -> community_day_summary
+
+ggplot(community_day_summary, aes(x=DayInfected,y=cumulative,group=factor(Community),color=factor(Community))) + 
+  geom_line() + theme_classic() +
+  geom_vline(xintercept=t_ld_a) +
+  geom_vline(xintercept=t_ld_b) +
+  labs(color="Community",
+       x="Days",
+       y="Cumulative cases",
+       caption = paste0("Starting community = ",start_comm,
+                        "\n Total # cases = ", sum(community_day_summary$n),
+                        "\n Vertical black lines indicate when lockdown was announced and began"))
 
 
 
