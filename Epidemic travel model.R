@@ -98,7 +98,8 @@ for (irun in (1:Nruns)){
     
     # if lockdown hasn't been announced yet check if it should be
     if (t_ld_a==1000){
-      if (nrow(results[results$Community==start_comm & !is.na(results$Community),])>=cases_ld_a){
+      # should probably track symptomatic infections instead of setting threshold based on % asymp but leaving for now
+      if (nrow(results[results$Community==start_comm & !is.na(results$Community),])>=cases_ld_a/(1-perc_asymp)){
         t_ld_a <- t
         t_ld_b <- t + ld_b
       }
