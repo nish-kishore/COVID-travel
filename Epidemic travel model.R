@@ -39,7 +39,7 @@ perc_asymp<-0.5 # % asymptomatic
 # Lockdown parameters
 t_ld_a <- 1000 # change below in code once threshold cases reached
 t_ld_b <- 1000 # change below in code once threshold cases reached
-cases_ld_a <- 20 # number of cases when lockdown announced 
+cases_ld_a <- 10 # number of cases when lockdown announced 
 ld_b <- 10 # days after lockdownn announced that it begins
 beta_inc <- 1.5 # relative beta after lockdown announced
 beta_dec <- 0.8 # relative beta after lockdown begins (relative to initial beta)
@@ -193,33 +193,40 @@ for (irun in (1:Nruns)){
       }
     }
   }
+  results %>% 
+    mutate(t_ld_a=ifelse(t_ld_a==1000,NA,t_ld_a),
+           t_ld_b=ifelse(t_ld_a==1000,NA,t_ld_b),
+           travel_increase = alpha_init*alpha_inc,
+           travel_decrease = alpha_init*alpha_dec,
+           beta_increase = beta_init*beta_inc,
+           beta_decrease = beta_init*beta_dec) -> results_master
 }
 
 #overall
-results %>%
+results_master %>%
   filter(!is.na(Community)) %>%
   group_by(Community, Simulation) %>%
   summarise(n=n()) -> community_summary
 
 #pre lockdown announcement summary + lag for inc period
-results %>%
+results_master %>%
   filter(!is.na(Community) & DayInfected < (t_ld_a+5)) %>%
   group_by(Community, Simulation) %>%
   summarise(n=n()) -> community_summary_prelockdown
 
-results %>%
+results_master %>%
   filter(!is.na(Community) & DayInfected >=(t_ld_a+5) & DayInfected <= (t_ld_b+5)) %>%
   group_by(Community, Simulation) %>%
   summarise(n=n()) -> community_summary_postlockdown_a
 
-results %>%
+results_master %>%
   filter(!is.na(Community) & Simulation & DayInfected >=(t_ld_b+5)) %>%
   group_by(Community) %>%
   summarise(n=n()) -> community_summary_postlockdown_b
 
-# add summary statistics for results -- time to X # infections, distribution across communities, etc
+# add summary statistics for results_master -- time to X # infections, distribution across communities, etc
 
-results %>%
+results_master %>%
   filter(!is.na(Community)) %>%
   group_by(DayInfected, Community, Simulation) %>%
   summarise(n=n()) %>%
@@ -234,9 +241,9 @@ ggplot(community_day_summary, aes(x=DayInfected,y=cumulative,group=factor(Commun
        x="Days",
        y="Cumulative cases",
        caption = paste0("Starting community = ",start_comm,
-                         "\n Total # cases = ", sum(community_day_summary$n),
+                        "\n Total # cases = ", sum(community_day_summary$n),
                         "\n Vertical black lines indicate when lockdown was announced and began"))
-       ))
+
 
 
 
