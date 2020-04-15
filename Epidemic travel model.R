@@ -13,7 +13,7 @@ require(tidyverse)
 
 # Connectivity parameters
 # make a list of all communities 
-num_communities <- 1000
+num_communities <- 100
 size_communities <- 1000
 communities <- matrix(c(
   rep(size_communities, num_communities),
@@ -67,9 +67,7 @@ for (i in 1:num_communities){
   }
 }
 
-expand.grid(1:num_communities, 1:num_communities) %>%
-  set_names(c("i", "j")) %>%
-  mutate(val = ifelse(i == j, 0, (sum(communities[i,]*sum(communities[i,])))/(abs(i-j)^exp_grav)))
+
 
 mob_net_norm <- matrix(0,nrow=num_communities,ncol=num_communities)
 for (i in 1:num_communities){
