@@ -13,7 +13,7 @@ require(tidyverse)
 
 # Connectivity parameters
 # make a list of all communities 
-num_communities <- 100
+num_communities <- 3000
 size_communities <- 1000
 communities <- matrix(c(
   rep(size_communities, num_communities),
@@ -26,7 +26,7 @@ communities <- matrix(c(
   )
 colnames(communities) <- c("S", "E", "A", "I", "R")
 
-communities[c(25,65),"S"] <- 10000
+communities[c(25,65),"S"] <- 100000
 
 
 studypop_size <- sum(communities[,1])
