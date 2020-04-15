@@ -32,7 +32,7 @@ lat_per <- 0.2
 rec_per <- 0.1
 
 # Movement parameters
-alpha_init<-0.01 #moving probability
+alpha_init<-0.001 #moving probability
 beta_init<-0.15 # force of infection
 perc_asymp<-0.5 # % asymptomatic
 
@@ -43,7 +43,7 @@ cases_ld_a <- 20 # number of cases when lockdown announced
 ld_b <- 10 # days after lockdownn announced that it begins
 beta_inc <- 1.5 # relative beta after lockdown announced
 beta_dec <- 0.8 # relative beta after lockdown begins (relative to initial beta)
-alpha_inc <- 1 # relative travel after lockdown announced
+alpha_inc <- 10 # relative travel after lockdown announced
 alpha_dec <- 0.5 # relative travel decreases after lockdown begins (relative to initial travel)
 
 num_timesteps <- 200
@@ -219,7 +219,24 @@ results %>%
 
 # add summary statistics for results -- time to X # infections, distribution across communities, etc
 
+results %>%
+  filter(!is.na(Community)) %>%
+  group_by(DayInfected, Community, Simulation) %>%
+  summarise(n=n()) %>%
+  group_by(Community) %>%
+  mutate(cumulative=cumsum(n)) -> community_day_summary
 
+ggplot(community_day_summary, aes(x=DayInfected,y=cumulative,group=factor(Community),color=factor(Community))) + 
+  geom_line() + theme_classic() +
+  geom_vline(xintercept=t_ld_a) +
+  geom_vline(xintercept=t_ld_b) +
+  labs(color="Community",
+       x="Days",
+       y="Cumulative cases",
+       caption = paste0("Starting community = ",start_comm,
+                         "\n Total # cases = ", sum(community_day_summary$n),
+                        "\n Vertical black lines indicate when lockdown was announced and began"))
+       ))
 
 
 
