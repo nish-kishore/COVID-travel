@@ -62,7 +62,7 @@ mob_net <- matrix(0,nrow=num_communities,ncol=num_communities)
 for (i in 1:num_communities){
   for (j in 1:num_communities){
     if (i!=j){
-      mob_net[i,j] <- (sum(communities[[i]])*sum(communities[[i]]))/abs(i-j)^exp_grav
+      mob_net[i,j] <- (sum(communities[[i]])*sum(communities[[j]]))/abs(i-j)^exp_grav
     }
   }
 }
@@ -81,7 +81,7 @@ mob_net2 <- matrix(0,nrow=num_communities,ncol=num_communities)
 for (i in 1:num_communities){
   for (j in 1:num_communities){
     if (i!=j){
-      mob_net2[i,j] <- abs(i-j)/(sum(communities[[i]])*sum(communities[[i]]))
+      mob_net2[i,j] <- abs(i-j)/(sum(communities[[i]])*sum(communities[[j]]))
     }
   }
 }
