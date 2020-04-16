@@ -94,7 +94,8 @@ for (i in 1:num_communities){
   }
 }
 
-results <- data.frame("Community"=rep(NA,studypop_size),"DayInfected"=rep(NA,studypop_size),"Simulation"=rep(NA,studypop_size))
+results <- data.frame("Community"=rep(NA,studypop_size),"DayInfected"=rep(NA,studypop_size),"Simulation"=rep(NA,studypop_size),
+                      "Symptoms"=rep(NA,studypop_size))
 
 for (irun in (1:Nruns)){
   # add infected people in community where starting; choose symptom status based on % asymp
@@ -102,7 +103,7 @@ for (irun in (1:Nruns)){
   communities[start_comm, "S"] <- communities[start_comm, "S"] - num_inf
   communities[start_comm, "A"]  <- num_asymp
   communities[start_comm, "I"] <- num_inf - num_asymp
-  results[1:num_inf,] <- cbind(rep(start_comm,num_inf),rep(1,num_inf),rep(irun,num_inf))
+  results[1:num_inf,] <- cbind(rep(start_comm,num_inf),rep(1,num_inf),rep(irun,num_inf),c(rep(1,(num_inf - num_asymp)),rep(0,num_asymp)))
   
   for (t in 1:num_timesteps){
     cat(irun,t,"\n")
@@ -110,7 +111,8 @@ for (irun in (1:Nruns)){
     # if lockdown hasn't been announced yet check if it should be
     if (t_ld_a==1000){
       # should probably track symptomatic infections instead of setting threshold based on % asymp but leaving for now
-      if (nrow(results[results$Community==start_comm & !is.na(results$Community),])>=cases_ld_a/(1-perc_asymp)){
+      if (nrow(results[results$Community==start_comm & !is.na(results$Community) &
+                       results$Symptoms==1,])>=cases_ld_a){
         t_ld_a <- t
         t_ld_b <- t + ld_b
       }
@@ -152,7 +154,8 @@ for (irun in (1:Nruns)){
       communities[iloc, "I"] <- communities[iloc, "I"] + (num_new_inf - N_asymp)
       
       if (num_new_inf >0){
-        results[(num_inf+1):(num_inf+num_new_inf),] <- cbind(rep(iloc,num_new_inf),rep(t,num_new_inf),rep(irun,num_new_inf))
+        results[(num_inf+1):(num_inf+num_new_inf),] <- cbind(rep(iloc,num_new_inf),rep(t,num_new_inf),rep(irun,num_new_inf),
+                                                             c(rep(1,(num_new_inf - N_asymp)),rep(0,N_asymp)))
         num_inf <- num_inf + num_new_inf
       }
       
