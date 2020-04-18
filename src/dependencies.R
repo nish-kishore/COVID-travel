@@ -3,12 +3,14 @@ package_list <- c(
   "Rlab",
   "Matrix",
   "ggplot2",
-  "yaml"
+  "yaml",
+  "doParallel", 
+  "digest"
 )
 
 
 #install dependencies
-if(F){
+if(FALSE){
   install.packages(package_list)
 }
 
