@@ -7,10 +7,10 @@ model_a <- function(params){
     communities[start_comm, "S"] <- communities[start_comm, "S"] - num_inf
     communities[start_comm, "A"]  <- num_asymp
     communities[start_comm, "I"] <- num_inf - num_asymp
-    results[1:num_inf,] <- cbind(rep(start_comm,num_inf),rep(1,num_inf),rep(irun,num_inf),c(rep(1,(num_inf - num_asymp)),rep(0,num_asymp)))
+    results[1:num_inf,] <- cbind(rep(start_comm,num_inf),rep(1,num_inf),rep(Nruns,num_inf),c(rep(1,(num_inf - num_asymp)),rep(0,num_asymp)))
     
     for (t in 1:num_timesteps){
-      cat(irun,t,"\n")
+      cat(Nruns,t,"\n")
       
       # if lockdown hasn't been announced yet check if it should be
       if (t_ld_a==1000){
@@ -58,7 +58,7 @@ model_a <- function(params){
         communities[iloc, "I"] <- communities[iloc, "I"] + (num_new_inf - N_asymp)
         
         if (num_new_inf >0){
-          results[(num_inf+1):(num_inf+num_new_inf),] <- cbind(rep(iloc,num_new_inf),rep(t,num_new_inf),rep(irun,num_new_inf),
+          results[(num_inf+1):(num_inf+num_new_inf),] <- cbind(rep(iloc,num_new_inf),rep(t,num_new_inf),rep(Nruns,num_new_inf),
                                                                c(rep(1,(num_new_inf - N_asymp)),rep(0,N_asymp)))
           num_inf <- num_inf + num_new_inf
         }
