@@ -12,7 +12,7 @@ model_a <- function(params, irun){
       results[1:num_inf,] <- cbind(rep(start_comm,num_inf),rep(1,num_inf),rep(irun,num_inf),c(rep(1,(num_inf - num_asymp)),rep(0,num_asymp)))
       
       for (t in 1:num_timesteps){
-        #cat(irun,t,"\n")
+        cat(irun,t,"\n")
         
         # if lockdown hasn't been announced yet check if it should be
         if (t_ld_a==1000){
@@ -46,20 +46,21 @@ model_a <- function(params, irun){
           }
           
           # recover
-          recover_AS <- sum(rbinom(communities[iloc, "A"],1,rec_per))
-          recover_S <- sum(rbinom(communities[iloc, "I"],1,rec_per))
-          communities[iloc, "A"] <- communities[iloc, "A"] - recover_AS
-          communities[iloc, "I"] <- communities[iloc, "I"] - recover_S
+          #cat(communities)
+          recover_AS <- max(sum(rbinom(communities[iloc, "A"],1,rec_per)),0)
+          recover_S <- max(sum(rbinom(communities[iloc, "I"],1,rec_per)),0)
+          communities[iloc, "A"] <- max(communities[iloc, "A"] - recover_AS,0)
+          communities[iloc, "I"] <- max(communities[iloc, "I"] - recover_S,0)
           communities[iloc, "R"] <- communities[iloc, "R"] + recover_AS + recover_S
           
           # exposed --> infected
-          num_new_inf <- sum(rbinom(communities[iloc, "E"],1,lat_per))
-          N_asymp <- sum(rbinom(num_new_inf,1,perc_asymp))
-          communities[iloc, "E"] <- communities[iloc, "E"] - num_new_inf
+          num_new_inf <- max(sum(rbinom(communities[iloc, "E"],1,lat_per)),0)
+          N_asymp <- max(sum(rbinom(num_new_inf,1,perc_asymp)),0)
+          communities[iloc, "E"] <- max(communities[iloc, "E"] - num_new_inf,0)
           communities[iloc, "A"] <- communities[iloc, "A"] + N_asymp
           communities[iloc, "I"] <- communities[iloc, "I"] + (num_new_inf - N_asymp)
           
-          if (num_new_inf >0){
+          if (num_new_inf > 0){
             results[(num_inf+1):(num_inf+num_new_inf),] <- cbind(rep(iloc,num_new_inf),rep(t,num_new_inf),rep(irun,num_new_inf),
                                                                  c(rep(1,(num_new_inf - N_asymp)),rep(0,N_asymp)))
             num_inf <- num_inf + num_new_inf
@@ -70,23 +71,23 @@ model_a <- function(params, irun){
               sum(communities[,"I"])>0){
             area <- ifelse(iloc %in% urban, area_urban, (ifelse( iloc %in% suburban, area_suburban,area_rural)))
             beta_step <- beta/area
-            tot_num_exp <- sum(communities[iloc,c(3,4)])
-            N_exp <- sum(rbinom(communities[iloc, "S"],1,1-(1-beta_step)^tot_num_exp))
+            tot_num_exp <- max(sum(communities[iloc,c(3,4)]),0)
+            N_exp <- max(sum(rbinom(communities[iloc, "S"],1,1-(1-beta_step)^tot_num_exp)),0)
             communities[iloc, "E"] <- communities[iloc, "E"] + N_exp
             communities[iloc, "S"] <- communities[iloc, "S"] - N_exp
           }
           
           # move
-          N_moveS <- sum(rbinom(sum(communities[iloc, "S"]),1,alpha))
-          N_moveE <- sum(rbinom(sum(communities[iloc, "E"]),1,alpha))
-          N_moveIAS <- sum(rbinom(sum(communities[iloc, "A"]),1,alpha))
-          N_moveR <- sum(rbinom(sum(communities[iloc, "R"]),1,alpha))
+          N_moveS <- max(sum(rbinom(sum(communities[iloc, "S"]),1,alpha)),0)
+          N_moveE <- max(sum(rbinom(sum(communities[iloc, "E"]),1,alpha)),0)
+          N_moveIAS <- max(sum(rbinom(sum(communities[iloc, "A"]),1,alpha)),0)
+          N_moveR <- max(sum(rbinom(sum(communities[iloc, "R"]),1,alpha)),0)
           
           # remove number moving from community
-          communities[iloc, "S"] <- communities[iloc, "S"] - N_moveS
-          communities[iloc, "E"] <- communities[iloc, "E"] - N_moveE
-          communities[iloc, "I"] <- communities[iloc, "I"] - N_moveIAS
-          communities[iloc, "R"] <- communities[iloc, "R"] - N_moveR
+          communities[iloc, "S"] <- max(communities[iloc, "S"] - N_moveS,0)
+          communities[iloc, "E"] <- max(communities[iloc, "E"] - N_moveE,0)
+          communities[iloc, "I"] <- max(communities[iloc, "I"] - N_moveIAS,0)
+          communities[iloc, "R"] <- max(communities[iloc, "R"] - N_moveR,0)
           
           # add those moving to new communities
           if (sum(N_moveS+N_moveE+N_moveIAS+N_moveR)>0){
@@ -114,7 +115,6 @@ model_a <- function(params, irun){
           }
         }
       }
-      
       results$t_ld_a <- ifelse(t_ld_a==1000,NA,t_ld_a)
       results$t_ld_b <- ifelse(t_ld_a==1000,NA,t_ld_b)
       results$travel_increase <- alpha_init*alpha_inc
@@ -124,8 +124,6 @@ model_a <- function(params, irun){
       
       return(results)
       
-    }) -> x
-    
-    return(x)
+    })
 
 }
