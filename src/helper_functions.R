@@ -16,17 +16,17 @@ init_model_objects <- function(params){
     )
     colnames(communities) <- c("S", "E", "A", "I", "R")
     
-    communities[c(25,65),"S"] <- 1000
     urban <- c(45,57)
     suburban <-c(23:27,33:39,43:44,46:49,53:56,58:59,63:69,76:79)
     rural <- setdiff(1:num_communities, c(urban, suburban))
     
-    area_urban <- 500 # square miles?
+    area_urban <- 300 # square miles?
     area_suburban <- 700 
     area_rural <- 1000
     
-    communities[urban,"S"] <- 10000 # urban 
-    communities[suburban,"S"] <- 5000 # suburban
+    communities[urban,"S"] <- 300000 # urban 
+    communities[suburban,"S"] <- 350000 # suburban
+    communities[rural, "S"] <- 1000000 #rural
     
     studypop_size <- sum(communities[,1])
     
