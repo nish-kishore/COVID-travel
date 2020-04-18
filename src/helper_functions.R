@@ -125,5 +125,5 @@ run_model <- function(driver_file_path){
 
 #reads in results from a given run
 load_run_results <- function(unique_id){
-  return(read_csv("cache/results/",unique_id,".csv"))
+  return(read_csv(paste0("./cache/results/",unique_id,".csv")))
 }
