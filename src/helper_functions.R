@@ -102,7 +102,7 @@ run_model <- function(driver_file_path){
   #set up parallel processing
   cl <- makeCluster(detectCores()-2)
   registerDoParallel(cl)
-  cat(paste0("Starting cluster ", length(packed_model_objects), " jobs identified."))
+  print(paste0("Starting cluster ", length(packed_model_objects), " jobs identified.\n"))
   
   for(i in 1:length(packed_model_objects)){
     if(!params_df[i,"unique_id"] %in% results_log$unique_id){
@@ -111,7 +111,7 @@ run_model <- function(driver_file_path){
       foreach(irun = 1:params$Nruns, .export = "model_a", .combine = rbind) %dopar% {model_a(params, irun)} %>%
         write_csv(paste0("./cache/results/",params_df[i,"unique_id"],".csv"))
       
-      cat(paste0("Job ", i, "/", length(packed_model_objects), " - Completed"))
+      print(paste0("Job ", i, "/", length(packed_model_objects), " - Completed\n"))
       results_log <- rbind(results_log,cbind("date_time" = Sys.time(), "user" = as.character(Sys.info()["login"]), params_df[i,]))
     }
     
