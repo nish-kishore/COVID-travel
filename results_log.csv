@@ -1,0 +1,4 @@
+date_time,user,num_communities,size_communities,exp_grav,start_comm,num_inf,lat_per,rec_per,alpha_init,beta_init,perc_asymp,t_ld_a,t_ld_b,cases_ld_a,ld_b,beta_inc,beta_dec,alpha_inc,alpha_dec,num_timesteps,Nruns,unique_id
+2020-04-18T20:39:47Z,Nishant,100,1000,2,25,5,0.2,0.1,0.001,0.15,0.5,1000,1000,10,10,1.5,0.8,10,0.5,200,2,b501e1a712076965290bdcb364d75bce
+2020-04-18T20:40:30Z,Nishant,100,1000,2,25,5,0.2,0.1,0.001,0.16,0.5,1000,1000,10,10,1.5,0.8,10,0.5,200,2,a956ba18737e8f30083b1049d2cec4da
+2020-04-18T20:41:10Z,Nishant,100,1000,2,25,5,0.2,0.1,0.001,0.17,0.5,1000,1000,10,10,1.5,0.8,10,0.5,200,2,f1ca1ec5289c5ef50b96a2ebe6746149
