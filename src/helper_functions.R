@@ -24,9 +24,9 @@ init_model_objects <- function(params){
     area_suburban <- 700 
     area_rural <- 1000
     
-    communities[urban,"S"] <- 300000 # urban 
-    communities[suburban,"S"] <- 350000 # suburban
-    communities[rural, "S"] <- 1000000 #rural
+    communities[urban,"S"] <- 300000 # urban: makes it 1000 people/sq mile
+    communities[suburban,"S"] <- 350000 # suburban 500 people/ sq mile
+    communities[rural, "S"] <- 100000 #rural 100 people per square mile
     
     studypop_size <- sum(communities[,1])
     
