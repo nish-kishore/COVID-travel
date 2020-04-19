@@ -14,7 +14,7 @@ size_communities:
 exp_grav:
   2 # exponent for gravity model
 start_comm:
-  25 # choose community where outbreak will start
+  45 # choose community where outbreak will start
 num_inf:
   5 # choose number of initial infections
 # Disease parameters (average 5 day latent and 10 day inf. period)
