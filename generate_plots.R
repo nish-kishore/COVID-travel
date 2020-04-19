@@ -60,14 +60,18 @@ rural <- setdiff(1:100, c(urban, suburban))
 
 # summarise total # infections and start times by community type
 community_day_summary %>%
-  group_by(Community) %>%
-  summarise(tot_infections = sum(n),
-            start_time = min(DayInfected)) %>%
+  group_by(Community,Simulation) %>%
+  summarise(infections = sum(n),
+            start = min(DayInfected)) %>%
   mutate(Community_type = ifelse(Community %in% urban, "urban",
                                  ifelse(Community %in% suburban, "suburban", "rural"))) %>%
   group_by(Community_type) %>%
-  summarise(tot_infections = sum(tot_infections),
-            start_time = mean(start_time))
+  summarise(tot_infections = sum(infections),
+            start_time = mean(start)) %>%
+  #group_by(Simulation) %>%
+  mutate(perc_infections = tot_infections / sum(tot_infections)) -> summary_stats
+
+
 
 
 
