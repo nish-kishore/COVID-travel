@@ -52,3 +52,23 @@ community_day_summary %>%
        caption = paste0("Starting community = ",params$start_comm,
                         "\n Total # cases = ", sum(community_day_summary$n),
                         "\n Vertical black lines indicate when lockdown was announced and began"))
+
+# if we vary this set up will need to note this for each simulation
+urban <- c(45,57)
+suburban <-c(23:27,33:39,43:44,46:49,53:56,58:59,63:69,76:79)
+rural <- setdiff(1:100, c(urban, suburban))
+
+# summarise total # infections and start times by community type
+community_day_summary %>%
+  group_by(Community) %>%
+  summarise(tot_infections = sum(n),
+            start_time = min(DayInfected)) %>%
+  mutate(Community_type = ifelse(Community %in% urban, "urban",
+                                 ifelse(Community %in% suburban, "suburban", "rural"))) %>%
+  group_by(Community_type) %>%
+  summarise(tot_infections = sum(tot_infections),
+            start_time = mean(start_time))
+
+
+
+
