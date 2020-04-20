@@ -121,6 +121,8 @@ model_a <- function(params, irun){
       results$travel_decrease <- alpha_init*alpha_dec
       results$beta_increase <- beta_init*beta_inc 
       results$beta_decrease <- beta_init*beta_dec
+      results$type <- ifelse(results$Community %in% urban, "urban",
+                             ifelse(results$Community %in% suburban, "suburban", "rural"))
       
       return(results)
       
