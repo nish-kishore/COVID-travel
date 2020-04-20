@@ -116,6 +116,8 @@ run_model <- function(driver_file_path){
                            "urban %" = 0,
                            "average cases" = 0,
                            "correlation" = 0))
+    }else{
+      print(paste0("Job ", i, "/", length(packed_model_objects), " - Found in results log and will not be rerun."))
     }
     
   }
