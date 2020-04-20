@@ -4,7 +4,7 @@ source("./src/helper_functions.R")
 
 #load log of results generated so far 
 results_log <- read_csv("./results_log.csv")
-row <- 15
+row <- 14
 
 results_master <- load_run_results(results_log[row,"unique_id"])
 params <- results_log[row,] %>% as.list()
@@ -52,14 +52,15 @@ community_type_summary %>%
   #can change to median once we have more runs
   #summarise(avg_cumulative = mean(cumulative)) %>%
   summarise(cumulative_type = sum(cumulative)) %>%
-  ggplot(aes(x=DayInfected,y=cumulative_type,group=factor(type),color=factor(type))) +
+  ggplot(aes(x=DayInfected,y=cumulative_type,color=factor(type),lty=factor(Simulation))) +
   scale_color_viridis_d() +
-  geom_line() + theme_classic() +
+  geom_line() + theme_classic() + 
   labs(color="Community",
        x="Days",
        y="Cumulative cases",
        caption = paste0("Relative increase in travel post lockdown announcement = ", params$alpha_inc,
-                        "\n Total # cases = ", sum(community_type_summary$n)))
+                        "\n Total # cases = ", sum(community_type_summary$n)/max(community_type_summary$Simulation),
+                        "\n # simulations = ", max(community_type_summary$Simulation)))
 
 # summarise total # infections and start times by community type
 community_day_summary %>%

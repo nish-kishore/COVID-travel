@@ -107,7 +107,7 @@ model_a <- function(params, irun){
             for (dest in destIAS){
               communities[dest,"A"] <-   communities[dest,"A"] +1
             }
-            
+            s
             for (dest in destR){
               communities[dest,"R"] <-   communities[dest,"R"] +1
             }
