@@ -86,7 +86,7 @@ model_a <- function(params, irun){
           # remove number moving from community
           communities[iloc, "S"] <- max(communities[iloc, "S"] - N_moveS,0)
           communities[iloc, "E"] <- max(communities[iloc, "E"] - N_moveE,0)
-          communities[iloc, "A"] <- max(communities[iloc, "I"] - N_moveIAS,0)
+          communities[iloc, "A"] <- max(communities[iloc, "A"] - N_moveIAS,0)
           communities[iloc, "R"] <- max(communities[iloc, "R"] - N_moveR,0)
           
           # add those moving to new communities
