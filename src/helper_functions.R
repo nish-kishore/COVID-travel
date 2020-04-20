@@ -83,7 +83,8 @@ init_model_objects <- function(params){
 
 #takes in parameters from the driver file and runs the model
 run_model <- function(driver_file_path){
-  params_df <- read_yaml(driver_file_path) %>% as_tibble()
+  params_df <- read_yaml(driver_file_path) %>% expand.grid() %>% as_tibble()
+  
   params_df$unique_id <- apply(params_df, 1, digest)
   
   packed_model_objects <- lapply(1:nrow(params_df), function(x) init_model_objects(as.list(params_df[x,])))
@@ -95,7 +96,7 @@ run_model <- function(driver_file_path){
   #set up parallel processing
   cl <- makeCluster(detectCores()-2)
   registerDoParallel(cl)
-  print(paste0("Starting cluster ", length(packed_model_objects), " jobs identified.\n"))
+  print(paste0("Starting cluster ", length(packed_model_objects), " jobs identified."))
   
   for(i in 1:length(packed_model_objects)){
     if(!params_df[i,"unique_id"] %in% results_log$unique_id){
@@ -104,7 +105,7 @@ run_model <- function(driver_file_path){
       foreach(irun = 1:params$Nruns, .export = "model_a", .combine = rbind) %dopar% {model_a(params, irun)} %>%
         write_csv(paste0("./cache/results/",params_df[i,"unique_id"],".csv"))
       
-      print(paste0("Job ", i, "/", length(packed_model_objects), " - Completed\n"))
+      print(paste0("Job ", i, "/", length(packed_model_objects), " - Completed"))
       results_log <- rbind(results_log,cbind("date_time" = Sys.time(), "user" = as.character(Sys.info()["login"]), params_df[i,],
                            "rural %" = 0,
                            "suburban %" = 0,
