@@ -27,6 +27,7 @@ alpha_init:
   0.0005 #moving probability
 beta_init: # force of infection
   - 0.0015
+  - 0.0020
 perc_asymp:
   0.5 # % asymptomatic
 # Lockdown parameters
@@ -41,10 +42,10 @@ ld_b:
 beta_inc:
   1.2 # relative beta after lockdown announced
 beta_dec:
-  - 0.5 # relative beta after lockdown begins (relative to initial beta)
+  0.5 # relative beta after lockdown begins (relative to initial beta)
 alpha_inc:
-  - 5 # relative travel after lockdown announced
-  - 1
+  - 5.0 # relative travel after lockdown announced
+  - 1.0
 alpha_dec:
    0.5 # relative travel decreases after lockdown begins (relative to initial travel)
 num_timesteps:
