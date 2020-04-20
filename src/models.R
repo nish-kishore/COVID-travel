@@ -86,7 +86,7 @@ model_a <- function(params, irun){
           # remove number moving from community
           communities[iloc, "S"] <- max(communities[iloc, "S"] - N_moveS,0)
           communities[iloc, "E"] <- max(communities[iloc, "E"] - N_moveE,0)
-          communities[iloc, "I"] <- max(communities[iloc, "I"] - N_moveIAS,0)
+          communities[iloc, "A"] <- max(communities[iloc, "A"] - N_moveIAS,0)
           communities[iloc, "R"] <- max(communities[iloc, "R"] - N_moveR,0)
           
           # add those moving to new communities
@@ -121,6 +121,8 @@ model_a <- function(params, irun){
       results$travel_decrease <- alpha_init*alpha_dec
       results$beta_increase <- beta_init*beta_inc 
       results$beta_decrease <- beta_init*beta_dec
+      results$type <- ifelse(results$Community %in% urban, "urban",
+                             ifelse(results$Community %in% suburban, "suburban", "rural"))
       
       return(results)
       
