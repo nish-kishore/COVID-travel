@@ -112,7 +112,11 @@ run_model <- function(driver_file_path){
         write_csv(paste0("./cache/results/",params_df[i,"unique_id"],".csv"))
       
       print(paste0("Job ", i, "/", length(packed_model_objects), " - Completed\n"))
-      results_log <- rbind(results_log,cbind("date_time" = Sys.time(), "user" = as.character(Sys.info()["login"]), params_df[i,]))
+      results_log <- rbind(results_log,cbind("date_time" = Sys.time(), "user" = as.character(Sys.info()["login"]), params_df[i,],
+                           "rural %" = NA,
+                           "suburban %" = NA,
+                           "urban %" = NA,
+                           "total cases" = NA))
     }
     
   }

@@ -4,7 +4,7 @@ source("./src/helper_functions.R")
 
 #load log of results generated so far 
 results_log <- read_csv("./results_log.csv")
-row <- 14
+row <- 16
 
 results_master <- load_run_results(results_log[row,"unique_id"])
 params <- results_log[row,] %>% as.list()
@@ -56,10 +56,11 @@ community_type_summary %>%
   scale_color_viridis_d() +
   geom_line() + theme_classic() + 
   labs(color="Community",
+       lty = "Simulation",
        x="Days",
        y="Cumulative cases",
        caption = paste0("Relative increase in travel post lockdown announcement = ", params$alpha_inc,
-                        "\n Total # cases = ", sum(community_type_summary$n)/max(community_type_summary$Simulation),
+                        "\n Average total # cases = ", sum(community_type_summary$n)/max(community_type_summary$Simulation),
                         "\n # simulations = ", max(community_type_summary$Simulation)))
 
 # summarise total # infections and start times by community type
@@ -75,10 +76,10 @@ community_day_summary %>%
 
 # add summary_stats back to results_log? 
 
-results_log[row,24:27] <- c("rural %" = summary_stats[1,"perc_infections"],
-                                                                  "suburban %" = summary_stats[2,"perc_infections"],
-                                                                  "urban %" = summary_stats[3,"perc_infections"],
-                                                                  "total cases" = sum(community_day_summary$n))
+results_log[row,"rural %" ] <- summary_stats[1,"perc_infections"]
+results_log[row,"suburban %" ] <- summary_stats[2,"perc_infections"]
+results_log[row,"urban %" ] <- summary_stats[3,"perc_infections"]
+results_log[row,"total cases" ] <- sum(community_day_summary$n)
 
 write.csv(results_log,"./results_log.csv",row.names = FALSE)
 

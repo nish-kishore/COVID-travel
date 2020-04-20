@@ -37,11 +37,11 @@ t_ld_b:
 cases_ld_a:
   10 # number of cases when lockdown announced
 ld_b:
-  10 # days after lockdownn announced that it begins
+  10 # days after lockdown announced that it begins
 beta_inc:
   1.2 # relative beta after lockdown announced
 beta_dec:
-  0.8 # relative beta after lockdown begins (relative to initial beta)
+  - 0.5 # relative beta after lockdown begins (relative to initial beta)
 alpha_inc:
   - 5 # relative travel after lockdown announced
   - 1
@@ -50,4 +50,4 @@ alpha_dec:
 num_timesteps:
    200
 Nruns:
-  2
+   5
