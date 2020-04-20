@@ -50,4 +50,4 @@ alpha_dec:
 num_timesteps:
    200
 Nruns:
-   5
+   2

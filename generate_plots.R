@@ -2,6 +2,8 @@
 source("./src/dependencies.R")
 source("./src/helper_functions.R")
 
+require(ncf)
+
 #load log of results generated so far 
 results_log <- read_csv("./results_log.csv")
 row <- 16
@@ -61,7 +63,7 @@ community_type_summary %>%
        y="Cumulative cases",
        caption = paste0("Relative increase in travel post lockdown announcement = ", params$alpha_inc,
                         "\n Average total # cases = ", sum(community_type_summary$n)/max(community_type_summary$Simulation),
-                        "\n # simulations = ", max(community_type_summary$Simulation)))
+                        "\n # simulations = ", params$Nruns))
 
 # summarise total # infections and start times by community type
 community_day_summary %>%
@@ -79,7 +81,25 @@ community_day_summary %>%
 results_log[row,"rural %" ] <- summary_stats[1,"perc_infections"]
 results_log[row,"suburban %" ] <- summary_stats[2,"perc_infections"]
 results_log[row,"urban %" ] <- summary_stats[3,"perc_infections"]
-results_log[row,"total cases" ] <- sum(community_day_summary$n)
+results_log[row,"average cases" ] <-  sum(community_day_summary$n)/params$Nruns
+
+# correlation of time series
+community_day_summary %>%
+  select(Community,DayInfected,Simulation,n) %>%
+  group_by(Simulation) %>%
+  spread(DayInfected,n)-> time_series
+
+Correlations <- rep(NA,params$Nruns)
+for (i in 1:params$Nruns){
+  time_series  %>%
+    subset(Simulation ==i) %>%
+    as.matrix() %>%
+    mSynch(na.rm=TRUE) -> Correlations[i]
+}
+
+Correlations %>%
+  unlist() %>%
+  mean() -> results_log[row,"correlation" ] 
 
 write.csv(results_log,"./results_log.csv",row.names = FALSE)
 

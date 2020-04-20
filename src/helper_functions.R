@@ -113,10 +113,11 @@ run_model <- function(driver_file_path){
       
       print(paste0("Job ", i, "/", length(packed_model_objects), " - Completed\n"))
       results_log <- rbind(results_log,cbind("date_time" = Sys.time(), "user" = as.character(Sys.info()["login"]), params_df[i,],
-                           "rural %" = NA,
-                           "suburban %" = NA,
-                           "urban %" = NA,
-                           "total cases" = NA))
+                           "rural %" = 0,
+                           "suburban %" = 0,
+                           "urban %" = 0,
+                           "average cases" = 0,
+                           "correlation" = 0))
     }
     
   }
