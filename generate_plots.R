@@ -5,7 +5,7 @@ source("./src/helper_functions.R")
 #load log of results generated so far 
 results_log <- read_csv("./results_log.csv")
 
-results_master <- load_run_results(results_log[1,"unique_id"])
+results_master <- load_run_results(results_log[7,"unique_id"])
 params <- results_log[1,] %>% as.list()
 
 #overall
@@ -14,58 +14,58 @@ results_master %>%
   group_by(Community, Simulation) %>%
   summarise(n=n()) -> community_summary
 
-#pre lockdown announcement summary + lag for inc period
-results_master %>%
-  filter(!is.na(Community) & DayInfected < (params$t_ld_a+5)) %>%
-  group_by(Community, Simulation) %>%
-  summarise(n=n()) -> community_summary_prelockdown
-
-results_master %>%
-  filter(!is.na(Community) & DayInfected >=(params$t_ld_a+5) & DayInfected <= (params$t_ld_b+5)) %>%
-  group_by(Community, Simulation) %>%
-  summarise(n=n()) -> community_summary_postlockdown_a
-
-results_master %>%
-  filter(!is.na(Community) & Simulation & DayInfected >=(params$t_ld_b+5)) %>%
-  group_by(Community) %>%
-  summarise(n=n()) -> community_summary_postlockdown_b
+# #pre lockdown announcement summary + lag for inc period
+# results_master %>%
+#   filter(!is.na(Community) & DayInfected < (params$t_ld_a+5)) %>%
+#   group_by(Community, Simulation) %>%
+#   summarise(n=n()) -> community_summary_prelockdown
+# 
+# results_master %>%
+#   filter(!is.na(Community) & DayInfected >=(params$t_ld_a+5) & DayInfected <= (params$t_ld_b+5)) %>%
+#   group_by(Community, Simulation) %>%
+#   summarise(n=n()) -> community_summary_postlockdown_a
+# 
+# results_master %>%
+#   filter(!is.na(Community) & Simulation & DayInfected >=(params$t_ld_b+5)) %>%
+#   group_by(Community) %>%
+#   summarise(n=n()) -> community_summary_postlockdown_b
 
 # add summary statistics for results_master -- time to X # infections, distribution across communities, etc
 
 results_master %>%
   filter(!is.na(Community)) %>%
-  group_by(DayInfected, Community, Simulation) %>%
+  group_by(DayInfected, Simulation, Community, type) %>%
   summarise(n=n()) %>%
-  group_by(Community) %>%
   mutate(cumulative=cumsum(n)) -> community_day_summary
 
-community_day_summary %>%
-  ungroup() %>%
-  group_by(DayInfected, Community) %>%
+results_master %>%
+  filter(!is.na(Community)) %>%
+  group_by(DayInfected, Simulation, type) %>%
+  summarise(n=n()) %>%
+  group_by(type) %>%
+  mutate(cumulative=cumsum(n)) -> community_type_summary
+
+community_type_summary %>%
+  #ungroup() %>%
+  group_by(DayInfected, type,Simulation) %>%
   #can change to median once we have more runs
-  summarise(avg_cumulative = mean(cumulative)) %>%
-  ggplot(aes(x=DayInfected,y=avg_cumulative,group=factor(Community),color=factor(Community))) +
+  #summarise(avg_cumulative = mean(cumulative)) %>%
+  summarise(cumulative_type = sum(cumulative)) %>%
+  ggplot(aes(x=DayInfected,y=cumulative_type,group=factor(type),color=factor(type))) +
+  scale_color_viridis_d() +
   geom_line() + theme_classic() +
   labs(color="Community",
        x="Days",
        y="Cumulative cases",
-       caption = paste0("Starting community = ",params$start_comm,
-                        "\n Total # cases = ", sum(community_day_summary$n),
-                        "\n Vertical black lines indicate when lockdown was announced and began"))
-
-# if we vary this set up will need to note this for each simulation
-urban <- c(45,57)
-suburban <-c(23:27,33:39,43:44,46:49,53:56,58:59,63:69,76:79)
-rural <- setdiff(1:100, c(urban, suburban))
+       caption = paste0("Relative increase in travel post lockdown announcement = ", params$alpha_inc,
+                        "\n Total # cases = ", sum(community_type_summary$n)))
 
 # summarise total # infections and start times by community type
 community_day_summary %>%
-  group_by(Community,Simulation) %>%
+  group_by(Community,Simulation,type) %>%
   summarise(infections = sum(n),
             start = min(DayInfected)) %>%
-  mutate(Community_type = ifelse(Community %in% urban, "urban",
-                                 ifelse(Community %in% suburban, "suburban", "rural"))) %>%
-  group_by(Community_type) %>%
+  group_by(type) %>%
   summarise(tot_infections = sum(infections),
             start_time = mean(start)) %>%
   #group_by(Simulation) %>%
