@@ -4,7 +4,7 @@ source("./src/helper_functions.R")
 
 #load log of results generated so far 
 results_log <- read_csv("./results_log.csv")
-row <- 13
+row <- 15
 
 results_master <- load_run_results(results_log[row,"unique_id"])
 params <- results_log[row,] %>% as.list()
@@ -72,8 +72,13 @@ community_day_summary %>%
   #group_by(Simulation) %>%
   mutate(perc_infections = tot_infections / sum(tot_infections)) -> summary_stats
 
+# add summary_stats back to results_log? 
 
+results_log[row,24:27] <- c("rural %" = summary_stats[1,"perc_infections"],
+                                                                  "suburban %" = summary_stats[2,"perc_infections"],
+                                                                  "urban %" = summary_stats[3,"perc_infections"],
+                                                                  "total cases" = sum(community_day_summary$n))
 
-
+write.csv(results_log,"./results_log.csv",row.names = FALSE)
 
 
