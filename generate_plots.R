@@ -6,7 +6,7 @@ require(ncf)
 
 #load log of results generated so far 
 results_log <- read_csv("./results_log.csv")
-row <- 16
+row <- 19
 
 results_master <- load_run_results(results_log[row,"unique_id"])
 params <- results_log[row,] %>% as.list()
@@ -76,11 +76,13 @@ community_day_summary %>%
   #group_by(Simulation) %>%
   mutate(perc_infections = tot_infections / sum(tot_infections)) -> summary_stats
 
-# add summary_stats back to results_log? 
+# add summary_stats back to results_log
 
-results_log[row,"rural %" ] <- summary_stats[1,"perc_infections"]
-results_log[row,"suburban %" ] <- summary_stats[2,"perc_infections"]
-results_log[row,"urban %" ] <- summary_stats[3,"perc_infections"]
+
+
+try(results_log[row,"rural %" ] <- summary_stats[summary_stats$type=="rural","perc_infections"],silent=T)
+try(results_log[row,"suburban %" ] <- summary_stats[summary_stats$type=="suburban","perc_infections"],silent=T)
+try(results_log[row,"urban %" ] <- summary_stats[summary_stats$type=="urban","perc_infections"],silent=T)
 results_log[row,"average cases" ] <-  sum(community_day_summary$n)/params$Nruns
 
 # correlation of time series
