@@ -27,7 +27,6 @@ alpha_init:
   0.0005 #moving probability
 beta_init: # force of infection
   - 0.0015
-  - 0.0020
 perc_asymp:
   0.5 # % asymptomatic
 # Lockdown parameters
@@ -36,15 +35,15 @@ t_ld_a:
 t_ld_b:
   1000 # change below in code once threshold cases reached
 cases_ld_a:
-  10 # number of cases when lockdown announced
+  30 # number of cases when lockdown announced
 ld_b:
   10 # days after lockdown announced that it begins
 beta_inc:
   1.2 # relative beta after lockdown announced
 beta_dec:
-  0.5 # relative beta after lockdown begins (relative to initial beta)
+  0.6 # relative beta after lockdown begins (relative to initial beta)
 alpha_inc:
-  - 5.0 # relative travel after lockdown announced
+  - 3.0 # relative travel after lockdown announced
   - 1.0
 alpha_dec:
    0.5 # relative travel decreases after lockdown begins (relative to initial travel)

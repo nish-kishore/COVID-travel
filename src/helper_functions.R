@@ -114,6 +114,9 @@ run_model <- function(driver_file_path){
                            "rural %" = 0,
                            "suburban %" = 0,
                            "urban %" = 0,
+                           "rural start time" = 0,
+                           "suburban start time" = 0,
+                           "urban start time" = 0,
                            "average cases" = 0,
                            "correlation" = 0))
     }

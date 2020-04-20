@@ -6,7 +6,7 @@ require(ncf)
 
 #load log of results generated so far 
 results_log <- read_csv("./results_log.csv")
-row <- 19
+row <- 26
 
 results_master <- load_run_results(results_log[row,"unique_id"])
 params <- results_log[row,] %>% as.list()
@@ -83,7 +83,12 @@ community_day_summary %>%
 try(results_log[row,"rural %" ] <- summary_stats[summary_stats$type=="rural","perc_infections"],silent=T)
 try(results_log[row,"suburban %" ] <- summary_stats[summary_stats$type=="suburban","perc_infections"],silent=T)
 try(results_log[row,"urban %" ] <- summary_stats[summary_stats$type=="urban","perc_infections"],silent=T)
+try(results_log[row,"rural start time" ] <- summary_stats[summary_stats$type=="rural","start_time"],silent=T)
+try(results_log[row,"suburban start time" ] <- summary_stats[summary_stats$type=="suburban","start_time"],silent=T)
+try(results_log[row,"urban start time" ] <- summary_stats[summary_stats$type=="urban","start_time"],silent=T)
 results_log[row,"average cases" ] <-  sum(community_day_summary$n)/params$Nruns
+
+
 
 # correlation of time series
 community_day_summary %>%
