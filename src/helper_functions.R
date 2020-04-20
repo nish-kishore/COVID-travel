@@ -83,8 +83,11 @@ init_model_objects <- function(params){
 
 #takes in parameters from the driver file and runs the model
 run_model <- function(driver_file_path){
+  
+  #reads and expands grid of all possible values
   params_df <- read_yaml(driver_file_path) %>% expand.grid() %>% as_tibble()
   
+  #creates unique id hash
   params_df$unique_id <- apply(params_df, 1, digest)
   
   packed_model_objects <- lapply(1:nrow(params_df), function(x) init_model_objects(as.list(params_df[x,])))
@@ -99,6 +102,7 @@ run_model <- function(driver_file_path){
   print(paste0("Starting cluster ", length(packed_model_objects), " jobs identified."))
   
   for(i in 1:length(packed_model_objects)){
+    #only new combinations of parameters are run. 
     if(!params_df[i,"unique_id"] %in% results_log$unique_id){
       params <- packed_model_objects[[i]]
       
