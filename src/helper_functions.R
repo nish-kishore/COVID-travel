@@ -53,23 +53,16 @@ init_model_objects <- function(params){
     }
     
     # mobility network post lockdown announcement - increase probabilities further away
-    mob_net2 <- matrix(0,nrow=num_communities,ncol=num_communities)
-    for (i in 1:num_communities){
-      for (j in 1:num_communities){
-        if (i!=j){
-          mob_net2[i,j] <- abs(i-j)/(sum(communities[[i]])*sum(communities[[j]]))
-        }
-      }
-    }
-    mob_net2[,start_comm] <- 0 # prevent travel into city on lockdown
+    mob_net2 <- mob_net_norm
+    mob_net2[,urban] <- 0 # prevent any travel to urban cities
+    mob_net2[,suburban] <- 0 # prevent travel to suburban areas
+    
     mob_net_norm2 <- matrix(0,nrow=num_communities,ncol=num_communities)
     for (i in 1:num_communities){
       for (j in 1:num_communities){
         mob_net_norm2[i,j] <- mob_net2[i,j]/sum(mob_net2[i,])
-        # right now I just reversed gravity model so further away / smaller is higher but need to refine
       }
     }
-    
     params$mob_net_norm <- mob_net_norm 
     params$mob_net_norm2 <- mob_net_norm2
     params$results <- data.frame("Community"=rep(NA,studypop_size),"DayInfected"=rep(NA,studypop_size),"Simulation"=rep(NA,studypop_size),
