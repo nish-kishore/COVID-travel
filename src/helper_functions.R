@@ -20,13 +20,13 @@ init_model_objects <- function(params){
     suburban <-c(23:27,33:39,43:44,46:49,53:56,58:59,63:69,76:79)
     rural <- setdiff(1:num_communities, c(urban, suburban))
     
-    area_urban <- 300 # square miles?
-    area_suburban <- 700 
-    area_rural <- 1000
+    area_urban <- 4 # square miles?
+    area_suburban <- 7
+    area_rural <- 10
     
-    communities[urban,"S"] <- 300000 # urban: makes it 1000 people/sq mile
-    communities[suburban,"S"] <- 350000 # suburban 500 people/ sq mile
-    communities[rural, "S"] <- 100000 #rural 100 people per square mile
+    communities[urban,"S"] <- 4000 # urban: makes it 1000 people/sq mile
+    communities[suburban,"S"] <- 3500 # suburban 500 people/ sq mile
+    communities[rural, "S"] <- 1000 #rural 100 people per square mile
     
     studypop_size <- sum(communities[,1])
     

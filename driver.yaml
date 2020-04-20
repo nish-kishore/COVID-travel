@@ -28,7 +28,6 @@ alpha_init:
 beta_init: # force of infection
   - 0.15
   - 0.16
-  - 0.17
 perc_asymp:
   0.5 # % asymptomatic
 # Lockdown parameters
@@ -51,4 +50,4 @@ alpha_dec:
 num_timesteps:
    200
 Nruns:
-  2
+  1
