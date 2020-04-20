@@ -55,7 +55,7 @@ init_model_objects <- function(params){
     # mobility network post lockdown announcement - increase probabilities further away
     mob_net2 <- mob_net_norm
     mob_net2[,urban] <- 0 # prevent any travel to urban cities 
-    mob_net2[,suburban] <- 0 # prevent travel to suburban areas
+    #mob_net2[,suburban] <- 0 # prevent travel to suburban areas
     
     mob_net_norm2 <- matrix(0,nrow=num_communities,ncol=num_communities)
     for (i in 1:num_communities){
