@@ -5,8 +5,9 @@ source("./src/helper_functions.R")
 require(ncf)
 
 #load log of results generated so far 
+#for (n in 115:128){
 results_log <- read_csv("./results_log.csv")
-row <- 28
+row <- n
 
 results_master <- load_run_results(results_log[row,"unique_id"])
 params <- results_log[row,] %>% as.list()
@@ -45,7 +46,7 @@ results_master %>%
   filter(!is.na(Community)) %>%
   group_by(DayInfected, Simulation, type) %>%
   summarise(n=n()) %>%
-  group_by(type) %>%
+  group_by(type, Simulation) %>%
   mutate(cumulative=cumsum(n)) -> community_type_summary
 
 community_type_summary %>%
@@ -53,8 +54,7 @@ community_type_summary %>%
   group_by(DayInfected, type,Simulation) %>%
   #can change to median once we have more runs
   #summarise(avg_cumulative = mean(cumulative)) %>%
-  summarise(cumulative_type = sum(cumulative)) %>%
-  ggplot(aes(x=DayInfected,y=cumulative_type,color=factor(type),lty=factor(Simulation))) +
+  ggplot(aes(x=DayInfected,y=cumulative,color=factor(type),lty=factor(Simulation))) +
   scale_color_viridis_d() +
   geom_line() + theme_classic() + 
   labs(color="Community",
@@ -110,4 +110,4 @@ Correlations %>%
 
 write.csv(results_log,"./results_log.csv",row.names = FALSE)
 
-
+#}
