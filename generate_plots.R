@@ -40,6 +40,7 @@ results_master %>%
   filter(!is.na(Community)) %>%
   group_by(DayInfected, Simulation, Community, type) %>%
   summarise(n=n()) %>%
+  group_by(Community, Simulation) %>%
   mutate(cumulative=cumsum(n)) -> community_day_summary
 
 results_master %>%

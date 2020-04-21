@@ -135,6 +135,7 @@ model_a <- function(params, irun){
         filter(!is.na(Community)) %>%
         group_by(DayInfected, Simulation, Community, type) %>%
         summarise(n=n()) %>%
+        group_by(Simulation, Community) %>%
         mutate(cumulative=cumsum(n)) -> results_summary
       
       return(results_summary)
