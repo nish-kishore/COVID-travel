@@ -110,15 +110,7 @@ run_model <- function(driver_file_path){
         write_csv(paste0("./cache/results_summary/",params_df[i,"unique_id"],".csv"))
       
       print(paste0("Job ", i, "/", length(packed_model_objects), " - Completed"))
-      results_log <- rbind(results_log,cbind("date_time" = Sys.time(), "user" = as.character(Sys.info()["login"]), params_df[i,],
-                           "rural %" = 0,
-                           "suburban %" = 0,
-                           "urban %" = 0,
-                           "rural start time" = 0,
-                           "suburban start time" = 0,
-                           "urban start time" = 0,
-                           "average cases" = 0,
-                           "correlation" = 0))
+      results_log <- rbind(results_log,cbind("date_time" = Sys.time(), "user" = as.character(Sys.info()["login"]), params_df[i,]))
     }else{
       print(paste0("Job ", i, "/", length(packed_model_objects), " - Found in results log and will not be rerun."))
     }

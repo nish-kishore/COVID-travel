@@ -5,9 +5,8 @@ source("./src/helper_functions.R")
 require(ncf)
 
 #load log of results generated so far 
-#for (n in 115:128){
 results_log <- read_csv("./results_log.csv")
-row <- n
+row <- 1
 
 results_master <- load_run_results(results_log[row,"unique_id"])
 params <- results_log[row,] %>% as.list()
@@ -66,49 +65,45 @@ community_type_summary %>%
                         "\n Average total # cases = ", sum(community_type_summary$n)/max(community_type_summary$Simulation),
                         "\n # simulations = ", params$Nruns))
 
-# summarise total # infections and start times by community type
-community_day_summary %>%
-  group_by(Community,Simulation,type) %>%
+# summarise total # infections and start times by community 
+results_master %>%
+  group_by(Community,Simulation, type) %>%
   summarise(infections = sum(n),
             start = min(DayInfected)) %>%
-  group_by(type) %>%
-  summarise(tot_infections = sum(infections),
-            start_time = mean(start)) %>%
-  #group_by(Simulation) %>%
-  mutate(perc_infections = tot_infections / sum(tot_infections)) -> summary_stats
+  group_by(Community, type) %>%
+  summarise(prob_epi = sum(infections>=params$cases_ld_a)/params$Nruns,
+            av_start_time = mean(start))-> summary_stats
+
 
 # add summary_stats back to results_log
-
-
-
-try(results_log[row,"rural %" ] <- summary_stats[summary_stats$type=="rural","perc_infections"],silent=T)
-try(results_log[row,"suburban %" ] <- summary_stats[summary_stats$type=="suburban","perc_infections"],silent=T)
-try(results_log[row,"urban %" ] <- summary_stats[summary_stats$type=="urban","perc_infections"],silent=T)
-try(results_log[row,"rural start time" ] <- summary_stats[summary_stats$type=="rural","start_time"],silent=T)
-try(results_log[row,"suburban start time" ] <- summary_stats[summary_stats$type=="suburban","start_time"],silent=T)
-try(results_log[row,"urban start time" ] <- summary_stats[summary_stats$type=="urban","start_time"],silent=T)
-results_log[row,"average cases" ] <-  sum(community_day_summary$n)/params$Nruns
+# try(results_log[row,"rural %" ] <- summary_stats[summary_stats$type=="rural","perc_infections"],silent=T)
+# try(results_log[row,"suburban %" ] <- summary_stats[summary_stats$type=="suburban","perc_infections"],silent=T)
+# try(results_log[row,"urban %" ] <- summary_stats[summary_stats$type=="urban","perc_infections"],silent=T)
+# try(results_log[row,"rural start time" ] <- summary_stats[summary_stats$type=="rural","start_time"],silent=T)
+# try(results_log[row,"suburban start time" ] <- summary_stats[summary_stats$type=="suburban","start_time"],silent=T)
+# try(results_log[row,"urban start time" ] <- summary_stats[summary_stats$type=="urban","start_time"],silent=T)
+# results_log[row,"average cases" ] <-  sum(community_day_summary$n)/params$Nruns
 
 
 
 # correlation of time series
-community_day_summary %>%
-  select(Community,DayInfected,Simulation,n) %>%
-  group_by(Simulation) %>%
-  spread(DayInfected,n)-> time_series
+# community_day_summary %>%
+#   select(Community,DayInfected,Simulation,n) %>%
+#   group_by(Simulation) %>%
+#   spread(DayInfected,n)-> time_series
+# 
+# Correlations <- rep(NA,params$Nruns)
+# for (i in 1:params$Nruns){
+#   time_series  %>%
+#     subset(Simulation ==i) %>%
+#     as.matrix() %>%
+#     mSynch(na.rm=TRUE) -> Correlations[i]
+# }
+# 
+# Correlations %>%
+#   unlist() %>%
+#   mean() -> results_log[row,"correlation" ] 
+# 
+# write.csv(results_log,"./results_log.csv",row.names = FALSE)
 
-Correlations <- rep(NA,params$Nruns)
-for (i in 1:params$Nruns){
-  time_series  %>%
-    subset(Simulation ==i) %>%
-    as.matrix() %>%
-    mSynch(na.rm=TRUE) -> Correlations[i]
-}
 
-Correlations %>%
-  unlist() %>%
-  mean() -> results_log[row,"correlation" ] 
-
-write.csv(results_log,"./results_log.csv",row.names = FALSE)
-
-#}
