@@ -12,11 +12,13 @@ num_communities:
 size_communities:
   1000
 exp_grav:
-  2 # exponent for gravity model
+  - 2 # exponent for gravity model
+  - 1.5
 start_comm:
   45 # choose community where outbreak will start
 num_inf:
-  5 # choose number of initial infections
+  - 5 # choose number of initial infections
+  - 1
 # Disease parameters (average 5 day latent and 10 day inf. period)
 lat_per:
   0.2
@@ -55,6 +57,6 @@ alpha_dec:
   - 0.5 # relative travel decreases after lockdown begins (relative to initial travel)
   - 1.0
 num_timesteps:
-   200
-Nruns:
    20
+Nruns:
+   100
