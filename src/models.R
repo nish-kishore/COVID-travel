@@ -34,16 +34,23 @@ model_a <- function(params, irun){
         # recover
         
         for (iloc in 1:num_communities){
-          if (iloc==start_comm & t >= t_ld_a & t < t_ld_b){
+          if (iloc==start_comm & t >= t_ld_a & t < t_ld_b){ # change alpha and beta if lockdown has been announced in starting comm
             alpha <- alpha_init*alpha_inc
             beta <- beta_init*beta_inc 
-          } else if (iloc==start_comm & t >= t_ld_b){
+          } else if (iloc==start_comm & t >= t_ld_b){ # change alpha and beta if lockdown has begun in starting comm
             alpha <- alpha_init*alpha_dec
             beta <- beta_init*beta_dec
-          } else{
+          } else if (nrow(results[results$Community==iloc & !is.na(results$Community) &
+                                    results$Symptoms==1,])>=cases_ld_a){ 
+            # change beta if threshold reached in other communnities but keep alpha the same
+            beta <- beta_init*beta_dec
+          } else {
             alpha <- alpha_init
             beta <- beta_init
           }
+          
+        
+        
           
           # recover
           #cat(communities)
