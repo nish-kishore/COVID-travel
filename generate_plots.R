@@ -68,6 +68,11 @@ community_type_summary %>%
 num_edge <- sqrt(params$num_communities)
 row <- c(rep(1:num_edge,each=10))
 col <- c(rep(1:num_edge,times=10))
+
+urban <- c(45,57)
+suburban <-c(23:27,33:39,43:44,46:49,53:56,58:59,63:69,76:79)
+rural <- setdiff(1:num_communities, c(urban, suburban))
+
 # summarise total # infections and start times by community 
 results_master %>%
   group_by(Community,Simulation, type) %>%
@@ -78,6 +83,21 @@ results_master %>%
             av_start_time = mean(start)) %>%
   mutate(row = row[Community],
          col = col[Community]) -> summary_stats
+
+excluded <- setdiff(1:100,summary_stats$Community)
+type_excluded <- ifelse(excluded %in% urban, "urban",
+                        ifelse(excluded %in% suburban, "suburban", rural))
+cbind("Community"=excluded,
+      "type"=type_excluded,
+      "prob_epi"=rep(0,length(excluded)),
+      "av_start_time"=rep(NA,length(excluded)),
+      "row"=row[excluded],
+      "col"=col[excluded]) %>%
+        as.data.frame() -> excluded_rows
+  
+summary_stats %>%
+  bind_rows(excluded_rows)
+
 
 heatmap <- ggplot(summary_stats,aes(x=row,y=col)) + 
   geom_tile(aes(fill=prob_epi,color=type),size=2,width=0.8,height=0.8) + 
