@@ -2,7 +2,7 @@
 source("./src/dependencies.R")
 source("./src/helper_functions.R")
 
-require(ncf)
+require(ggpubr)
 
 #load log of results generated so far 
 results_log <- read_csv("./results_log.csv")
@@ -77,14 +77,25 @@ results_master %>%
   summarise(prob_epi = sum(infections>=params$cases_ld_a)/params$Nruns,
             av_start_time = mean(start)) %>%
   mutate(row = row[Community],
-         col = col[Community])-> summary_stats
+         col = col[Community]) -> summary_stats
 
-ggplot(summary_stats) + geom_tile(aes(x=row,y=col,fill=prob_epi)) + 
+epidemic_prob <- ggplot(summary_stats,aes(x=row,y=col)) + geom_tile(aes(fill=prob_epi)) + 
+  geom_text(aes(label = type)) +
   scale_fill_viridis_c(option="plasma") + theme_classic() + 
   theme(legend.position = "bottom", axis.ticks = element_blank(),
         axis.title.x = element_blank(),axis.title.y = element_blank(), 
         axis.text.x = element_blank(), axis.text.y = element_blank()) + 
   labs(fill="Probability epidemic") 
+
+start_time <- ggplot(summary_stats,aes(x=row,y=col)) + geom_tile(aes(fill=av_start_time)) + 
+  geom_text(aes(label = type)) +
+  scale_fill_viridis_c(option="plasma") + theme_classic() + 
+  theme(legend.position = "bottom", axis.ticks = element_blank(),
+        axis.title.x = element_blank(),axis.title.y = element_blank(), 
+        axis.text.x = element_blank(), axis.text.y = element_blank()) + 
+  labs(fill="Average start time") 
+
+ggarrange(epidemic_prob,start_time)
 
 
 # add summary_stats back to results_log
