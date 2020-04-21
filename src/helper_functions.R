@@ -33,12 +33,17 @@ init_model_objects <- function(params){
     params$communities <- communities
     params$studypop_size <- studypop_size
     
+    
+    num_edge <- sqrt(num_communities)
+    row <- c(rep(1:10,each=10))
+    col <- c(rep(1:10,times=10))
     # initial mobility network (gravity model)
     mob_net <- matrix(0,nrow=num_communities,ncol=num_communities)
     for (i in 1:num_communities){
       for (j in 1:num_communities){
         if (i!=j){
-          mob_net[i,j] <- (sum(communities[[i]])*sum(communities[[j]]))/abs(i-j)^exp_grav
+          mob_net[i,j] <- (sum(communities[[i]])*sum(communities[[j]]))/
+                                      (abs(row[i]-row[j]) + abs(col[i] + col[j]))^exp_grav
         }
       }
     }
