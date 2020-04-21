@@ -65,7 +65,7 @@ community_type_summary %>%
                         "\n Average total # cases = ", sum(community_type_summary$n)/max(community_type_summary$Simulation),
                         "\n # simulations = ", params$Nruns))
 
-num_edge <- sqrt(num_communities)
+num_edge <- sqrt(params$num_communities)
 row <- c(rep(1:num_edge,each=10))
 col <- c(rep(1:num_edge,times=10))
 # summarise total # infections and start times by community 
@@ -87,7 +87,9 @@ heatmap <- ggplot(summary_stats,aes(x=row,y=col)) +
   theme(legend.position = "bottom", axis.ticks = element_blank(),
         axis.title.x = element_blank(),axis.title.y = element_blank(), 
         axis.text.x = element_blank(), axis.text.y = element_blank()) + 
-  labs(fill="Probability epidemic") 
+  labs(fill="Probability epidemic",
+       color=element_blank(),
+       caption="Numbers in cells denote average start time of epidemic") 
 
 
 # add summary_stats back to results_log
