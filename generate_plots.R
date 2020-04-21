@@ -79,7 +79,7 @@ results_master %>%
   summarise(infections = sum(n),
             start = min(DayInfected)) %>%
   group_by(Community, type) %>%
-  summarise(prob_epi = sum(infections>=params$cases_ld_a)/params$Nruns,
+  summarise(prob_epi = round(sum(infections>=params$cases_ld_a)/params$Nruns,2),
             av_start_time = mean(start)) %>%
   mutate(row = row[Community],
          col = col[Community]) -> summary_stats
@@ -87,23 +87,21 @@ results_master %>%
 excluded <- setdiff(1:100,summary_stats$Community)
 type_excluded <- ifelse(excluded %in% urban, "urban",
                         ifelse(excluded %in% suburban, "suburban", rural))
-cbind("Community"=excluded,
+
+bind_cols("Community"=excluded,
       "type"=type_excluded,
       "prob_epi"=rep(0,length(excluded)),
       "av_start_time"=rep(NA,length(excluded)),
       "row"=row[excluded],
       "col"=col[excluded]) %>%
-        as.data.frame() -> excluded_rows
-  
-summary_stats %>%
-  bind_rows(excluded_rows)
+        as_tibble() %>%
+          bind_rows(summary_stats)-> summary_stats_complete
 
-
-heatmap <- ggplot(summary_stats,aes(x=row,y=col)) + 
+heatmap <- ggplot(summary_stats_complete,aes(x=row,y=col)) + 
   geom_tile(aes(fill=prob_epi,color=type),size=2,width=0.8,height=0.8) + 
   scale_color_grey()+
   geom_text(aes(label = round(av_start_time))) +
-  scale_fill_viridis_c(option="plasma") + theme_classic() + 
+  scale_fill_viridis_c(option="plasma",limits=c(0,1)) + theme_classic() + 
   theme(legend.position = "bottom", axis.ticks = element_blank(),
         axis.title.x = element_blank(),axis.title.y = element_blank(), 
         axis.text.x = element_blank(), axis.text.y = element_blank()) + 
