@@ -14,7 +14,7 @@ size_communities:
 exp_grav:
   2 # exponent for gravity model
 start_comm:
-  25 # choose community where outbreak will start
+  45 # choose community where outbreak will start
 num_inf:
   5 # choose number of initial infections
 # Disease parameters (average 5 day latent and 10 day inf. period)
@@ -24,11 +24,14 @@ rec_per:
   0.1
 # Movement parameters
 alpha_init:
-  0.001 #moving probability
+  - 0.0001 #moving probability
+  - 0.0005
+  - 0.001
+  - 0.005
 beta_init: # force of infection
-  - 0.15
-  - 0.16
-  - 0.17
+  - 0.0015
+  - 0.002
+  - 0.0025
 perc_asymp:
   0.5 # % asymptomatic
 # Lockdown parameters
@@ -37,18 +40,34 @@ t_ld_a:
 t_ld_b:
   1000 # change below in code once threshold cases reached
 cases_ld_a:
-  10 # number of cases when lockdown announced
+  - 10 # number of cases when lockdown announced
+  - 25 
+  - 40
+ 
 ld_b:
-  10 # days after lockdownn announced that it begins
+  - 2 # days after lockdown announced that it begins
+  - 5
+  - 8
 beta_inc:
-  1.5 # relative beta after lockdown announced
+  - 1.0 # relative beta after lockdown announced
+  - 1.5
+  - 2.0 
+  - 2.5
 beta_dec:
-  0.8 # relative beta after lockdown begins (relative to initial beta)
+  - 0.2 # relative beta after lockdown begins (relative to initial beta)
+  - 0.5
+  - 0.8
+  - 1.0
 alpha_inc:
-  10 # relative travel after lockdown announced
+  - 1.0 # relative travel after lockdown announced
+  - 1.5
+  - 2
+  - 5.0
 alpha_dec:
-   0.5 # relative travel decreases after lockdown begins (relative to initial travel)
+  - 0.1 # relative travel decreases after lockdown begins (relative to initial travel)
+  - 0.5
+  - 1
 num_timesteps:
    200
 Nruns:
-  2
+   20
