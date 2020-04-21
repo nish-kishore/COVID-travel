@@ -107,7 +107,7 @@ run_model <- function(driver_file_path){
       params <- packed_model_objects[[i]]
       
       foreach(irun = 1:params$Nruns, .export = "model_a", .combine = rbind) %dopar% {model_a(params, irun)} %>%
-        write_csv(paste0("./cache/results/",params_df[i,"unique_id"],".csv"))
+        write_csv(paste0("./cache/results_summary/",params_df[i,"unique_id"],".csv"))
       
       print(paste0("Job ", i, "/", length(packed_model_objects), " - Completed"))
       results_log <- rbind(results_log,cbind("date_time" = Sys.time(), "user" = as.character(Sys.info()["login"]), params_df[i,],

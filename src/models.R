@@ -124,7 +124,13 @@ model_a <- function(params, irun){
       results$type <- ifelse(results$Community %in% urban, "urban",
                              ifelse(results$Community %in% suburban, "suburban", "rural"))
       
-      return(results)
+      results %>%
+        filter(!is.na(Community)) %>%
+        group_by(DayInfected, Simulation, Community, type) %>%
+        summarise(n=n()) %>%
+        mutate(cumulative=cumsum(n)) -> results_summary
+      
+      return(results_summary)
       
     })
 
