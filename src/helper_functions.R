@@ -43,7 +43,7 @@ init_model_objects <- function(params){
       for (j in 1:num_communities){
         if (i!=j){
           mob_net[i,j] <- (sum(communities[[i]])*sum(communities[[j]]))/
-                                      (abs(row[i]-row[j]) + abs(col[i] + col[j]))^exp_grav
+                                      (abs(row[i]-row[j]) + abs(col[i] - col[j]))^exp_grav
         }
       }
     }
