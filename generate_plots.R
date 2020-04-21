@@ -79,23 +79,15 @@ results_master %>%
   mutate(row = row[Community],
          col = col[Community]) -> summary_stats
 
-epidemic_prob <- ggplot(summary_stats,aes(x=row,y=col)) + geom_tile(aes(fill=prob_epi,color=type)) + 
-  geom_text(aes(label = av_start_time)) +
+heatmap <- ggplot(summary_stats,aes(x=row,y=col)) + 
+  geom_tile(aes(fill=prob_epi,color=type),size=2,width=0.8,height=0.8) + 
+  scale_color_grey()+
+  geom_text(aes(label = round(av_start_time))) +
   scale_fill_viridis_c(option="plasma") + theme_classic() + 
   theme(legend.position = "bottom", axis.ticks = element_blank(),
         axis.title.x = element_blank(),axis.title.y = element_blank(), 
         axis.text.x = element_blank(), axis.text.y = element_blank()) + 
   labs(fill="Probability epidemic") 
-
-start_time <- ggplot(summary_stats,aes(x=row,y=col)) + geom_tile(aes(fill=av_start_time)) + 
-  geom_text(aes(label = type)) +
-  scale_fill_viridis_c(option="plasma") + theme_classic() + 
-  theme(legend.position = "bottom", axis.ticks = element_blank(),
-        axis.title.x = element_blank(),axis.title.y = element_blank(), 
-        axis.text.x = element_blank(), axis.text.y = element_blank()) + 
-  labs(fill="Average start time") 
-
-ggarrange(epidemic_prob,start_time,nrow=1)
 
 
 # add summary_stats back to results_log
