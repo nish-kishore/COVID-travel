@@ -12,10 +12,10 @@ results_master <- load_run_results(results_log[row,"unique_id"])
 params <- results_log[row,] %>% as.list()
 
 #overall
-results_master %>%
-  filter(!is.na(Community)) %>%
-  group_by(Community, Simulation) %>%
-  summarise(n=n()) -> community_summary
+# results_master %>%
+#   filter(!is.na(Community)) %>%
+#   group_by(Community, Simulation) %>%
+#   summarise(n=n()) -> community_summary
 
 # #pre lockdown announcement summary + lag for inc period
 # results_master %>%
@@ -42,28 +42,28 @@ results_master %>%
   group_by(Community, Simulation) %>%
   mutate(cumulative=cumsum(n)) -> community_day_summary
 
-results_master %>%
-  filter(!is.na(Community)) %>%
-  group_by(DayInfected, Simulation, type) %>%
-  summarise(n=n()) %>%
-  group_by(type, Simulation) %>%
-  mutate(cumulative=cumsum(n)) -> community_type_summary
-
-community_type_summary %>%
-  #ungroup() %>%
-  group_by(DayInfected, type,Simulation) %>%
-  #can change to median once we have more runs
-  #summarise(avg_cumulative = mean(cumulative)) %>%
-  ggplot(aes(x=DayInfected,y=cumulative,color=factor(type),lty=factor(Simulation))) +
-  scale_color_viridis_d() +
-  geom_line() + theme_classic() + 
-  labs(color="Community",
-       lty = "Simulation",
-       x="Days",
-       y="Cumulative cases",
-       caption = paste0("Relative increase in travel post lockdown announcement = ", params$alpha_inc,
-                        "\n Average total # cases = ", sum(community_type_summary$n)/max(community_type_summary$Simulation),
-                        "\n # simulations = ", params$Nruns))
+# results_master %>%
+#   filter(!is.na(Community)) %>%
+#   group_by(DayInfected, Simulation, type) %>%
+#   summarise(n=n()) %>%
+#   group_by(type, Simulation) %>%
+#   mutate(cumulative=cumsum(n)) -> community_type_summary
+# 
+# community_type_summary %>%
+#   #ungroup() %>%
+#   group_by(DayInfected, type,Simulation) %>%
+#   #can change to median once we have more runs
+#   #summarise(avg_cumulative = mean(cumulative)) %>%
+#   ggplot(aes(x=DayInfected,y=cumulative,color=factor(type),lty=factor(Simulation))) +
+#   scale_color_viridis_d() +
+#   geom_line() + theme_classic() + 
+#   labs(color="Community",
+#        lty = "Simulation",
+#        x="Days",
+#        y="Cumulative cases",
+#        caption = paste0("Relative increase in travel post lockdown announcement = ", params$alpha_inc,
+#                         "\n Average total # cases = ", sum(community_type_summary$n)/max(community_type_summary$Simulation),
+#                         "\n # simulations = ", params$Nruns))
 
 num_edge <- sqrt(params$num_communities)
 row <- c(rep(1:num_edge,each=10))
