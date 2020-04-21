@@ -65,6 +65,9 @@ community_type_summary %>%
                         "\n Average total # cases = ", sum(community_type_summary$n)/max(community_type_summary$Simulation),
                         "\n # simulations = ", params$Nruns))
 
+num_edge <- sqrt(num_communities)
+row <- c(rep(1:num_edge,each=10))
+col <- c(rep(1:num_edge,times=10))
 # summarise total # infections and start times by community 
 results_master %>%
   group_by(Community,Simulation, type) %>%
@@ -72,7 +75,16 @@ results_master %>%
             start = min(DayInfected)) %>%
   group_by(Community, type) %>%
   summarise(prob_epi = sum(infections>=params$cases_ld_a)/params$Nruns,
-            av_start_time = mean(start))-> summary_stats
+            av_start_time = mean(start)) %>%
+  mutate(row = row[Community],
+         col = col[Community])-> summary_stats
+
+ggplot(summary_stats) + geom_tile(aes(x=row,y=col,fill=prob_epi)) + 
+  scale_fill_viridis_c(option="plasma") + theme_classic() + 
+  theme(legend.position = "bottom", axis.ticks = element_blank(),
+        axis.title.x = element_blank(),axis.title.y = element_blank(), 
+        axis.text.x = element_blank(), axis.text.y = element_blank()) + 
+  labs(fill="Probability epidemic") 
 
 
 # add summary_stats back to results_log
