@@ -35,8 +35,8 @@ init_model_objects <- function(params){
     
     
     num_edge <- sqrt(num_communities)
-    row <- c(rep(1:10,each=10))
-    col <- c(rep(1:10,times=10))
+    row <- c(rep(1:num_edge,each=10))
+    col <- c(rep(1:num_edge,times=10))
     # initial mobility network (gravity model)
     mob_net <- matrix(0,nrow=num_communities,ncol=num_communities)
     for (i in 1:num_communities){
