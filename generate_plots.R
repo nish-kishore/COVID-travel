@@ -4,7 +4,7 @@ source("./src/helper_functions.R")
 
 #load log of results generated so far 
 results_log <- read_csv("./results_log.csv")
-row <- 4
+row <- 3
 
 results_master <- load_run_results(results_log[row,"unique_id"])
 params <- results_log[row,] %>% as.list()
