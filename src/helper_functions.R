@@ -30,7 +30,20 @@ init_model_objects <- function(params){
 
     studypop_size <- sum(communities[,1])
 
-    params$communities <- communities
+    params$communities <- communities %>% 
+      as_tibble() %>%
+      mutate(iloc = row_number(),
+             comm_type = case_when(
+               iloc %in% urban ~ "Urban", 
+               iloc %in% suburban ~ "Suburban",
+               TRUE ~ "Rural"
+             ),
+             area = case_when(
+               iloc %in% urban ~ 4,
+               iloc %in% suburban ~ 7,
+               TRUE ~ 10
+             ),
+             cum_symp = 0)
     params$studypop_size <- studypop_size
 
 
@@ -70,8 +83,7 @@ init_model_objects <- function(params){
     }
     params$mob_net_norm <- mob_net_norm
     params$mob_net_norm2 <- mob_net_norm2
-    params$results <- data.frame("Community"=rep(NA,studypop_size),"DayInfected"=rep(NA,studypop_size),"Simulation"=rep(NA,studypop_size),
-                                 "Symptoms"=rep(NA,studypop_size))
+    params$results <- vector(mode = "list", length = num_timesteps)
 
     params$urban <- urban
     params$suburban <- suburban
