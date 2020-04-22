@@ -104,7 +104,8 @@ heatmap <- ggplot(summary_stats_complete,aes(x=row,y=col)) +
   scale_fill_viridis_c(option="plasma",limits=c(0,1)) + theme_classic() + 
   theme(legend.position = "bottom", axis.ticks = element_blank(),
         axis.title.x = element_blank(),axis.title.y = element_blank(), 
-        axis.text.x = element_blank(), axis.text.y = element_blank()) + 
+        axis.text.x = element_blank(), axis.text.y = element_blank(),
+        axis.line = element_blank()) + 
   labs(fill="Probability epidemic",
        color=element_blank(),
        caption="Numbers in cells denote average start time of epidemic") 
