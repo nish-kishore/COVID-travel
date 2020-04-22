@@ -1,7 +1,7 @@
 source("./src/dependencies.R")
 source("./src/models.R")
 
-#create the world objects for one set of parameters 
+#create the world objects for one set of parameters
 
 init_model_objects <- function(params){
   with(params, {
@@ -15,25 +15,25 @@ init_model_objects <- function(params){
     nrow = num_communities
     )
     colnames(communities) <- c("S", "E", "A", "I", "R")
-    
+
     urban <- c(45,57)
     suburban <-c(23:27,33:39,43:44,46:49,53:56,58:59,63:69,76:79)
     rural <- setdiff(1:num_communities, c(urban, suburban))
-    
+
     area_urban <- 4 # square miles?
     area_suburban <- 7
     area_rural <- 10
-    
+
     communities[urban,"S"] <- 4000 # urban: makes it 1000 people/sq mile
     communities[suburban,"S"] <- 3500 # suburban 500 people/ sq mile
     communities[rural, "S"] <- 1000 #rural 100 people per square mile
-    
+
     studypop_size <- sum(communities[,1])
-    
+
     params$communities <- communities
     params$studypop_size <- studypop_size
-    
-    
+
+
     num_edge <- sqrt(num_communities)
     row <- c(rep(1:num_edge,each=10))
     col <- c(rep(1:num_edge,times=10))
@@ -47,85 +47,89 @@ init_model_objects <- function(params){
         }
       }
     }
-    
-    
-    
+
+
+
     mob_net_norm <- matrix(0,nrow=num_communities,ncol=num_communities)
     for (i in 1:num_communities){
       for (j in 1:num_communities){
         mob_net_norm[i,j] <- mob_net[i,j]/sum(mob_net[i,])
       }
     }
-    
+
     # mobility network post lockdown announcement - increase probabilities further away
     mob_net2 <- mob_net_norm
-    mob_net2[,start_comm] <- 0 # prevent any travel to urban cities 
-    #mob_net2[,suburban] <- 0 # prevent travel to suburban areas 
-    
+    mob_net2[,start_comm] <- 0 # prevent any travel to urban cities
+    #mob_net2[,suburban] <- 0 # prevent travel to suburban areas
+
     mob_net_norm2 <- matrix(0,nrow=num_communities,ncol=num_communities)
     for (i in 1:num_communities){
       for (j in 1:num_communities){
         mob_net_norm2[i,j] <- mob_net2[i,j]/sum(mob_net2[i,])
       }
     }
-    params$mob_net_norm <- mob_net_norm 
+    params$mob_net_norm <- mob_net_norm
     params$mob_net_norm2 <- mob_net_norm2
     params$results <- data.frame("Community"=rep(NA,studypop_size),"DayInfected"=rep(NA,studypop_size),"Simulation"=rep(NA,studypop_size),
                                  "Symptoms"=rep(NA,studypop_size))
-    
+
     params$urban <- urban
     params$suburban <- suburban
     params$rural <- rural
-    
+
     params$area_urban <- area_urban
-    params$area_suburban <- area_suburban 
+    params$area_suburban <- area_suburban
     params$area_rural <- area_rural
-    
+
     return(params)
   })
 }
 
+#pack and run all model objects
+pack_and_run_models <- function(params){
+  packed_model_objects <- init_model_objects(as.list(params))
+}
 
 #takes in parameters from the driver file and runs the model
 run_model <- function(driver_file_path){
-  
+
   #reads and expands grid of all possible values
   params_df <- read_yaml(driver_file_path) %>% expand.grid() %>% as_tibble()
-  
+
   #creates unique id hash
   params_df$unique_id <- apply(params_df, 1, digest)
-  
+
   packed_model_objects <- lapply(1:nrow(params_df), function(x) init_model_objects(as.list(params_df[x,])))
   suppressMessages(
     results_log <- read_csv("./results_log.csv")
   )
 
-  
+
   #set up parallel processing
   cl <- makeCluster(detectCores()-2)
   registerDoParallel(cl)
   print(paste0("Starting cluster ", length(packed_model_objects), " jobs identified."))
-  
+
   for(i in 1:length(packed_model_objects)){
-    #only new combinations of parameters are run. 
+    #only new combinations of parameters are run.
     if(!params_df[i,"unique_id"] %in% results_log$unique_id){
       params <- packed_model_objects[[i]]
-      
+
       foreach(irun = 1:params$Nruns, .export = "model_a", .combine = rbind) %dopar% {model_a(params, irun)} %>%
         write_csv(paste0("./cache/results/",params_df[i,"unique_id"],".csv"))
-      
+
       print(paste0("Job ", i, "/", length(packed_model_objects), " - Completed"))
       results_log <- rbind(results_log,cbind("date_time" = Sys.time(), "user" = as.character(Sys.info()["login"]), params_df[i,]))
     }else{
       print(paste0("Job ", i, "/", length(packed_model_objects), " - Found in results log and will not be rerun."))
     }
-    
+
   }
   write_csv(results_log, "./results_log.csv")
-  
+
   #stop parallel processing
   stopCluster(cl)
-  
+
 }
 
 #reads in results from a given run
