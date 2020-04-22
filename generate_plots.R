@@ -4,7 +4,7 @@ source("./src/helper_functions.R")
 
 #load log of results generated so far 
 results_log <- read_csv("./results_log.csv")
-row <- 1
+row <- 4
 
 results_master <- load_run_results(results_log[row,"unique_id"])
 params <- results_log[row,] %>% as.list()
@@ -35,7 +35,7 @@ params <- results_log[row,] %>% as.list()
 
 results_master %>%
   filter(!is.na(Community)) %>%
-  group_by(DayInfected, Simulation, Community, type) %>%
+  group_by(DayInfected, Simulation, Community, type, t_ld_a) %>%
   summarise(n=n()) %>%
   group_by(Community, Simulation) %>%
   mutate(cumulative=cumsum(n)) -> community_day_summary
@@ -73,12 +73,12 @@ rural <- setdiff(1:num_communities, c(urban, suburban))
 
 # summarise total # infections and start times by community 
 results_master %>%
-  group_by(Community,Simulation, type) %>%
+  group_by(Community,Simulation, type, t_ld_a) %>%
   summarise(infections = sum(n),
             start = min(DayInfected)) %>%
   group_by(Community, type) %>%
   summarise(prob_epi = round(sum(infections>=params$cases_ld_a)/params$Nruns,2),
-            av_start_time = mean(start)-params$cases_ld_a) %>%
+            av_start_time = mean(start)-mean(t_ld_a)) %>%
   mutate(row = row[Community],
          col = col[Community]) -> summary_stats
 
@@ -95,7 +95,7 @@ bind_cols("Community"=excluded,
         as_tibble() %>%
           bind_rows(summary_stats)-> summary_stats_complete
 
-heatmap <- ggplot(summary_stats_complete,aes(x=row,y=col)) + 
+heatmap1 <- ggplot(summary_stats_complete,aes(x=row,y=col)) + 
   geom_tile(aes(fill=prob_epi,color=type),size=2,width=0.8,height=0.8) + 
   scale_color_grey()+
   geom_text(aes(label = round(av_start_time))) +
@@ -106,7 +106,7 @@ heatmap <- ggplot(summary_stats_complete,aes(x=row,y=col)) +
         axis.line = element_blank()) + 
   labs(fill="Probability epidemic",
        color=element_blank(),
-       caption="Numbers in cells denote average start time of epidemic") 
+       caption="Number in cell denotes average time of first case \nrelative to announcement of restrictions") 
 
 
 # add summary_stats back to results_log

@@ -57,6 +57,6 @@ alpha_dec:
   - 0.5 # relative travel decreases after lockdown begins (relative to initial travel)
  # - 1.0
 num_timesteps:
-   100
+   60
 Nruns:
    10

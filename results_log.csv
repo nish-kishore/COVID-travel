@@ -1,3 +1,5 @@
 date_time,user,num_communities,size_communities,exp_grav,start_comm,num_inf,lat_per,rec_per,alpha_init,beta_init,perc_asymp,t_ld_a,t_ld_b,cases_ld_a,ld_b,beta_inc,beta_dec,alpha_inc,alpha_dec,num_timesteps,Nruns,unique_id
 2020-04-22T02:53:09Z,root,100,1000,2,45,5,0.2,0.1,0.001,0.0015,0.5,1000,1000,10,7,1.5,0.5,1,0.5,100,10,b6ea6e47bb43fbafc5bf7b887b407612
 2020-04-22T02:59:19Z,root,100,1000,2,45,5,0.2,0.1,0.001,0.0015,0.5,1000,1000,10,7,1.5,0.5,2,0.5,100,10,f405d672739f5e9a76f61009d243b29f
+2020-04-22T13:44:52Z,root,100,1000,2,45,5,0.2,0.1,0.001,0.0015,0.5,1000,1000,10,7,1.5,0.5,1,0.5,60,10,3a986df7a2a5d3e7220e5bed8be45d16
+2020-04-22T13:48:11Z,root,100,1000,2,45,5,0.2,0.1,0.001,0.0015,0.5,1000,1000,10,7,1.5,0.5,2,0.5,60,10,16653c39202494663ed94947f4cd110b
