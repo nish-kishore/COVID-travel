@@ -2,8 +2,6 @@
 source("./src/dependencies.R")
 source("./src/helper_functions.R")
 
-require(ggpubr)
-
 #load log of results generated so far 
 results_log <- read_csv("./results_log.csv")
 row <- 1
@@ -80,7 +78,7 @@ results_master %>%
             start = min(DayInfected)) %>%
   group_by(Community, type) %>%
   summarise(prob_epi = round(sum(infections>=params$cases_ld_a)/params$Nruns,2),
-            av_start_time = mean(start)) %>%
+            av_start_time = mean(start)-params$cases_ld_a) %>%
   mutate(row = row[Community],
          col = col[Community]) -> summary_stats
 
