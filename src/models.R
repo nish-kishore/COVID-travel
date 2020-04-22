@@ -1,6 +1,8 @@
 #Model A
 
+
 model_a <- function(params, irun){
+  require(tidyverse)
   params$irun <- irun
     with(params, {
       
