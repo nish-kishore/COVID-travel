@@ -1,10 +1,9 @@
 #Model A
 
-model_a <- function(params, irun){
+model_a <- function(params){
   require(tidyverse)
-  params$irun <- irun
     with(params, {
-      
+      irun <- NA
       # add infected people in community where starting; choose symptom status based on % asymp
       num_asymp <- sum(rbinom(num_inf,1,perc_asymp))
       communities[start_comm, "S"] <- communities[start_comm, "S"] - num_inf
@@ -13,7 +12,7 @@ model_a <- function(params, irun){
       results[1:num_inf,] <- cbind(rep(start_comm,num_inf),rep(1,num_inf),rep(irun,num_inf),c(rep(1,(num_inf - num_asymp)),rep(0,num_asymp)))
       
       for (t in 1:num_timesteps){
-        cat(irun,t,"\n")
+        #cat(irun,t,"\n")
         
         # if lockdown hasn't been announced yet check if it should be
         if (t_ld_a==1000){

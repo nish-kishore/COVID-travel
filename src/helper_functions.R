@@ -86,12 +86,15 @@ init_model_objects <- function(params){
 }
 
 #pack and run all model objects
-pack_and_run_models <- function(params){
-  packed_model_objects <- init_model_objects(as.list(params))
+pack_and_run_models <- function(params_test){
+  packed_model_objects <- init_model_objects(params_test)
+  
+  replicate(1,model_a(packed_model_objects))
+  
 }
 
 #takes in parameters from the driver file and runs the model
-run_model <- function(driver_file_path){
+run_models <- function(driver_file_path){
 
   #reads and expands grid of all possible values
   params_df <- read_yaml(driver_file_path) %>% expand.grid() %>% as_tibble()
@@ -99,16 +102,25 @@ run_model <- function(driver_file_path){
   #creates unique id hash
   params_df$unique_id <- apply(params_df, 1, digest)
 
-  packed_model_objects <- lapply(1:nrow(params_df), function(x) init_model_objects(as.list(params_df[x,])))
+  #load in results log
   suppressMessages(
     results_log <- read_csv("./results_log.csv")
   )
-
-
+  
+  #subset to params that we don't already have a result for 
+  new_params_df <- subset(params_df, !unique_id %in% results_log$unique_id)
+  done_params_df <- subset(params_df, unique_id %in% results_log$unique_id)
+  
+  print(paste("There are", nrow(new_params_df), "new parameter combinations to run.", nrow(done_params_df),
+              "combinations have already been run previously and will be skipped."))
+  
   #set up parallel processing
   cl <- makeCluster(detectCores()-2)
   registerDoParallel(cl)
-  print(paste0("Starting cluster ", length(packed_model_objects), " jobs identified."))
+  print(paste0("Starting cluster ", nrow(params_df), " jobs identified."))
+  
+  foreach(i = 1:nrow(new_params_df), .export = c("model_a", "run_models", "init_model_objects"), 
+          .combine = rbind) %dopar% {pack_and_run_models(transpose(new_params_df[i,])[[1]])}
 
   for(i in 1:length(packed_model_objects)){
     #only new combinations of parameters are run.

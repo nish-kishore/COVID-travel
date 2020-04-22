@@ -13,7 +13,7 @@ size_communities:
   1000
 exp_grav:
   - 2 # exponent for gravity model
- # - 1.5
+  - 1.75
 start_comm:
   45 # choose community where outbreak will start
 num_inf:
@@ -39,8 +39,8 @@ t_ld_b:
   1000 # change below in code once threshold cases reached
 cases_ld_a:
   - 10 # number of cases when lockdown announced
- # - 30 
- 
+ # - 30
+
 ld_b:
  # - 3 # days after lockdown announced that it begins
   - 7

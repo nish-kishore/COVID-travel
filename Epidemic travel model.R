@@ -6,5 +6,5 @@ source("./src/helper_functions.R")
 
 
 #run model using inputs from driver file 
-run_model("./driver.yaml")
+run_models("./driver.yaml")
 
