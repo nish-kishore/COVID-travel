@@ -33,12 +33,17 @@ init_model_objects <- function(params){
     params$communities <- communities
     params$studypop_size <- studypop_size
     
+    
+    num_edge <- sqrt(num_communities)
+    row <- c(rep(1:num_edge,each=10))
+    col <- c(rep(1:num_edge,times=10))
     # initial mobility network (gravity model)
     mob_net <- matrix(0,nrow=num_communities,ncol=num_communities)
     for (i in 1:num_communities){
       for (j in 1:num_communities){
         if (i!=j){
-          mob_net[i,j] <- (sum(communities[[i]])*sum(communities[[j]]))/abs(i-j)^exp_grav
+          mob_net[i,j] <- (sum(communities[[i]])*sum(communities[[j]]))/
+                                      (abs(row[i]-row[j]) + abs(col[i] - col[j]))^exp_grav
         }
       }
     }
@@ -110,15 +115,7 @@ run_model <- function(driver_file_path){
         write_csv(paste0("./cache/results/",params_df[i,"unique_id"],".csv"))
       
       print(paste0("Job ", i, "/", length(packed_model_objects), " - Completed"))
-      results_log <- rbind(results_log,cbind("date_time" = Sys.time(), "user" = as.character(Sys.info()["login"]), params_df[i,],
-                           "rural %" = 0,
-                           "suburban %" = 0,
-                           "urban %" = 0,
-                           "rural start time" = 0,
-                           "suburban start time" = 0,
-                           "urban start time" = 0,
-                           "average cases" = 0,
-                           "correlation" = 0))
+      results_log <- rbind(results_log,cbind("date_time" = Sys.time(), "user" = as.character(Sys.info()["login"]), params_df[i,]))
     }else{
       print(paste0("Job ", i, "/", length(packed_model_objects), " - Found in results log and will not be rerun."))
     }

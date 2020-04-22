@@ -5,7 +5,8 @@ package_list <- c(
   "ggplot2",
   "yaml",
   "doParallel", 
-  "digest"
+  "digest",
+  "ggpubr"
 )
 
 
