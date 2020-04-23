@@ -6,7 +6,7 @@ source("./src/generate_plots.R")
 
 
 #run model using inputs from driver file 
-run_models("./driver.yaml")
+run_models("./drivers/driver.yaml")
 
 #generate heatmaps 
 generate_plots(run_all = T)

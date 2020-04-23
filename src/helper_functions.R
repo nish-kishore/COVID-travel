@@ -161,7 +161,7 @@ run_models <- function(driver_file_path){
 
   foreach(i = 1:nrow(new_params_df),
           .export = c("model_a_optim", "run_models", "init_model_objects", "pack_and_run_models",
-                      "update_disease_status", "update_loc", "update_mob_data"),
+                      "update_disease_status", "update_loc", "update_mob_data", "get_comm_types"),
           .packages = c("tidyverse"),
           .combine = rbind) %dopar% {pack_and_run_models(list_of_params[[i]])} -> out_results
 
