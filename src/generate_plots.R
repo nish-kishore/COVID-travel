@@ -46,7 +46,7 @@ create_heatmap <- function(rds_id){
     bind_rows(summary_stats)-> summary_stats_complete
   
   heatmap <- ggplot(summary_stats_complete,aes(x=col,y=row)) +
-    geom_tile(aes(fill=prob_epi,color=type,alpha=1/10),size=2,width=0.8,height=0.8) +
+    geom_tile(aes(fill=prob_epi,color=type,alpha=0.5),size=2,width=0.8,height=0.8) +
     #scale_color_brewer(type = "qual", palette = "Dark2") +
     scale_color_grey(start = 1, end = 0)+
     geom_text(aes(label = av_start_time), fontface = "bold",color="black") +
@@ -62,8 +62,8 @@ create_heatmap <- function(rds_id){
          alpha=element_blank(),
          caption=paste0("Number in cell denotes average time of first case relative to announcement of restrictions",
                        "\nCases to trigger restrictions = ", params$cases_ld_a, "; Days between restrictions annnounced and begin = ",params$ld_b, 
-                       "\nRelatve beta after restrictions announced = ", params$beta_inc, "; Relatve beta after restrictions in place = ", params$beta_dec, 
-                       "\nInitial movement prob = ",params$alpha_init,"; Relatve travel after restrictions announced = ", params$alpha_inc,"; Relatve travel after restrictions in place = ", params$alpha_dec))
+                       "\nRelative beta after restrictions announced = ", params$beta_inc, "; Relative beta after restrictions in place = ", params$beta_dec, 
+                       "\nInitial movement prob = ",params$alpha_init,"; Relative travel after restrictions announced = ", params$alpha_inc,"; Relative travel after restrictions in place = ", params$alpha_dec))
   
   
   return(heatmap)
