@@ -57,6 +57,7 @@ generate_plots <- function(results_master, row){
            color=element_blank(),
            caption="Number in cell denotes average time of first case \nrelative to announcement of restrictions") 
   
+  
     return(heatmap)
 }
 

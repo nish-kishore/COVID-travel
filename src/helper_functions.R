@@ -1,6 +1,7 @@
 source("./src/dependencies.R")
 source("./src/models.R")
 source("./src/optim_funcs.R")
+source("./src/generate_plots.R")
 
 #create the world objects for one set of parameters
 
@@ -140,13 +141,15 @@ run_models <- function(driver_file_path){
   
   foreach(i = 1:nrow(new_params_df), 
           .export = c("model_a_optim", "run_models", "init_model_objects", "pack_and_run_models",
-                      "update_disease_status", "update_loc", "update_mob_data"),
+                      "update_disease_status", "update_loc", "update_mob_data","generate_plots"),
           .packages = c("tidyverse"),
           .combine = rbind) %dopar% {pack_and_run_models(list_of_params[[i]])} -> out_results
   
   results_log <- rbind(results_log, out_results)
   
   write_csv(results_log, "./results_log.csv")
+  
+  ggsave(paste0(unique_id,".png"),heatmap)
 
   #stop parallel processing
   stopCluster(cl)
