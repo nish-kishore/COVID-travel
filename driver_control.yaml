@@ -1,0 +1,60 @@
+# agents are in five compartments: SEI(A)IR (2 I compartments: asymptomatic, symptomatic)
+# S are susceptible, E are infected but in the latency state, I are infected and infectious and R recovered.
+# S+E+IAS+R move freely on a spatial network
+# IS do not move
+
+# position in list: S=1, E=2, IAS=3, IS=4, R=5
+
+# Connectivity parameters
+# make a list of all communities
+num_communities:
+  100
+size_communities:
+  1000
+exp_grav:
+  - 2 # exponent for gravity model
+start_comm:
+  45 # choose community where outbreak will start
+num_inf:
+  - 5 # choose number of initial infections
+ # - 1
+# Disease parameters (average 5 day latent and 10 day inf. period)
+lat_per:
+  0.2
+rec_per:
+  0.1
+# Movement parameters
+alpha_init: #moving probability
+ # - 0.0005
+  - 0.001
+beta_init: # force of infection
+  - 0.0015
+perc_asymp:
+  0.5 # % asymptomatic
+# Lockdown parameters
+t_ld_a:
+  1000 # change below in code once threshold cases reached
+t_ld_b:
+  1000 # change below in code once threshold cases reached
+cases_ld_a:
+  - 10 # number of cases when lockdown announced
+ # - 30
+
+ld_b:
+ # - 3 # days after lockdown announced that it begins
+  - 7
+beta_inc:
+ # - 1.0 # relative beta after lockdown announced
+  - 1.0
+beta_dec:
+  - 0.5 # relative beta after lockdown begins (relative to initial beta)
+ # - 1.0
+alpha_inc:
+  - 1.0 # relative travel after lockdown announced
+alpha_dec:
+  - 0.5 # relative travel decreases after lockdown begins (relative to initial travel)
+ # - 1.0
+num_timesteps:
+   60
+Nruns:
+   10
