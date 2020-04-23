@@ -1,5 +1,6 @@
 source("./src/helper_functions.R")
 source("./testing/optim_funcs.R")
+source("./src/models.R")
 
 #base variales
 params_df <- read_yaml("driver.yaml") %>% expand.grid() %>% as_tibble()

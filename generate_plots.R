@@ -4,7 +4,7 @@ source("./src/helper_functions.R")
 
 #load log of results generated so far 
 results_log <- read_csv("./results_log.csv")
-row <- 3
+row <- 8
 
 results_master <- load_run_results(results_log[row,"unique_id"])
 params <- results_log[row,] %>% as.list()
@@ -69,7 +69,7 @@ col <- c(rep(1:num_edge,times=10))
 
 urban <- c(45,57)
 suburban <-c(23:27,33:39,43:44,46:49,53:56,58:59,63:69,76:79)
-rural <- setdiff(1:num_communities, c(urban, suburban))
+rural <- setdiff(1:params$num_communities, c(urban, suburban))
 
 # summarise total # infections and start times by community 
 results_master %>%
@@ -84,7 +84,7 @@ results_master %>%
 
 excluded <- setdiff(1:100,summary_stats$Community)
 type_excluded <- ifelse(excluded %in% urban, "urban",
-                        ifelse(excluded %in% suburban, "suburban", rural))
+                        ifelse(excluded %in% suburban, "suburban", "rural"))
 
 bind_cols("Community"=excluded,
       "type"=type_excluded,

@@ -1,5 +1,6 @@
 source("./src/dependencies.R")
 source("./src/models.R")
+source("./testing/optim_funcs.R")
 
 #create the world objects for one set of parameters
 
@@ -98,10 +99,14 @@ init_model_objects <- function(params){
 }
 
 #pack and run all model objects
-pack_and_run_models <- function(params_test){
-  packed_model_objects <- init_model_objects(params_test)
+pack_and_run_models <- function(params){
+  packed_model_objects <- init_model_objects(params)
   
-  replicate(1,model_a(packed_model_objects))
+  replicate(params$Nruns, model_a_optim(packed_model_objects), simplify = FALSE) %>%
+    bind_rows(.id = "Simulation") %>%
+    write_rds(paste0("./cache/results/",params$unique_id,".rds"))
+  
+  return(as_tibble(cbind("date_time" = Sys.time(), "user" = as.character(Sys.info()["login"]), as_tibble(params))))
   
 }
 
@@ -126,29 +131,21 @@ run_models <- function(driver_file_path){
   print(paste("There are", nrow(new_params_df), "new parameter combinations to run.", nrow(done_params_df),
               "combinations have already been run previously and will be skipped."))
   
+  list_of_params <- transpose(new_params_df)
+  
   #set up parallel processing
   cl <- makeCluster(detectCores()-2)
   registerDoParallel(cl)
-  print(paste0("Starting cluster ", nrow(params_df), " jobs identified."))
+  print(paste0("Starting cluster ", nrow(new_params_df), " jobs identified."))
   
-  foreach(i = 1:nrow(new_params_df), .export = c("model_a", "run_models", "init_model_objects"), 
-          .combine = rbind) %dopar% {pack_and_run_models(transpose(new_params_df[i,])[[1]])}
-
-  for(i in 1:length(packed_model_objects)){
-    #only new combinations of parameters are run.
-    if(!params_df[i,"unique_id"] %in% results_log$unique_id){
-      params <- packed_model_objects[[i]]
-
-      foreach(irun = 1:params$Nruns, .export = "model_a", .combine = rbind) %dopar% {model_a(params, irun)} %>%
-        write_csv(paste0("./cache/results/",params_df[i,"unique_id"],".csv"))
-
-      print(paste0("Job ", i, "/", length(packed_model_objects), " - Completed"))
-      results_log <- rbind(results_log,cbind("date_time" = Sys.time(), "user" = as.character(Sys.info()["login"]), params_df[i,]))
-    }else{
-      print(paste0("Job ", i, "/", length(packed_model_objects), " - Found in results log and will not be rerun."))
-    }
-
-  }
+  foreach(i = 1:nrow(new_params_df), 
+          .export = c("model_a_optim", "run_models", "init_model_objects", "pack_and_run_models",
+                      "update_disease_status", "update_loc", "update_mob_data"),
+          .packages = c("tidyverse"),
+          .combine = rbind) %dopar% {pack_and_run_models(list_of_params[[i]])} -> out_results
+  
+  results_log <- rbind(results_log, out_results)
+  
   write_csv(results_log, "./results_log.csv")
 
   #stop parallel processing
@@ -158,5 +155,5 @@ run_models <- function(driver_file_path){
 
 #reads in results from a given run
 load_run_results <- function(unique_id){
-  return(read_csv(paste0("./cache/results/",unique_id,".csv")))
+  return(read_rds(paste0("./cache/results/",unique_id,".rds")))
 }

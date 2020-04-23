@@ -153,89 +153,40 @@ model_a <- function(params){
 model_a_optim <- function(params){
   with(params, {
     # add infected people in community where starting; choose symptom status based on % asymp
+    int_params <- params
     num_asymp <- sum(rbinom(num_inf,1,perc_asymp))
-    communities[start_comm, "S"] <- communities[start_comm, "S"] - num_inf
-    communities[start_comm, "A"]  <- num_asymp
-    communities[start_comm, "I"] <- num_inf - num_asymp
-    communities[start_comm, "cum_symp"] <- num_inf - num_asymp
-    start_comm_cum_symp <- num_inf - num_asymp
+    int_params$communities[start_comm, "S"] <- communities[start_comm, "S"] - num_inf
+    int_params$communities[start_comm, "A"]  <- num_asymp
+    int_params$communities[start_comm, "I"] <- num_inf - num_asymp
+    int_params$communities[start_comm, "cum_symp"] <- num_inf - num_asymp
+    start_comm_cum_symp <- as.integer(num_inf - num_asymp)
     
     for (t in 1:num_timesteps){
-      #cat(irun,t,"\n")
+      #cat(t,"\n")
       
       #update mobility information
-      mob_list <- update_mob_data(t_ld_a, t_ld_b, ld_b, t, start_comm_cum_symp)
-      params$t_ld_a <- mob_list[[1]]
-      params$t_ld_b <- mob_list[[2]]
+      mob_list <- update_mob_data(int_params, t, start_comm_cum_symp)
+      int_params$t_ld_a <- mob_list[[1]]
+      int_params$t_ld_b <- mob_list[[2]]
       mob_net <- mob_list[[3]]
       
       #update disease information
-      dis_list <- update_disease_status(communities, params, t)
-      communities <- dis_list[[1]]
-      results <- dis_list[[2]]
-      start_comm_num_symp <- dis_list[[3]]
+      dis_list <- update_disease_status(int_params, t, num_asymp)
+      int_params$communities <- dis_list[[1]]
+      results[[t]] <- dis_list[[2]]
+      start_comm_cum_symp <- dis_list[[3]]
       
-      
-      for (iloc in 1:num_communities){
-        
-        
-        # move
-        N_moveS <- sum(rbinom(sum(communities[iloc, "S"]),1,alpha))
-        N_moveE <- sum(rbinom(sum(communities[iloc, "E"]),1,alpha))
-        N_moveIAS <- sum(rbinom(sum(communities[iloc, "A"]),1,alpha))
-        N_moveR <- sum(rbinom(sum(communities[iloc, "R"]),1,alpha))
-        
-        # remove number moving from community
-        communities[iloc, "S"] <- communities[iloc, "S"] - N_moveS
-        communities[iloc, "E"] <- communities[iloc, "E"] - N_moveE
-        communities[iloc, "A"] <- communities[iloc, "A"] - N_moveIAS
-        communities[iloc, "R"] <- communities[iloc, "R"] - N_moveR
-        
-        # add those moving to new communities
-        if (sum(N_moveS+N_moveE+N_moveIAS+N_moveR)>0){
-          destS <- sample(c(1:num_communities),N_moveS,mob_net[iloc,],replace=TRUE)
-          destE <- sample(c(1:num_communities),N_moveE,mob_net[iloc,],replace=TRUE)
-          destIAS <- sample(c(1:num_communities),N_moveIAS,mob_net[iloc,],replace=TRUE)
-          destR <- sample(c(1:num_communities),N_moveR,mob_net[iloc,],replace=TRUE)
-          
-          for (dest in destS){
-            communities[dest,"S"] <-   communities[dest,"S"] +1
-          }
-          
-          for (dest in destE){
-            communities[dest,"E"] <-   communities[dest,"E"] +1
-          }
-          
-          for (dest in destIAS){
-            communities[dest,"A"] <-   communities[dest,"A"] +1
-          }
-          
-          for (dest in destR){
-            communities[dest,"R"] <-   communities[dest,"R"] +1
-          }
-          
-        }
-      }
+      #update movement information
+      int_params$communities <- update_loc(int_params$communities, t, mob_net, int_params$num_communities)
     }
-    
-    
-    
-    results$t_ld_a <- ifelse(t_ld_a==1000,NA,t_ld_a)
-    results$t_ld_b <- ifelse(t_ld_a==1000,NA,t_ld_b)
-    results$travel_increase <- alpha_init*alpha_inc
-    results$travel_decrease <- alpha_init*alpha_dec
-    results$beta_increase <- beta_init*beta_inc 
-    results$beta_decrease <- beta_init*beta_dec
-    results$type <- ifelse(results$Community %in% urban, "U",
-                           ifelse(results$Community %in% suburban, "S", "R"))
-    
-    results %>%
-      filter(!is.na(Community)) %>%
-      group_by(DayInfected, Simulation, Community, type, t_ld_a) %>%
+
+    bind_rows(results) %>%
+      group_by(DayInfected, Community, type, t_ld_a) %>%
       summarise(n=n()) %>%
       ungroup() %>%
-      group_by(Simulation, Community) %>%
-      mutate(cumulative=cumsum(n)) -> results_summary
+      group_by(Community) %>%
+      mutate(cumulative=cumsum(n)) %>%
+      ungroup() -> results_summary
     
     return(results_summary)
     
