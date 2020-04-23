@@ -4,19 +4,12 @@ source("./src/helper_functions.R")
 
 #load log of results generated so far 
 results_log <- read_csv("./results_log.csv")
-row <- 12
+row <- 13
 
 results_master <- load_run_results(results_log[row,"unique_id"])
 params <- results_log[row,] %>% as.list()
 
 generate_plots <- function(results_master){
-
-  results_master %>%
-  filter(!is.na(Community)) %>%
-  group_by(DayInfected, Simulation, Community, type, t_ld_a) %>%
-  summarise(n=n()) %>%
-  group_by(Community, Simulation) %>%
-  mutate(cumulative=cumsum(n)) -> community_day_summary
 
   num_edge <- sqrt(params$num_communities)
   row <- c(rep(1:num_edge,each=10))
@@ -28,13 +21,14 @@ generate_plots <- function(results_master){
   
   # summarise total # infections and start times by community 
   results_master %>%
-    group_by(Community,Simulation, type, t_ld_a) %>%
+    group_by(Community,Simulation, type) %>%
     summarise(infections = sum(n),
-              start = min(DayInfected)) %>%
+              start = min(DayInfected),
+              t_ld_a = min(t_ld_a)) %>%
     ungroup() %>%
     group_by(Community, type) %>%
     summarise(prob_epi = round(sum(infections>=params$cases_ld_a)/params$Nruns,2),
-                av_start_time = mean(start - t_ld_a)) %>%
+                av_start_time = round(mean(start - t_ld_a),1)) %>%
       mutate(row = row[Community],
              col = col[Community]) -> summary_stats
     
@@ -51,10 +45,10 @@ generate_plots <- function(results_master){
             as_tibble() %>%
               bind_rows(summary_stats)-> summary_stats_complete
     
-    heatmap1 <- ggplot(summary_stats_complete,aes(x=col,y=row)) + 
+    heatmap <- ggplot(summary_stats_complete,aes(x=col,y=row)) + 
       geom_tile(aes(fill=prob_epi,color=type),size=2,width=0.8,height=0.8) + 
       scale_color_grey()+
-      geom_text(aes(label = round(av_start_time))) +
+      geom_text(aes(label = av_start_time)) +
       scale_fill_viridis_c(option="plasma",limits=c(0,1)) + theme_classic() + 
       theme(legend.position = "bottom", axis.ticks = element_blank(),
             axis.title.x = element_blank(),axis.title.y = element_blank(), 
@@ -64,6 +58,7 @@ generate_plots <- function(results_master){
            color=element_blank(),
            caption="Number in cell denotes average time of first case \nrelative to announcement of restrictions") 
   
+    return(heatmap)
 }
 
 

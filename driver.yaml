@@ -42,8 +42,8 @@ cases_ld_a:
  # - 30
 
 ld_b:
- # - 3 # days after lockdown announced that it begins
-  - 7
+  - 3 # days after lockdown announced that it begins
+ # - 7
 beta_inc:
  # - 1.0 # relative beta after lockdown announced
   - 1.5
@@ -59,4 +59,4 @@ alpha_dec:
 num_timesteps:
    60
 Nruns:
-   10
+   2

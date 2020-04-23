@@ -81,8 +81,8 @@ update_disease_status <- function(params, t, num_asymp){
       tmp_results <- rbind(tibble("Community" = rep(start_comm,num_inf),
                                    "DayInfected" = rep(1,num_inf),
                                    "Symptoms" = c(rep(1,(num_inf - num_asymp)),rep(0,num_asymp)),
-                                  "type" = "Urban",
-                                  "t_ld_a" = 1000),
+                                   "type" = "Urban",
+                                   "t_ld_a" = 1000),
                    tmp_results)
     }
 
