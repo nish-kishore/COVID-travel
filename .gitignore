@@ -40,6 +40,3 @@ vignettes/*.pdf
 
 # pkgdown site
 docs/
-
-#Files
-/cache/results/*.csv
