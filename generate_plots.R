@@ -78,7 +78,7 @@ results_master %>%
             start = min(DayInfected)) %>%
   group_by(Community, type) %>%
   summarise(prob_epi = round(sum(infections>=params$cases_ld_a)/params$Nruns,2),
-            av_start_time = mean(start)-mean(t_ld_a)) %>%
+            av_start_time = mean(start - t_ld_a)) %>%
   mutate(row = row[Community],
          col = col[Community]) -> summary_stats
 
@@ -95,7 +95,7 @@ bind_cols("Community"=excluded,
         as_tibble() %>%
           bind_rows(summary_stats)-> summary_stats_complete
 
-heatmap1 <- ggplot(summary_stats_complete,aes(x=row,y=col)) + 
+heatmap1 <- ggplot(summary_stats_complete,aes(x=col,y=row)) + 
   geom_tile(aes(fill=prob_epi,color=type),size=2,width=0.8,height=0.8) + 
   scale_color_grey()+
   geom_text(aes(label = round(av_start_time))) +
