@@ -1,6 +1,6 @@
 source("./src/dependencies.R")
 source("./src/models.R")
-source("./testing/optim_funcs.R")
+source("./src/optim_funcs.R")
 
 #create the world objects for one set of parameters
 

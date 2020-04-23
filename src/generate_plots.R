@@ -2,14 +2,13 @@
 source("./src/dependencies.R")
 source("./src/helper_functions.R")
 
-#load log of results generated so far 
-results_log <- read_csv("./results_log.csv")
-row <- 13
-
-results_master <- load_run_results(results_log[row,"unique_id"])
-params <- results_log[row,] %>% as.list()
-
-generate_plots <- function(results_master){
+generate_plots <- function(results_master, row){
+  
+  #load log of results generated so far 
+  results_log <- read_csv("./results_log.csv")
+  
+  results_master <- load_run_results(results_log[row,"unique_id"])
+  params <- results_log[row,] %>% as.list()
 
   num_edge <- sqrt(params$num_communities)
   row <- c(rep(1:num_edge,each=10))
