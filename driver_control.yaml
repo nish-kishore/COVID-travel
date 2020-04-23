@@ -13,7 +13,6 @@ size_communities:
   1000
 exp_grav:
   - 2 # exponent for gravity model
-  - 1.75
 start_comm:
   45 # choose community where outbreak will start
 num_inf:
@@ -46,13 +45,12 @@ ld_b:
   - 7
 beta_inc:
  # - 1.0 # relative beta after lockdown announced
-  - 1.5
+  - 1.0
 beta_dec:
   - 0.5 # relative beta after lockdown begins (relative to initial beta)
  # - 1.0
 alpha_inc:
   - 1.0 # relative travel after lockdown announced
-  - 2.0
 alpha_dec:
   - 0.5 # relative travel decreases after lockdown begins (relative to initial travel)
  # - 1.0
