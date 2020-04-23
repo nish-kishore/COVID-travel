@@ -1,7 +1,25 @@
 source("./src/dependencies.R")
 source("./src/models.R")
 source("./src/optim_funcs.R")
-source("./src/generate_plots.R")
+
+#specify rural/suburban/rural
+get_comm_types <- function(num_communities){
+  urban <- c(45,57)
+  suburban <- c(23:27,33:39,43:44,46:49,53:56,58:59,63:69,76:79)
+  rural <- setdiff(1:num_communities, c(urban, suburban))
+  
+  area_urban <- 4
+  area_suburban <- 7
+  area_rural <- 10
+  
+  n_urban <- 4000
+  n_suburban <- 3500
+  n_rural <- 1000
+  
+  return(list(urban, suburban, rural,
+              area_urban, area_suburban, area_rural, 
+              n_urban, n_suburban, n_rural))
+}
 
 #create the world objects for one set of parameters
 
@@ -18,25 +36,27 @@ init_model_objects <- function(params){
     )
     colnames(communities) <- c("S", "E", "A", "I", "R")
 
-    urban <- c(45,57)
-    suburban <-c(23:27,33:39,43:44,46:49,53:56,58:59,63:69,76:79)
-    rural <- setdiff(1:num_communities, c(urban, suburban))
+    com_types_list <- get_comm_types(num_communities)
+    
+    urban <- com_types_list[[1]]
+    suburban <- com_types_list[[2]]
+    rural <- com_types_list[[3]]
 
-    area_urban <- 4 # square miles?
-    area_suburban <- 7
-    area_rural <- 10
+    area_urban <- com_types_list[[4]] # square miles?
+    area_suburban <- com_types_list[[5]]
+    area_rural <- com_types_list[[6]]
 
-    communities[urban,"S"] <- 4000 # urban: makes it 1000 people/sq mile
-    communities[suburban,"S"] <- 3500 # suburban 500 people/ sq mile
-    communities[rural, "S"] <- 1000 #rural 100 people per square mile
+    communities[urban,"S"] <- com_types_list[[7]] # urban: makes it 1000 people/sq mile
+    communities[suburban,"S"] <- com_types_list[[8]] # suburban 500 people/ sq mile
+    communities[rural, "S"] <- com_types_list[[9]] #rural 100 people per square mile
 
     studypop_size <- sum(communities[,1])
 
-    params$communities <- communities %>% 
+    params$communities <- communities %>%
       as_tibble() %>%
       mutate(iloc = row_number(),
              comm_type = case_when(
-               iloc %in% urban ~ "Urban", 
+               iloc %in% urban ~ "Urban",
                iloc %in% suburban ~ "Suburban",
                TRUE ~ "Rural"
              ),
@@ -102,13 +122,13 @@ init_model_objects <- function(params){
 #pack and run all model objects
 pack_and_run_models <- function(params){
   packed_model_objects <- init_model_objects(params)
-  
+
   replicate(params$Nruns, model_a_optim(packed_model_objects), simplify = FALSE) %>%
     bind_rows(.id = "Simulation") %>%
     write_rds(paste0("./cache/results/",params$unique_id,".rds"))
-  
+
   return(as_tibble(cbind("date_time" = Sys.time(), "user" = as.character(Sys.info()["login"]), as_tibble(params))))
-  
+
 }
 
 #takes in parameters from the driver file and runs the model
@@ -124,32 +144,30 @@ run_models <- function(driver_file_path){
   suppressMessages(
     results_log <- read_csv("./results_log.csv")
   )
-  
-  #subset to params that we don't already have a result for 
+
+  #subset to params that we don't already have a result for
   new_params_df <- subset(params_df, !unique_id %in% results_log$unique_id)
   done_params_df <- subset(params_df, unique_id %in% results_log$unique_id)
-  
+
   print(paste("There are", nrow(new_params_df), "new parameter combinations to run.", nrow(done_params_df),
               "combinations have already been run previously and will be skipped."))
-  
+
   list_of_params <- transpose(new_params_df)
-  
+
   #set up parallel processing
   cl <- makeCluster(detectCores()-2)
   registerDoParallel(cl)
   print(paste0("Starting cluster ", nrow(new_params_df), " jobs identified."))
-  
-  foreach(i = 1:nrow(new_params_df), 
+
+  foreach(i = 1:nrow(new_params_df),
           .export = c("model_a_optim", "run_models", "init_model_objects", "pack_and_run_models",
-                      "update_disease_status", "update_loc", "update_mob_data","generate_plots"),
+                      "update_disease_status", "update_loc", "update_mob_data"),
           .packages = c("tidyverse"),
           .combine = rbind) %dopar% {pack_and_run_models(list_of_params[[i]])} -> out_results
-  
+
   results_log <- rbind(results_log, out_results)
-  
+
   write_csv(results_log, "./results_log.csv")
-  
-  ggsave(paste0(unique_id,".png"),heatmap)
 
   #stop parallel processing
   stopCluster(cl)
