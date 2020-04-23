@@ -38,7 +38,10 @@ update_disease_status <- function(params, t, num_asymp){
           cum_symp >= cases_ld_a ~ beta_init*beta_dec,
         TRUE ~ beta_init
         ),
-        beta_step = beta/area) %>%
+        beta_step = beta/area,
+        t_ld_a = case_when(
+          cum_symp >= cases_ld_a ~ t,
+          TRUE ~ NA)) %>%
       rowwise() %>%
       mutate(#recover
         recover_AS = sum(rbinom(A, 1, rec_per)),
@@ -75,14 +78,13 @@ update_disease_status <- function(params, t, num_asymp){
     
     tmp_results <- rbind(symp, asymp)
     
-    tmp_results$t_ld_a <- t_ld_a
     
     if(t == 1){
       tmp_results <- rbind(tibble("Community" = rep(start_comm,num_inf),
                                    "DayInfected" = rep(1,num_inf),
                                    "Symptoms" = c(rep(1,(num_inf - num_asymp)),rep(0,num_asymp)),
-                                  "type" = "Urban",
-                                  "t_ld_a" = 1000),
+                                   "type" = "Urban",
+                                   "t_ld_a" = NA),
                    tmp_results)
     }
 
