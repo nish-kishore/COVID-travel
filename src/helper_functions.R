@@ -178,3 +178,10 @@ run_models <- function(driver_file_path){
 load_run_results <- function(unique_id){
   return(read_rds(paste0("./cache/results/",unique_id,".rds")))
 }
+
+#attached vars from results into data
+load_merge_vars <- function(results_log,id,...){
+  load_run_results(id) %>%
+    cbind(subset(results_log, unique_id %in% id) %>% dplyr::select(...)) %>%
+    as_tibble()
+}
