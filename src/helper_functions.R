@@ -132,7 +132,7 @@ pack_and_run_models <- function(params){
 }
 
 #takes in parameters from the driver file and runs the model
-run_models <- function(driver_file_path){
+run_models <- function(driver_file_path, cores = NULL){
 
   #reads and expands grid of all possible values
   params_df <- read_yaml(driver_file_path) %>% expand.grid() %>% as_tibble()
@@ -155,7 +155,11 @@ run_models <- function(driver_file_path){
   list_of_params <- transpose(new_params_df)
 
   #set up parallel processing
-  cl <- makeCluster(detectCores()-2)
+  if(is.null(cores)){
+    cl <- makeCluster(detectCores()-2)
+  }else{
+    cl <- makeCluster(cores)
+  }
   registerDoParallel(cl)
   print(paste0("Starting cluster ", nrow(new_params_df), " jobs identified."))
 
