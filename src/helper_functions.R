@@ -3,18 +3,35 @@ source("./src/models.R")
 source("./src/optim_funcs.R")
 
 #specify rural/suburban/rural
-get_comm_types <- function(num_communities){
-  urban <- c(45,57)
-  suburban <- c(23:27,33:39,43:44,46:49,53:56,58:59,63:69,76:79)
-  rural <- setdiff(1:num_communities, c(urban, suburban))
+get_comm_types <- function(num_communities, comm_version){
+  if(comm_version == 1){
+    urban <- c(45,57)
+    suburban <- c(23:27,33:39,43:44,46:49,53:56,58:59,63:69,76:79)
+    rural <- setdiff(1:num_communities, c(urban, suburban))
+    
+    area_urban <- 4
+    area_suburban <- 7
+    area_rural <- 10
+    
+    n_urban <- 4000
+    n_suburban <- 3500
+    n_rural <- 1000
+  }
   
-  area_urban <- 4
-  area_suburban <- 7
-  area_rural <- 10
-  
-  n_urban <- 4000
-  n_suburban <- 3500
-  n_rural <- 1000
+  if(comm_version == 2){
+    urban <- c(45,57)
+    suburban <- c(23:27,33:39,43:44,46:49,53:56,58:59,63:69,76:79)
+    rural <- setdiff(1:num_communities, c(urban, suburban))
+    
+    area_urban <- 4
+    area_suburban <- 10
+    area_rural <- 10
+    
+    n_urban <- 4000
+    n_suburban <- 2500
+    n_rural <- 2500
+  }
+
   
   return(list(urban, suburban, rural,
               area_urban, area_suburban, area_rural, 
@@ -36,7 +53,7 @@ init_model_objects <- function(params){
     )
     colnames(communities) <- c("S", "E", "A", "I", "R")
 
-    com_types_list <- get_comm_types(num_communities)
+    com_types_list <- get_comm_types(num_communities, comm_version)
     
     urban <- com_types_list[[1]]
     suburban <- com_types_list[[2]]
