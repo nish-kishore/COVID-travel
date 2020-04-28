@@ -42,3 +42,4 @@ docs/
 /cache/results/*.csv
 /cache/figs/*.*
 /testing/*.*
+/figs/*.*
