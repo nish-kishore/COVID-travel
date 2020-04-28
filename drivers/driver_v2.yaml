@@ -53,6 +53,8 @@ beta_dec:
   - 1.0
 alpha_inc:
   - 5.0 # relative travel after lockdown announced
+  - 1.0
+  - 2.0
 alpha_dec:
   - 0.5 # relative travel decreases after lockdown begins (relative to initial travel)
 num_timesteps:
