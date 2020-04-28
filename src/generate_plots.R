@@ -90,3 +90,67 @@ generate_plots <- function(run_all = FALSE){
   
 }
 
+
+summary_stats <- function(row){
+  
+    rds_id <- read_csv("./results_log.csv") %>% subset(unique_id == unique_id[row]) %>% pull(unique_id)
+  
+    suppressMessages(
+      params <- read_csv("./results_log.csv") %>% subset(unique_id == rds_id)
+    )
+    
+    data <- read_rds(paste0("./cache/results/",rds_id,".rds"))
+    
+    data %>%
+      group_by(Community,Simulation, type) %>%
+      summarise(infections = sum(n),
+                start = min(DayInfected),
+                t_ld_a = min(t_ld_a)) %>%
+      ungroup() %>%
+      group_by(Community, type) %>%
+      summarise(prob_epi = round(sum(infections>=10)/params$Nruns,2),
+                av_start_time = round(mean(start - t_ld_a),1)) %>%
+      ungroup %>%
+      summarise(av_prob_epi = mean(prob_epi),
+             num_comm_epi = sum(prob_epi>0),
+             av_start_time = mean(av_start_time))-> summary_stats
+    
+      bind_cols(params,summary_stats) -> summary_results_row
+      
+      return(summary_results_row)
+  
+}
+
+rows <- seq(17,400,1)
+
+lapply(rows,function(i)summary_stats(i)) %>%
+  bind_rows() %>%
+  mutate(alpha_beta = paste0("travel inc: ",alpha_inc,
+                             "; beta inc: ", beta_inc,
+                             "; travel dec: ",alpha_dec,
+                             "; beta dec: ",beta_dec),
+         param_sums = paste0("initial: ",  num_inf,
+                             "; travel: ", alpha_init,
+                             "; trigger: ",cases_ld_a,
+                             "; delay: ",ld_b))-> summary_results
+
+ggplot(summary_results,aes(x=param_sums,y=alpha_beta)) +
+  geom_tile(aes(fill=av_prob_epi),size=2,width=0.8,height=0.8) +
+  scale_color_grey(start = 1, end = 0)+
+  #geom_text(aes(label = round(av_start_time)), fontface = "bold",color="black") +
+  geom_text(aes(label = round(av_prob_epi,1)), fontface = "bold",color="black") +
+  scale_fill_viridis_c(limits=c(0,1)) + 
+  theme_classic() +
+  theme(legend.position = "bottom", axis.ticks = element_blank(),
+        axis.text.x=element_text(angle=90),
+        #axis.text.x = element_blank(),
+        #axis.text.y = element_blank(),   
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.line = element_blank()) + scale_alpha(guide = 'none')+
+  labs(fill="Probability have 10+ cases",
+       #x="Other parameters",
+       #y="Travel & beta",
+       color=element_blank(),
+       alpha=element_blank())
+
