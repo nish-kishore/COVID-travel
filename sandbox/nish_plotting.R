@@ -2,38 +2,44 @@ source("./src/helper_functions.R")
 
 travel_probs <- read_rds("./testing/travel_probs.rds")
 results_log <- read_csv("./results_log.csv")
-ids <- subset(results_log, comm_version == 2) %>% select(unique_id)
+ids <- subset(results_log, Nruns == 50) %>% select(unique_id)
 
-lapply(1:nrow(ids), function(x) load_merge_vars(results_log, ids[x,], alpha_init, ld_b, beta_inc, alpha_inc, beta_dec, alpha_dec, Nruns)) %>%
+lapply(1:nrow(ids), function(x) load_merge_vars(results_log, ids[x,], cases_ld_a, beta_inc, alpha_inc, beta_dec, alpha_dec, Nruns)) %>%
   bind_rows() -> plot_data
 
-plot_data %>%
-  group_by(Simulation)%>%
-  summarise(min=min(t_ld_a)) %>%
-  filter(min<1000) %>%
-  pull(Simulation) -> non_fade_outs
+plot_point_comp <- function(day_till, cases_ld){
+  plot_data %>%
+    subset(cases_ld_a %in% c(9999, cases_ld) & beta_inc == 1.5 & beta_dec == 0.5 & alpha_dec == 0.5) %>% 
+    mutate(sim_type = case_when(
+      cases_ld_a == 9999 ~ "Control", 
+      alpha_inc == 1 ~ "Lockdown-No Surge", 
+      alpha_inc == 2 ~ "Lockdown-Travel Surge"
+    )) %>%
+    arrange(cumulative) %>%
+    subset(cumulative >= day_till) %>%
+    group_by(Community,Simulation, sim_type) %>%
+    slice(1) %>%
+    ungroup() %>%
+    group_by(Community, sim_type) %>%
+    summarise(avg_day_to_n = sum(DayInfected)/50) %>%
+    ungroup() -> out_data
+  
+  subset(out_data, sim_type == "Control") %>%
+    select(Community, avg_day_to_n) %>%
+    rename("ctrl_day_to_n" = "avg_day_to_n") %>%
+    right_join(out_data, by = "Community") %>%
+    ggplot(aes(x = ctrl_day_to_n, y = avg_day_to_n, color = sim_type)) +
+    geom_point() + 
+    geom_smooth(method = "loess", se = F) + 
+    theme_bw() + 
+    labs(x = "Control - Avg days till X cases", y = "Comparison - Avg days till X cases",
+         title = paste0("Avg # of days till ",day_till, " cases / Lockdown after: ", cases_ld, " cases"), 
+         color = "Sim Type")
+}
 
-plot_data %>%
-  group_by(Community,Simulation, type, alpha_init, ld_b, beta_inc, alpha_inc, beta_dec, alpha_dec) %>%
-  summarise(infections = sum(n),
-            start = min(DayInfected),
-            t_ld_a = min(t_ld_a)) %>%
-  ungroup() %>%
-  group_by(Community, type, alpha_init, ld_b, beta_inc, alpha_inc, beta_dec, alpha_dec) %>%
-  summarise(prob_epi_1 = round(sum(infections>=1)/10,2),
-            prob_epi_10 = round(sum(infections>=10)/10,2),
-            prob_epi_30 = round(sum(infections>=30)/10,2),
-            prob_epi_50 = round(sum(infections>=50)/10,2),
-            av_start_time = round(mean(start - t_ld_a),1)) %>%
-  ungroup() %>%
-  mutate(type = ifelse(type == "Urban", "City", "Non-city"),
-         alpha_init = factor(alpha_init), 
-         ld_b = factor(ld_b), 
-         beta_inc = factor(beta_inc), 
-         alpha_inc = factor(alpha_inc), 
-         beta_dec = factor(beta_dec), 
-         alpha_dec = factor(alpha_dec)) %>%
-  left_join(travel_probs, by = "Community") -> out_data
+plot_point_comp(10, 30)
+
+
 
 create_plot <- function(data, alpha_inc2, ld_b2, cases){
   data %>%
