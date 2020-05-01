@@ -94,8 +94,8 @@ init_model_objects <- function(params){
     for (i in 1:num_communities){
       for (j in 1:num_communities){
         if (i!=j){
-          mob_net[i,j] <- (sum(communities[[i]])*sum(communities[[j]]))/
-                                      (abs(row[i]-row[j]) + abs(col[i] - col[j]))^exp_grav
+          mob_net[i,j] <- ((sum(communities[[i]])^a0)*(sum(communities[[j]])^b0))/
+                                      (abs(row[i]-row[j]) + abs(col[i] - col[j]))^exp_grav0
         }
       }
     }
@@ -108,9 +108,20 @@ init_model_objects <- function(params){
         mob_net_norm[i,j] <- mob_net[i,j]/sum(mob_net[i,])
       }
     }
+    
 
     # mobility network post lockdown announcement - increase probabilities further away
-    mob_net2 <- mob_net_norm
+    mob_net2 <- matrix(0,nrow=num_communities,ncol=num_communities)
+    for (i in 1:num_communities){
+      for (j in 1:num_communities){
+        if (i!=j){
+          mob_net2[i,j] <- ((sum(communities[[i]])^a1)*(sum(communities[[j]])^b1))/
+            (abs(row[i]-row[j]) + abs(col[i] - col[j]))^exp_grav1
+        }
+      }
+    }
+    
+
     mob_net2[,start_comm] <- 0 # prevent any travel to urban cities
     #mob_net2[,suburban] <- 0 # prevent travel to suburban areas
 
