@@ -19,7 +19,7 @@ b0:
  - 0.2698
 exp_grav0:
   # - 2 # exponent for gravity model pre lockdown
-  - 1.75
+  #- 1.75
   - 1.817
 a1:
  - 1 # population origin coefficient for gravity model post lockdown announced
@@ -29,7 +29,7 @@ b1:
  - 0.2698
 exp_grav1:
   # - 2 # exponent for gravity model post lockdown announced
-  - 1.75
+  #- 1.75
   - 1.817
 start_comm:
   45 # choose community where outbreak will start
