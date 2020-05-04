@@ -13,18 +13,24 @@ size_communities:
   1000
 a0:
  - 1 # population origin coefficient for gravity model pre lockdown
-b0
+ - 0.2707
+b0:
  - 1 # population destination coefficient for gravity model pre lockdown
+ - 0.2698
 exp_grav0:
   # - 2 # exponent for gravity model pre lockdown
   - 1.75
+  - 1.817
 a1:
  - 1 # population origin coefficient for gravity model post lockdown announced
-b1
+ - 0.2707
+b1:
  - 1 # population destination coefficient for gravity model post lockdown announced
+ - 0.2698
 exp_grav1:
   # - 2 # exponent for gravity model post lockdown announced
   - 1.75
+  - 1.817
 start_comm:
   45 # choose community where outbreak will start
 comm_version:
