@@ -6,7 +6,7 @@ source("./src/helper_functions.R")
 
 
 #run model using inputs from driver file
-run_models("./drivers/driver_v2.yaml", cores = 10)
+run_models("./drivers/driver_v2.yaml", cores = 12)
 
 #generate heatmaps
 #generate_plots(run_all = T)

@@ -32,6 +32,19 @@ get_comm_types <- function(num_communities, comm_version){
     n_rural <- 2500
   }
 
+  if(comm_version == 3){
+    urban <- c(45)
+    suburban <- c(23:27,33:39,43:44,46:49,53:56,58:59,63:69,76:79)
+    rural <- setdiff(1:num_communities, c(urban, suburban))
+
+    area_urban <- 4
+    area_suburban <- 10
+    area_rural <- 10
+
+    n_urban <- 4000
+    n_suburban <- 2500
+    n_rural <- 2500
+  }
 
   return(list(urban, suburban, rural,
               area_urban, area_suburban, area_rural,
@@ -94,8 +107,8 @@ init_model_objects <- function(params){
     for (i in 1:num_communities){
       for (j in 1:num_communities){
         if (i!=j){
-          mob_net[i,j] <- (sum(communities[[i]])*sum(communities[[j]]))/
-                                      (abs(row[i]-row[j]) + abs(col[i] - col[j]))^exp_grav
+          mob_net[i,j] <- ((sum(communities[[i]])^a0)*(sum(communities[[j]])^b0))/
+                                      (abs(row[i]-row[j]) + abs(col[i] - col[j]))^exp_grav0
         }
       }
     }
@@ -109,8 +122,19 @@ init_model_objects <- function(params){
       }
     }
 
+
     # mobility network post lockdown announcement - increase probabilities further away
-    mob_net2 <- mob_net_norm
+    mob_net2 <- matrix(0,nrow=num_communities,ncol=num_communities)
+    for (i in 1:num_communities){
+      for (j in 1:num_communities){
+        if (i!=j){
+          mob_net2[i,j] <- ((sum(communities[[i]])^a1)*(sum(communities[[j]])^b1))/
+            (abs(row[i]-row[j]) + abs(col[i] - col[j]))^exp_grav1
+        }
+      }
+    }
+
+
     mob_net2[,start_comm] <- 0 # prevent any travel to urban cities
     #mob_net2[,suburban] <- 0 # prevent travel to suburban areas
 
