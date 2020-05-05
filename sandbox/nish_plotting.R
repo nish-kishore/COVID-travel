@@ -2,7 +2,7 @@ source("./src/helper_functions.R")
 
 travel_probs <- read_rds("./testing/travel_probs.rds")
 results_log <- read_csv("./results_log.csv")
-ids <- subset(results_log, Nruns == 50) %>% select(unique_id)
+ids <- subset(results_log, as.Date(date_time) == as.Date("2020-05-05")) %>% select(unique_id)
 
 lapply(1:nrow(ids), function(x) load_merge_vars(results_log, ids[x,], cases_ld_a, beta_inc, alpha_inc, beta_dec, alpha_dec, Nruns)) %>%
   bind_rows() -> plot_data
@@ -37,7 +37,7 @@ plot_point_comp <- function(day_till, cases_ld){
          color = "Sim Type")
 }
 
-plot_point_comp(10, 30)
+plot_point_comp(10, 10)
 
 
 
