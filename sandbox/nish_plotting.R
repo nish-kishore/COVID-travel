@@ -20,12 +20,15 @@ plot_point_comp <- function(day_till, cases_ld){
     group_by(Community,Simulation, sim_type) %>%
     slice(1) %>%
     ungroup() %>%
+    group_by(Community) %>%
+    mutate(nsims=length(n)) %>%
+    ungroup() %>%
     group_by(Community, sim_type) %>%
-    summarise(avg_day_to_n = sum(DayInfected)/50) %>%
+    summarise(avg_day_to_n = sum(DayInfected)/mean(nsims)) %>%
     ungroup() -> out_data
   
   subset(out_data, sim_type == "Control") %>%
-    select(Community, avg_day_to_n) %>%
+    dplyr::select(Community, avg_day_to_n) %>%
     rename("ctrl_day_to_n" = "avg_day_to_n") %>%
     right_join(out_data, by = "Community") %>%
     ggplot(aes(x = ctrl_day_to_n, y = avg_day_to_n, color = sim_type)) +
