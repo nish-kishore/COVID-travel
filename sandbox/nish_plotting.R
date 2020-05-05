@@ -40,7 +40,7 @@ plot_point_comp <- function(day_till, cases_ld){
          color = "Sim Type")
 }
 
-plot_point_comp(10, 30)
+plot_point_comp(1, 10)
 
 
 
@@ -71,5 +71,31 @@ ggarrange(create_plot(out_data, 5, 3, 10), create_plot(out_data, 5, 7, 10), ncol
 glm(prob_epi ~ type + ld_b + beta_inc + beta_dec + alpha_init + alpha_inc + alpha_dec, data = out_data) %>% summary()
 
 glm(av_start_time ~ type + ld_b + beta_inc + beta_dec + alpha_init + alpha_inc + alpha_dec, data = out_data) %>% summary()
+
+
+
+
+# get number of communities that have X cases by Y date in any simulations
+num_comms<- function(day_till,day,cases_ld){
+  plot_data %>%
+    subset(cases_ld_a %in% c(9999, cases_ld) & beta_inc == 1.5 & beta_dec == 0.5 & alpha_dec == 0.5) %>% 
+    mutate(sim_type = case_when(
+      cases_ld_a == 9999 ~ "Control", 
+      alpha_inc == 1 ~ "Lockdown-No Surge", 
+      alpha_inc == 2 ~ "Lockdown-Travel Surge"
+    )) %>%
+    arrange(cumulative) %>%
+    subset(cumulative >= day_till & DayInfected<=day) %>%
+    group_by(Community,sim_type) %>%
+    slice(1) %>%
+    ungroup() %>%
+    group_by(sim_type) %>%
+    summarise(ncomm=length(Community)) -> out_data
+  
+  return(out_data)
+}
+
+num_comms(15,20,30)
+
 
 
