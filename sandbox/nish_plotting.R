@@ -100,10 +100,9 @@ for (i in 1:30){ # cases, day,
   for (j in 1:60){
     cat(i,j,"\n")
     out <- num_comms(i,j,30)
-    results <-rbind(results,
-                    cbind(out[1,2],sim_type="control",i,j),
-                    cbind(out[2,2],sim_type="lockdown, no surge",i,j),
-                    cbind(out[3,2],sim_type="lockdown, surge",i,j))
+    results <-rbind(results,cbind(out,
+                            rep(i,nrow(out)),
+                                  rep(j,nrow(out))))
   }
 }
 
