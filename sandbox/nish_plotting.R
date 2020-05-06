@@ -115,6 +115,6 @@ results %>%
        y="# communities",
        title="# of communities by simulation type with X cases by each day",
        color=element_blank(),
-       caption="Trigger: 30 cases")
+       caption="Trigger: 30 cases; note this is # communities that show up in ANY simulation")
 
 
