@@ -30,12 +30,13 @@ update_disease_status <- function(params, t, num_asymp){
         alpha = case_when(
           iloc==start_comm & t >= t_ld_a & t < t_ld_b ~ alpha_init*alpha_inc,
           iloc==start_comm & t >= t_ld_b ~ alpha_init*alpha_dec,
+          iloc!=start_comm & cum_symp >= cases_ld_a2 ~ alpha_init*alpha_dec,
           TRUE ~ alpha_init
         ),# change beta if threshold reached in other communnities but keep alpha the same
         beta = case_when(
           iloc==start_comm & t >= t_ld_a & t < t_ld_b ~ beta_init*beta_inc ,
           iloc==start_comm & t >= t_ld_b ~ beta_init*beta_dec,
-          cum_symp >= cases_ld_a ~ beta_init*beta_dec,
+          iloc!=start_comm & cum_symp >= cases_ld_a2 ~ beta_init*beta_dec,
         TRUE ~ beta_init
         ),
         beta_step = beta/area) %>%

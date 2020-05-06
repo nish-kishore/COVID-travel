@@ -58,6 +58,8 @@ cases_ld_a:
   - 10 # number of cases when lockdown announced
   - 30
   - 9999
+cases_ld_a2: # cases that trigger decrease in beta outside starting city
+  - 1
 ld_b:
   - 3 # days after lockdown announced that it begins
 beta_inc:
