@@ -2,7 +2,7 @@ source("./src/helper_functions.R")
 
 travel_probs <- read_rds("./testing/travel_probs.rds")
 results_log <- read_csv("./results_log.csv")
-ids <- subset(results_log, Nruns == 50) %>% select(unique_id)
+ids <- subset(results_log, comm_version == 3 & a0==1) %>% dplyr::select(unique_id)
 
 lapply(1:nrow(ids), function(x) load_merge_vars(results_log, ids[x,], cases_ld_a, beta_inc, alpha_inc, beta_dec, alpha_dec, Nruns)) %>%
   bind_rows() -> plot_data
@@ -40,7 +40,7 @@ plot_point_comp <- function(day_till, cases_ld){
          color = "Sim Type")
 }
 
-plot_point_comp(1, 10)
+plot_point_comp(10, 30)
 
 
 
@@ -95,7 +95,25 @@ num_comms<- function(day_till,day,cases_ld){
   return(out_data)
 }
 
-num_comms(15,20,30)
+results <- NULL
+for (i in 1:30){ # cases, day, 
+  for (j in 1:60){
+    cat(i,j,"\n")
+    out <- num_comms(i,j,30)
+    results <-rbind(results,
+                    cbind(out[1,2],sim_type="control",i,j),
+                    cbind(out[2,2],sim_type="lockdown, no surge",i,j),
+                    cbind(out[3,2],sim_type="lockdown, surge",i,j))
+  }
+}
 
+write.csv(results,"10_results_xbyy.csv")
+
+ggplot(results) + geom_line(aes(x=j,y=ncomm,color=factor(sim_type))) + xlim(0,60)+
+  facet_wrap(vars(i)) + theme_bw()+
+  labs(x="# days",
+       y="# communities",
+       title="# of communities by simulation type with X cases by each day",
+       color=element_blank())
 
 
