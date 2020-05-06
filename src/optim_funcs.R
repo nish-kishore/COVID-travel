@@ -93,7 +93,7 @@ update_disease_status <- function(params, t, num_asymp){
 
     start_comm_num_symp <- tmp_communities[start_comm, "cum_symp"] %>% pull()
 
-    tmp_results <- left_join(tmp_results, pop, by = "iloc")
+    tmp_results <- left_join(tmp_results, pop, by = c("Community" = "iloc"))
 
     return(list(tmp_communities, tmp_results, start_comm_num_symp))
 
