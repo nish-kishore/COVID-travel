@@ -107,13 +107,15 @@ for (i in 1:30){ # cases, day,
   }
 }
 
-write.csv(results,"10_results_xbyy.csv")
 
-ggplot(results) + geom_line(aes(x=j,y=ncomm,color=factor(sim_type))) + xlim(0,60)+
+results %>%
+  #filter(sim_type!="control") %>%
+  ggplot() + geom_line(aes(x=j,y=ncomm,color=factor(sim_type))) + xlim(0,30)+
   facet_wrap(vars(i)) + theme_bw()+
   labs(x="# days",
        y="# communities",
        title="# of communities by simulation type with X cases by each day",
-       color=element_blank())
+       color=element_blank(),
+       caption="Trigger: 30 cases")
 
 
