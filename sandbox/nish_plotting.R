@@ -2,7 +2,7 @@ source("./src/helper_functions.R")
 
 travel_probs <- read_rds("./testing/travel_probs.rds")
 results_log <- read_csv("./results_log.csv")
-ids <- subset(results_log, comm_version == 3 & a0==1) %>% dplyr::select(unique_id)
+ids <- subset(results_log, comm_version == 3 & a0==1 & cases_ld_a2 == 1) %>% dplyr::select(unique_id)
 
 lapply(1:nrow(ids), function(x) load_merge_vars(results_log, ids[x,], cases_ld_a, beta_inc, alpha_inc, beta_dec, alpha_dec, Nruns)) %>%
   bind_rows() -> plot_data
@@ -99,12 +99,13 @@ results <- NULL
 for (i in 1:30){ # cases, day, 
   for (j in 1:60){
     cat(i,j,"\n")
-    out <- num_comms(i,j,30)
+    out <- num_comms(i,j,10)
     results <-rbind(results,cbind(out,
-                            rep(i,nrow(out)),
-                                  rep(j,nrow(out))))
+                            "i"=rep(i,nrow(out)),
+                                "j"=rep(j,nrow(out))))
   }
 }
+
 
 
 results %>%
@@ -116,5 +117,44 @@ results %>%
        title="# of communities by simulation type with X cases by each day",
        color=element_blank(),
        caption="Trigger: 30 cases; note this is # communities that show up in ANY simulation")
+
+
+
+num_comms2<- function(day_till,day,rds_id_control,rds_id_nosurge,rds_id_surge){
+
+    data1 <- read_rds(paste0("./cache/results/",rds_id_control,".rds"))
+    data1 %>%
+      mutate(sim_type="Control") -> data1
+    data2 <- read_rds(paste0("./cache/results/",rds_id_nosurge,".rds"))
+    data2 %>%
+      mutate(sim_type="Lockdown-No Surge") -> data2
+    data3 <- read_rds(paste0("./cache/results/",rds_id_surge,".rds"))
+    data3 %>%
+      mutate(sim_type="Lockdown-Travel Surge") -> data3
+    
+    data <- rbind(data1,data2,data3)
+    
+    data %>%
+      arrange(cumulative) %>%
+      subset(cumulative >= day_till & DayInfected<=day) %>%
+      group_by(Community,sim_type,Simulation) %>%
+      slice(1) %>%
+      ungroup() %>%
+      group_by(sim_type,Simulation) %>%
+      summarise(ncomm=length(Community)) %>%
+      group_by(sim_type) %>%
+      summarise(mean_comm=sum(ncomm)/50)-> out_data
+  
+  return(out_data)
+}
+
+
+num_comms2(10,60,
+           "c35e97ec40811d7ff7161a394c194eac",
+           "a320c39d1afc8b11a9800ff98cc0128a",
+           "49dcd91e5338350fd7b1d50417f76f90")
+
+
+
 
 
