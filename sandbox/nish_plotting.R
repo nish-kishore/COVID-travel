@@ -2,9 +2,9 @@ source("./src/helper_functions.R")
 
 travel_probs <- read_rds("./testing/travel_probs.rds")
 results_log <- read_csv("./results_log.csv")
-ids <- subset(results_log, comm_version == 3 & a0==1) %>% dplyr::select(unique_id)
+ids <- tail(results_log, 27) %>% dplyr::select(unique_id)
 
-lapply(1:nrow(ids), function(x) load_merge_vars(results_log, ids[x,], cases_ld_a, beta_inc, alpha_inc, beta_dec, alpha_dec, Nruns)) %>%
+lapply(1:nrow(ids), function(x) load_merge_vars(results_log, ids[x,], cases_ld_a, alpha_inc, alpha_init, Nruns)) %>%
   bind_rows() -> plot_data
 
 plot_point_comp <- function(day_till, cases_ld){
@@ -116,3 +116,44 @@ results %>%
        title="# of communities by simulation type with X cases by each day",
        color=element_blank(),
        caption="Trigger: 30 cases")
+
+library(scales)
+create_travel_plot <- function(x,y){
+  plot_data %>%
+    subset(cases_ld_a %in% c(9999,x) & alpha_init == y) %>%
+    mutate(sim_type = case_when(
+      cases_ld_a == 9999 ~ "Control",
+      alpha_inc == 1 ~ "Lockdown-No Surge",
+      alpha_inc == 2 ~ "Lockdown-Travel Surge-2", 
+      alpha_inc == 3 ~ "Lockdown-Travel SUrge-3"
+    )) %>%
+    group_by(Community, DayInfected, sim_type) %>%
+    summarize(tot_pop = mean(tot_pop)) %>%
+    ungroup() %>%
+    arrange(DayInfected, Community, sim_type) %>%
+    mutate(perc_change = case_when(
+      Community == 45 ~ (tot_pop-4000)/4000,
+      TRUE ~ (tot_pop-2500)/2500
+    )) %>%
+    left_join(travel_probs, by = "Community") %>%
+    ggplot(aes(x = DayInfected, y = perc_change, group = Community, color = log(prob_start_comm))) + 
+    geom_line() + 
+    facet_wrap(~sim_type, ncol = 2) + 
+    scale_y_continuous(labels = scales::percent) + 
+    scale_color_viridis_c() +
+    theme_bw() + 
+    labs(x = "Day", y = "Percent Change in Population", color = "log(P(travel))", 
+         title = paste("Lockdown at:",x,"cases, alpha_init:",y)) -> p 
+  ggsave(filename = paste0("./figs/travelplot_",x,"_",y,".png"), plot = p)
+}
+
+create_travel_plot(10, 0.001)
+create_travel_plot(10, 0.005)
+create_travel_plot(10, 0.01)
+create_travel_plot(30, 0.001)
+create_travel_plot(30, 0.005)
+create_travel_plot(30, 0.01)
+
+
+
+

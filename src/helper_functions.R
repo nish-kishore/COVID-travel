@@ -234,6 +234,6 @@ load_run_results <- function(unique_id){
 #attached vars from results into data
 load_merge_vars <- function(results_log,id,...){
   load_run_results(id) %>%
-    cbind(subset(results_log, unique_id %in% id) %>% dplyr::select(...)) %>%
+    cbind(subset(results_log, unique_id %in% id) %>% tail(1) %>% dplyr::select(...)) %>%
     as_tibble()
 }
