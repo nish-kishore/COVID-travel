@@ -173,7 +173,7 @@ pack_and_run_models <- function(params){
 }
 
 #takes in parameters from the driver file and runs the model
-run_models <- function(driver_file_path, cores = NULL, rerun = F){
+run_models <- function(driver_file_path, cores = NULL, force_run = F){
 
   #reads and expands grid of all possible values
   params_df <- read_yaml(driver_file_path) %>% expand.grid() %>% as_tibble() %>%
@@ -194,7 +194,11 @@ run_models <- function(driver_file_path, cores = NULL, rerun = F){
   print(paste("There are", nrow(new_params_df), "new parameter combinations to run.", nrow(done_params_df),
               "combinations have already been run previously and will be skipped unless you've selected to rerun."))
 
-  run_params_df <- ifelse(rerun, params_df, new_params_df)
+  if(force_run){
+    runs_params_df <- params_df
+  }else{
+    runs_params_df <- new_params_df
+  }
 
   list_of_params <- transpose(runs_params_df)
 
