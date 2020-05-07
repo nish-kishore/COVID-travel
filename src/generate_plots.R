@@ -78,6 +78,14 @@ create_heatmap2 <- function(rds_id,comm_version,threshold,day){
   
   data <- read_rds(paste0("./cache/results/",rds_id,".rds"))
   
+  data %>%
+     group_by(Simulation,DayInfected, Community, type, t_ld_a) %>%
+     summarise(n=n()) %>%
+     ungroup() %>%
+     group_by(Community) %>%
+     mutate(cumulative=cumsum(n)) %>%
+     ungroup() -> data
+  
   comm_type_list <- get_comm_types(params$num_communities,3)
   
   city <- comm_type_list[[1]]
@@ -127,11 +135,10 @@ create_heatmap2 <- function(rds_id,comm_version,threshold,day){
           axis.title.x = element_blank(),axis.title.y = element_blank(),
           axis.text.x = element_blank(), axis.text.y = element_blank(),
           axis.line = element_blank()) + scale_alpha(guide = 'none')+
-    labs(fill="Probability epidemic",
+    labs(fill=paste0("Probability of ",threshold, " cases by day ", day),
          color=element_blank(),
          alpha=element_blank(),
-         caption=paste0("Number in cell denotes average time of first case relative to announcement of restrictions",
-                        "\nCases to trigger restrictions = ", params$cases_ld_a, "; Days between restrictions annnounced and begin = ",params$ld_b, 
+         caption=paste0("Cases to trigger restrictions = ", params$cases_ld_a, "; Days between restrictions annnounced and begin = ",params$ld_b, 
                         "\nRelative beta after restrictions announced = ", params$beta_inc, "; Relative beta after restrictions in place = ", params$beta_dec, 
                         "\nInitial movement prob = ",params$alpha_init,"; Relative travel after restrictions announced = ", params$alpha_inc,"; Relative travel after restrictions in place = ", params$alpha_dec))
   
