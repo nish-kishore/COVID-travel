@@ -175,7 +175,7 @@ plot_data_summary %>%
     alpha_inc == 3 ~ "Lockdown-Travel Surge3"
   )) %>%
   group_by(sim_type,Community,DayInfected) %>%
-  summarise(mean=mean(cumulative)) %>%
+  summarise(mean=sum(cumulative)/50) %>%
   ggplot() + 
   geom_line(aes(x=DayInfected,y=mean,color=factor(sim_type))) + 
   facet_wrap(vars(Community),scales="free_y") + 
