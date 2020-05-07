@@ -2,17 +2,17 @@ source("./src/helper_functions.R")
 
 travel_probs <- read_rds("./testing/travel_probs.rds")
 results_log <- read_csv("./results_log.csv")
-ids <- subset(results_log, as.Date(date_time) == as.Date("2020-05-05")) %>% select(unique_id)
+ids <- subset(results_log, comm_version == 3 & a0==1) %>% dplyr::select(unique_id)
 
 lapply(1:nrow(ids), function(x) load_merge_vars(results_log, ids[x,], cases_ld_a, beta_inc, alpha_inc, beta_dec, alpha_dec, Nruns)) %>%
   bind_rows() -> plot_data
 
 plot_point_comp <- function(day_till, cases_ld){
   plot_data %>%
-    subset(cases_ld_a %in% c(9999, cases_ld) & beta_inc == 1.5 & beta_dec == 0.5 & alpha_dec == 0.5) %>% 
+    subset(cases_ld_a %in% c(9999, cases_ld) & beta_inc == 1.5 & beta_dec == 0.5 & alpha_dec == 0.5) %>%
     mutate(sim_type = case_when(
-      cases_ld_a == 9999 ~ "Control", 
-      alpha_inc == 1 ~ "Lockdown-No Surge", 
+      cases_ld_a == 9999 ~ "Control",
+      alpha_inc == 1 ~ "Lockdown-No Surge",
       alpha_inc == 2 ~ "Lockdown-Travel Surge"
     )) %>%
     arrange(cumulative) %>%
@@ -20,20 +20,23 @@ plot_point_comp <- function(day_till, cases_ld){
     group_by(Community,Simulation, sim_type) %>%
     slice(1) %>%
     ungroup() %>%
+    group_by(Community) %>%
+    mutate(nsims=length(n)) %>%
+    ungroup() %>%
     group_by(Community, sim_type) %>%
-    summarise(avg_day_to_n = sum(DayInfected)/50) %>%
+    summarise(avg_day_to_n = sum(DayInfected)/mean(nsims)) %>%
     ungroup() -> out_data
-  
+
   subset(out_data, sim_type == "Control") %>%
-    select(Community, avg_day_to_n) %>%
+    dplyr::select(Community, avg_day_to_n) %>%
     rename("ctrl_day_to_n" = "avg_day_to_n") %>%
     right_join(out_data, by = "Community") %>%
     ggplot(aes(x = ctrl_day_to_n, y = avg_day_to_n, color = sim_type)) +
-    geom_point() + 
-    geom_smooth(method = "loess", se = F) + 
-    theme_bw() + 
+    geom_point() +
+    geom_smooth(method = "loess", se = F) +
+    theme_bw() +
     labs(x = "Control - Avg days till X cases", y = "Comparison - Avg days till X cases",
-         title = paste0("Avg # of days till ",day_till, " cases / Lockdown after: ", cases_ld, " cases"), 
+         title = paste0("Avg # of days till ",day_till, " cases / Lockdown after: ", cases_ld, " cases"),
          color = "Sim Type")
 }
 
@@ -48,13 +51,13 @@ create_plot <- function(data, alpha_inc2, ld_b2, cases){
     group_by(Community, type, beta_inc, beta_dec, prob_start_comm) %>%
     summarize(prob = mean(prob)) %>%
     ungroup() %>%
-    ggplot(aes(x = log(prob_start_comm), y = prob)) + 
-    geom_point() + 
-    geom_smooth(method = "loess") + 
-    facet_grid(beta_dec~beta_inc) + 
-    theme_bw() + 
-    labs(title = paste0("Delay: ", ld_b2, " days, Alpha(+): ",alpha_inc2,", Alpha(-): 0.5"), 
-         x = "Log probability of travel from start community", 
+    ggplot(aes(x = log(prob_start_comm), y = prob)) +
+    geom_point() +
+    geom_smooth(method = "loess") +
+    facet_grid(beta_dec~beta_inc) +
+    theme_bw() +
+    labs(title = paste0("Delay: ", ld_b2, " days, Alpha(+): ",alpha_inc2,", Alpha(-): 0.5"),
+         x = "Log probability of travel from start community",
          y = paste0("Probability of epidemic (> ",cases," cases)"))
 }
 
@@ -70,3 +73,46 @@ glm(prob_epi ~ type + ld_b + beta_inc + beta_dec + alpha_init + alpha_inc + alph
 glm(av_start_time ~ type + ld_b + beta_inc + beta_dec + alpha_init + alpha_inc + alpha_dec, data = out_data) %>% summary()
 
 
+
+
+# get number of communities that have X cases by Y date in any simulations
+num_comms<- function(day_till,day,cases_ld){
+  plot_data %>%
+    subset(cases_ld_a %in% c(9999, cases_ld) & beta_inc == 1.5 & beta_dec == 0.5 & alpha_dec == 0.5) %>%
+    mutate(sim_type = case_when(
+      cases_ld_a == 9999 ~ "Control",
+      alpha_inc == 1 ~ "Lockdown-No Surge",
+      alpha_inc == 2 ~ "Lockdown-Travel Surge"
+    )) %>%
+    arrange(cumulative) %>%
+    subset(cumulative >= day_till & DayInfected<=day) %>%
+    group_by(Community,sim_type) %>%
+    slice(1) %>%
+    ungroup() %>%
+    group_by(sim_type) %>%
+    summarise(ncomm=length(Community)) -> out_data
+
+  return(out_data)
+}
+
+results <- NULL
+for (i in 1:30){ # cases, day,
+  for (j in 1:60){
+    cat(i,j,"\n")
+    out <- num_comms(i,j,30)
+    results <-rbind(results,cbind(out,
+                            rep(i,nrow(out)),
+                                  rep(j,nrow(out))))
+  }
+}
+
+
+results %>%
+  #filter(sim_type!="control") %>%
+  ggplot() + geom_line(aes(x=j,y=ncomm,color=factor(sim_type))) + xlim(0,30)+
+  facet_wrap(vars(i)) + theme_bw()+
+  labs(x="# days",
+       y="# communities",
+       title="# of communities by simulation type with X cases by each day",
+       color=element_blank(),
+       caption="Trigger: 30 cases")
