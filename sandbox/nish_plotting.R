@@ -116,17 +116,17 @@ num_comms<- function(day_till,day,cases_ld){
   return(out_data)
 }
 
-cases <- c(1,2,5,10,25,50)
-results10 <- NULL
-for (i in 1:length(cases)){ # cases, day, 
-  for (j in 1:60){
-    cat(cases[i],j,"\n")
-    out <- num_comms(cases[i],j,10)
-    results10 <-rbind(results10,cbind(out,
-                            "case"=rep(cases[i],nrow(out)),
-                                "day"=rep(j,nrow(out))))
-  }
-}
+# cases <- c(1,2,5,10,25,50)
+# results10 <- NULL
+# for (i in 1:length(cases)){ # cases, day, 
+#   for (j in 1:60){
+#     cat(cases[i],j,"\n")
+#     out <- num_comms(cases[i],j,10)
+#     results10 <-rbind(results10,cbind(out,
+#                             "case"=rep(cases[i],nrow(out)),
+#                                 "day"=rep(j,nrow(out))))
+#   }
+# }
 
 
 
@@ -141,17 +141,17 @@ results10 %>%
        caption="Trigger: 10 cases")
 
 
-cases <- c(1,2,5,10,25,50)
-results30 <- NULL
-for (i in 1:length(cases)){ # cases, day, 
-  for (j in 1:60){
-    cat(cases[i],j,"\n")
-    out <- num_comms(cases[i],j,30)
-    results30 <-rbind(results30,cbind(out,
-                                      "case"=rep(cases[i],nrow(out)),
-                                      "day"=rep(j,nrow(out))))
-  }
-}
+# cases <- c(1,2,5,10,25,50)
+# results30 <- NULL
+# for (i in 1:length(cases)){ # cases, day, 
+#   for (j in 1:60){
+#     cat(cases[i],j,"\n")
+#     out <- num_comms(cases[i],j,30)
+#     results30 <-rbind(results30,cbind(out,
+#                                       "case"=rep(cases[i],nrow(out)),
+#                                       "day"=rep(j,nrow(out))))
+#   }
+# }
 
 
 
@@ -167,7 +167,7 @@ results30 %>%
        caption="Trigger: 30 cases")
 
 plot_data_summary %>%
-  filter(cases_ld_a %in% c(10,9999)) %>%
+  filter(cases_ld_a %in% c(30)) %>%
   mutate(sim_type = case_when(
     cases_ld_a == 9999 ~ "Control",
     alpha_inc == 1 ~ "Lockdown-No Surge",
@@ -182,7 +182,7 @@ plot_data_summary %>%
   labs(color=element_blank(),
        x="Day",
        y="Cumulative cases",
-       caption="Trigger = 10 cases")
+       caption="Trigger = 30 cases")
 
 
 
