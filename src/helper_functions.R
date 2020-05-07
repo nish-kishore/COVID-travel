@@ -173,10 +173,11 @@ pack_and_run_models <- function(params){
 }
 
 #takes in parameters from the driver file and runs the model
-run_models <- function(driver_file_path, cores = NULL){
+run_models <- function(driver_file_path, cores = NULL, force_run = F){
 
   #reads and expands grid of all possible values
-  params_df <- read_yaml(driver_file_path) %>% expand.grid() %>% as_tibble()
+  params_df <- read_yaml(driver_file_path) %>% expand.grid() %>% as_tibble() %>%
+    subset(beta_inc == 1.5 & beta_dec == 0.5 & alpha_dec == 0.5)
 
   #creates unique id hash
   params_df$unique_id <- apply(params_df, 1, digest)
@@ -191,9 +192,15 @@ run_models <- function(driver_file_path, cores = NULL){
   done_params_df <- subset(params_df, unique_id %in% results_log$unique_id)
 
   print(paste("There are", nrow(new_params_df), "new parameter combinations to run.", nrow(done_params_df),
-              "combinations have already been run previously and will be skipped."))
+              "combinations have already been run previously and will be skipped unless you've selected to rerun."))
 
-  list_of_params <- transpose(new_params_df)
+  if(force_run){
+    runs_params_df <- params_df
+  }else{
+    runs_params_df <- new_params_df
+  }
+
+  list_of_params <- transpose(runs_params_df)
 
   #set up parallel processing
   if(is.null(cores)){
@@ -202,9 +209,9 @@ run_models <- function(driver_file_path, cores = NULL){
     cl <- makeCluster(cores)
   }
   registerDoParallel(cl)
-  print(paste0("Starting cluster ", nrow(new_params_df), " jobs identified."))
+  print(paste0("Starting cluster ", nrow(runs_params_df), " jobs identified."))
 
-  foreach(i = 1:nrow(new_params_df),
+  foreach(i = 1:nrow(runs_params_df),
           .export = c("model_a_optim", "run_models", "init_model_objects", "pack_and_run_models",
                       "update_disease_status", "update_loc", "update_mob_data", "get_comm_types"),
           .packages = c("tidyverse"),

@@ -45,6 +45,8 @@ rec_per:
 # Movement parameters
 alpha_init: #moving probability
   - 0.001
+  - 0.005
+  - 0.01
 beta_init: # force of infection
   - 0.0015
 perc_asymp:
@@ -71,6 +73,7 @@ beta_dec:
 alpha_inc:
   - 1.0 # relative travel after lockdown announced
   - 2.0
+  - 3.0
 alpha_dec:
   - 0.5 # relative travel decreases after lockdown begins (relative to initial travel)
   - 1.0
