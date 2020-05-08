@@ -23,10 +23,13 @@ plot_data %>%
   group_by(Simulation, DayInfected, Community, type, cases_ld_a, alpha_inc) %>%
   summarise(n=n()) %>%
   ungroup() %>%
-  group_by(Simulation, Community, type, cases_ld_a, alpha_inc) %>%
-  mutate(cumulative=cumsum(n)) -> plot_data_summary
+  mutate(Simulation = as.numeric(Simulation)) %>%
+  dplyr::select(-type) -> plot_data_summary 
 
-complete(plot_data_summary,Simulation,nesting(DayInfected,Community,type,cases_ld_a,alpha_inc))
+plot_data_summary %>%
+  complete(Simulation, DayInfected, Community,cases_ld_a, alpha_inc, fill = list(n = 0)) %>%
+  group_by(Simulation, Community, cases_ld_a, alpha_inc) %>%
+  mutate(cumulative=cumsum(n))  -> plot_data_summary
 
 plot_point_comp <- function(day_till, cases_ld){
   plot_data_summary%>%
