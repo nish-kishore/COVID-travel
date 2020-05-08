@@ -167,7 +167,7 @@ results30 %>%
        caption="Trigger: 30 cases")
 
 plot_data_summary %>%
-  filter(cases_ld_a %in% c(30)) %>%
+  filter(cases_ld_a %in% c(10)) %>%
   mutate(sim_type = case_when(
     cases_ld_a == 9999 ~ "Control",
     alpha_inc == 1 ~ "Lockdown-No Surge",
@@ -181,8 +181,8 @@ plot_data_summary %>%
   facet_wrap(vars(Community),scales="free_y") + 
   labs(color=element_blank(),
        x="Day",
-       y="Cumulative cases",
-       caption="Trigger = 30 cases")
+       y="Average cumulative cases",
+       caption="Trigger = 10 cases")
 
 
 
