@@ -26,7 +26,7 @@ plot_data %>%
   group_by(Simulation, Community, type, cases_ld_a, alpha_inc) %>%
   mutate(cumulative=cumsum(n)) -> plot_data_summary
 
-complete(plot_data_summary,Simulation,DayInfected,Community,type,cases_ld_a,alpha_inc)
+complete(plot_data_summary,Simulation,nesting(DayInfected,Community,type,cases_ld_a,alpha_inc))
 
 plot_point_comp <- function(day_till, cases_ld){
   plot_data_summary%>%
