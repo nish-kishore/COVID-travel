@@ -15,7 +15,9 @@ ids <- subset(results_log, unique_id %in% analysis_ids) %>% dplyr::select(unique
 
 
 lapply(1:nrow(ids), function(x) load_merge_vars(results_log, ids[x,], cases_ld_a, beta_inc, alpha_inc, beta_dec, alpha_dec, Nruns)) %>%
-  bind_rows() -> plot_data
+  bind_rows() %>%
+  mutate(n=1)-> plot_data
+
 
 plot_data %>%
   group_by(Simulation, DayInfected, Community, type, cases_ld_a, alpha_inc) %>%
@@ -23,6 +25,8 @@ plot_data %>%
   ungroup() %>%
   group_by(Simulation, Community, type, cases_ld_a, alpha_inc) %>%
   mutate(cumulative=cumsum(n)) -> plot_data_summary
+
+complete(plot_data_summary,Simulation,DayInfected,Community,type,cases_ld_a,alpha_inc)
 
 plot_point_comp <- function(day_till, cases_ld){
   plot_data_summary%>%
