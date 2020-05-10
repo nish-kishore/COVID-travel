@@ -1,0 +1,459 @@
+"","sim_type","mean_comm","case","day"
+"1","Control",1,1,1
+"2","Lockdown-No Surge",1,1,1
+"3","Lockdown-Travel Surge2",1,1,1
+"4","Lockdown-Travel Surge3",1,1,1
+"5","Control",1.02,1,2
+"6","Lockdown-No Surge",1,1,2
+"7","Lockdown-Travel Surge2",1.02,1,2
+"8","Lockdown-Travel Surge3",1.02,1,2
+"9","Control",1.06,1,3
+"10","Lockdown-No Surge",1.04,1,3
+"11","Lockdown-Travel Surge2",1.02,1,3
+"12","Lockdown-Travel Surge3",1.12,1,3
+"13","Control",1.12,1,4
+"14","Lockdown-No Surge",1.12,1,4
+"15","Lockdown-Travel Surge2",1.18,1,4
+"16","Lockdown-Travel Surge3",1.14,1,4
+"17","Control",1.22,1,5
+"18","Lockdown-No Surge",1.34,1,5
+"19","Lockdown-Travel Surge2",1.32,1,5
+"20","Lockdown-Travel Surge3",1.3,1,5
+"21","Control",1.44,1,6
+"22","Lockdown-No Surge",1.58,1,6
+"23","Lockdown-Travel Surge2",1.54,1,6
+"24","Lockdown-Travel Surge3",1.38,1,6
+"25","Control",1.84,1,7
+"26","Lockdown-No Surge",1.88,1,7
+"27","Lockdown-Travel Surge2",1.82,1,7
+"28","Lockdown-Travel Surge3",1.88,1,7
+"29","Control",2.28,1,8
+"30","Lockdown-No Surge",2.52,1,8
+"31","Lockdown-Travel Surge2",2.48,1,8
+"32","Lockdown-Travel Surge3",2.44,1,8
+"33","Control",3.14,1,9
+"34","Lockdown-No Surge",3.04,1,9
+"35","Lockdown-Travel Surge2",3.32,1,9
+"36","Lockdown-Travel Surge3",3.56,1,9
+"37","Control",4.32,1,10
+"38","Lockdown-No Surge",4.3,1,10
+"39","Lockdown-Travel Surge2",5.08,1,10
+"40","Lockdown-Travel Surge3",5.88,1,10
+"41","Control",6.04,1,11
+"42","Lockdown-No Surge",5.96,1,11
+"43","Lockdown-Travel Surge2",7.78,1,11
+"44","Lockdown-Travel Surge3",9.56,1,11
+"45","Control",8.02,1,12
+"46","Lockdown-No Surge",8.16,1,12
+"47","Lockdown-Travel Surge2",12.1,1,12
+"48","Lockdown-Travel Surge3",14.32,1,12
+"49","Control",10.5,1,13
+"50","Lockdown-No Surge",10.78,1,13
+"51","Lockdown-Travel Surge2",16.1,1,13
+"52","Lockdown-Travel Surge3",18.86,1,13
+"53","Control",13.82,1,14
+"54","Lockdown-No Surge",13.52,1,14
+"55","Lockdown-Travel Surge2",19.24,1,14
+"56","Lockdown-Travel Surge3",23.02,1,14
+"57","Control",17.36,1,15
+"58","Lockdown-No Surge",16.3,1,15
+"59","Lockdown-Travel Surge2",22.12,1,15
+"60","Lockdown-Travel Surge3",26.2,1,15
+"61","Control",21.4,1,16
+"62","Lockdown-No Surge",19.14,1,16
+"63","Lockdown-Travel Surge2",24.6,1,16
+"64","Lockdown-Travel Surge3",29.18,1,16
+"65","Control",26.3,1,17
+"66","Lockdown-No Surge",21.86,1,17
+"67","Lockdown-Travel Surge2",27.42,1,17
+"68","Lockdown-Travel Surge3",31.9,1,17
+"69","Control",31.42,1,18
+"70","Lockdown-No Surge",24.84,1,18
+"71","Lockdown-Travel Surge2",30.1,1,18
+"72","Lockdown-Travel Surge3",34.8,1,18
+"73","Control",36.16,1,19
+"74","Lockdown-No Surge",27.32,1,19
+"75","Lockdown-Travel Surge2",32.84,1,19
+"76","Lockdown-Travel Surge3",37,1,19
+"77","Control",40.56,1,20
+"78","Lockdown-No Surge",29.88,1,20
+"79","Lockdown-Travel Surge2",35.16,1,20
+"80","Lockdown-Travel Surge3",39.54,1,20
+"81","Control",45.82,1,21
+"82","Lockdown-No Surge",32.76,1,21
+"83","Lockdown-Travel Surge2",37.8,1,21
+"84","Lockdown-Travel Surge3",41.64,1,21
+"85","Control",49.96,1,22
+"86","Lockdown-No Surge",35.66,1,22
+"87","Lockdown-Travel Surge2",40.62,1,22
+"88","Lockdown-Travel Surge3",44.14,1,22
+"89","Control",53.78,1,23
+"90","Lockdown-No Surge",38.24,1,23
+"91","Lockdown-Travel Surge2",43.42,1,23
+"92","Lockdown-Travel Surge3",46.74,1,23
+"93","Control",57.58,1,24
+"94","Lockdown-No Surge",40.72,1,24
+"95","Lockdown-Travel Surge2",45.96,1,24
+"96","Lockdown-Travel Surge3",49.26,1,24
+"97","Control",60.72,1,25
+"98","Lockdown-No Surge",43.74,1,25
+"99","Lockdown-Travel Surge2",48.4,1,25
+"100","Lockdown-Travel Surge3",51.32,1,25
+"101","Control",63.78,1,26
+"102","Lockdown-No Surge",45.94,1,26
+"103","Lockdown-Travel Surge2",50.52,1,26
+"104","Lockdown-Travel Surge3",53.58,1,26
+"105","Control",66.4,1,27
+"106","Lockdown-No Surge",48.02,1,27
+"107","Lockdown-Travel Surge2",52.68,1,27
+"108","Lockdown-Travel Surge3",55.62,1,27
+"109","Control",69.34,1,28
+"110","Lockdown-No Surge",50.44,1,28
+"111","Lockdown-Travel Surge2",55.02,1,28
+"112","Lockdown-Travel Surge3",57.84,1,28
+"113","Control",71.56,1,29
+"114","Lockdown-No Surge",52.36,1,29
+"115","Lockdown-Travel Surge2",57.36,1,29
+"116","Lockdown-Travel Surge3",59.96,1,29
+"117","Control",73.72,1,30
+"118","Lockdown-No Surge",54.7,1,30
+"119","Lockdown-Travel Surge2",59.76,1,30
+"120","Lockdown-Travel Surge3",62.12,1,30
+"121","Control",1,5,1
+"122","Lockdown-No Surge",1,5,1
+"123","Lockdown-Travel Surge2",1,5,1
+"124","Lockdown-Travel Surge3",1,5,1
+"125","Control",1,5,2
+"126","Lockdown-No Surge",1,5,2
+"127","Lockdown-Travel Surge2",1,5,2
+"128","Lockdown-Travel Surge3",1,5,2
+"129","Control",1,5,3
+"130","Lockdown-No Surge",1,5,3
+"131","Lockdown-Travel Surge2",1,5,3
+"132","Lockdown-Travel Surge3",1,5,3
+"133","Control",1,5,4
+"134","Lockdown-No Surge",1,5,4
+"135","Lockdown-Travel Surge2",1,5,4
+"136","Lockdown-Travel Surge3",1,5,4
+"137","Control",1,5,5
+"138","Lockdown-No Surge",1,5,5
+"139","Lockdown-Travel Surge2",1,5,5
+"140","Lockdown-Travel Surge3",1.02,5,5
+"141","Control",1,5,6
+"142","Lockdown-No Surge",1,5,6
+"143","Lockdown-Travel Surge2",1,5,6
+"144","Lockdown-Travel Surge3",1.02,5,6
+"145","Control",1.02,5,7
+"146","Lockdown-No Surge",1,5,7
+"147","Lockdown-Travel Surge2",1,5,7
+"148","Lockdown-Travel Surge3",1.02,5,7
+"149","Control",1.04,5,8
+"150","Lockdown-No Surge",1,5,8
+"151","Lockdown-Travel Surge2",1,5,8
+"152","Lockdown-Travel Surge3",1.02,5,8
+"153","Control",1.04,5,9
+"154","Lockdown-No Surge",1.02,5,9
+"155","Lockdown-Travel Surge2",1.02,5,9
+"156","Lockdown-Travel Surge3",1.02,5,9
+"157","Control",1.04,5,10
+"158","Lockdown-No Surge",1.04,5,10
+"159","Lockdown-Travel Surge2",1.02,5,10
+"160","Lockdown-Travel Surge3",1.06,5,10
+"161","Control",1.1,5,11
+"162","Lockdown-No Surge",1.08,5,11
+"163","Lockdown-Travel Surge2",1.08,5,11
+"164","Lockdown-Travel Surge3",1.12,5,11
+"165","Control",1.28,5,12
+"166","Lockdown-No Surge",1.18,5,12
+"167","Lockdown-Travel Surge2",1.34,5,12
+"168","Lockdown-Travel Surge3",1.28,5,12
+"169","Control",1.4,5,13
+"170","Lockdown-No Surge",1.36,5,13
+"171","Lockdown-Travel Surge2",1.6,5,13
+"172","Lockdown-Travel Surge3",1.86,5,13
+"173","Control",1.7,5,14
+"174","Lockdown-No Surge",1.62,5,14
+"175","Lockdown-Travel Surge2",2.32,5,14
+"176","Lockdown-Travel Surge3",2.72,5,14
+"177","Control",2.56,5,15
+"178","Lockdown-No Surge",1.92,5,15
+"179","Lockdown-Travel Surge2",3,5,15
+"180","Lockdown-Travel Surge3",3.84,5,15
+"181","Control",3.36,5,16
+"182","Lockdown-No Surge",2.6,5,16
+"183","Lockdown-Travel Surge2",4.12,5,16
+"184","Lockdown-Travel Surge3",5.1,5,16
+"185","Control",4.66,5,17
+"186","Lockdown-No Surge",3.38,5,17
+"187","Lockdown-Travel Surge2",5.46,5,17
+"188","Lockdown-Travel Surge3",6.56,5,17
+"189","Control",6.22,5,18
+"190","Lockdown-No Surge",4.5,5,18
+"191","Lockdown-Travel Surge2",7.44,5,18
+"192","Lockdown-Travel Surge3",8.3,5,18
+"193","Control",8.16,5,19
+"194","Lockdown-No Surge",6.02,5,19
+"195","Lockdown-Travel Surge2",9,5,19
+"196","Lockdown-Travel Surge3",10.04,5,19
+"197","Control",9.94,5,20
+"198","Lockdown-No Surge",7.44,5,20
+"199","Lockdown-Travel Surge2",10.58,5,20
+"200","Lockdown-Travel Surge3",12.02,5,20
+"201","Control",12.32,5,21
+"202","Lockdown-No Surge",8.86,5,21
+"203","Lockdown-Travel Surge2",12.32,5,21
+"204","Lockdown-Travel Surge3",14.34,5,21
+"205","Control",15.02,5,22
+"206","Lockdown-No Surge",11,5,22
+"207","Lockdown-Travel Surge2",14.62,5,22
+"208","Lockdown-Travel Surge3",17.14,5,22
+"209","Control",18.1,5,23
+"210","Lockdown-No Surge",12.74,5,23
+"211","Lockdown-Travel Surge2",17.04,5,23
+"212","Lockdown-Travel Surge3",19.4,5,23
+"213","Control",21.44,5,24
+"214","Lockdown-No Surge",14.78,5,24
+"215","Lockdown-Travel Surge2",19.3,5,24
+"216","Lockdown-Travel Surge3",21.98,5,24
+"217","Control",25.14,5,25
+"218","Lockdown-No Surge",16.92,5,25
+"219","Lockdown-Travel Surge2",21.4,5,25
+"220","Lockdown-Travel Surge3",24.06,5,25
+"221","Control",29.04,5,26
+"222","Lockdown-No Surge",18.98,5,26
+"223","Lockdown-Travel Surge2",23.5,5,26
+"224","Lockdown-Travel Surge3",26.32,5,26
+"225","Control",32.94,5,27
+"226","Lockdown-No Surge",21.32,5,27
+"227","Lockdown-Travel Surge2",25.8,5,27
+"228","Lockdown-Travel Surge3",29,5,27
+"229","Control",36.64,5,28
+"230","Lockdown-No Surge",23.54,5,28
+"231","Lockdown-Travel Surge2",28.06,5,28
+"232","Lockdown-Travel Surge3",31.3,5,28
+"233","Control",41.1,5,29
+"234","Lockdown-No Surge",26.06,5,29
+"235","Lockdown-Travel Surge2",30.38,5,29
+"236","Lockdown-Travel Surge3",33.56,5,29
+"237","Control",44.54,5,30
+"238","Lockdown-No Surge",28.26,5,30
+"239","Lockdown-Travel Surge2",32.7,5,30
+"240","Lockdown-Travel Surge3",35.96,5,30
+"241","Lockdown-Travel Surge3",1,10,2
+"242","Control",1,10,3
+"243","Lockdown-No Surge",1,10,3
+"244","Lockdown-Travel Surge2",1,10,3
+"245","Lockdown-Travel Surge3",1,10,3
+"246","Control",1,10,4
+"247","Lockdown-No Surge",1,10,4
+"248","Lockdown-Travel Surge2",1,10,4
+"249","Lockdown-Travel Surge3",1,10,4
+"250","Control",1,10,5
+"251","Lockdown-No Surge",1,10,5
+"252","Lockdown-Travel Surge2",1,10,5
+"253","Lockdown-Travel Surge3",1,10,5
+"254","Control",1,10,6
+"255","Lockdown-No Surge",1,10,6
+"256","Lockdown-Travel Surge2",1,10,6
+"257","Lockdown-Travel Surge3",1,10,6
+"258","Control",1,10,7
+"259","Lockdown-No Surge",1,10,7
+"260","Lockdown-Travel Surge2",1,10,7
+"261","Lockdown-Travel Surge3",1,10,7
+"262","Control",1,10,8
+"263","Lockdown-No Surge",1,10,8
+"264","Lockdown-Travel Surge2",1,10,8
+"265","Lockdown-Travel Surge3",1,10,8
+"266","Control",1,10,9
+"267","Lockdown-No Surge",1,10,9
+"268","Lockdown-Travel Surge2",1,10,9
+"269","Lockdown-Travel Surge3",1,10,9
+"270","Control",1,10,10
+"271","Lockdown-No Surge",1,10,10
+"272","Lockdown-Travel Surge2",1,10,10
+"273","Lockdown-Travel Surge3",1,10,10
+"274","Control",1.02,10,11
+"275","Lockdown-No Surge",1,10,11
+"276","Lockdown-Travel Surge2",1,10,11
+"277","Lockdown-Travel Surge3",1,10,11
+"278","Control",1.02,10,12
+"279","Lockdown-No Surge",1,10,12
+"280","Lockdown-Travel Surge2",1.02,10,12
+"281","Lockdown-Travel Surge3",1.02,10,12
+"282","Control",1.04,10,13
+"283","Lockdown-No Surge",1,10,13
+"284","Lockdown-Travel Surge2",1.08,10,13
+"285","Lockdown-Travel Surge3",1.04,10,13
+"286","Control",1.1,10,14
+"287","Lockdown-No Surge",1.04,10,14
+"288","Lockdown-Travel Surge2",1.14,10,14
+"289","Lockdown-Travel Surge3",1.14,10,14
+"290","Control",1.2,10,15
+"291","Lockdown-No Surge",1.08,10,15
+"292","Lockdown-Travel Surge2",1.34,10,15
+"293","Lockdown-Travel Surge3",1.4,10,15
+"294","Control",1.28,10,16
+"295","Lockdown-No Surge",1.26,10,16
+"296","Lockdown-Travel Surge2",1.76,10,16
+"297","Lockdown-Travel Surge3",1.88,10,16
+"298","Control",1.84,10,17
+"299","Lockdown-No Surge",1.38,10,17
+"300","Lockdown-Travel Surge2",2.16,10,17
+"301","Lockdown-Travel Surge3",2.6,10,17
+"302","Control",2.52,10,18
+"303","Lockdown-No Surge",1.64,10,18
+"304","Lockdown-Travel Surge2",2.66,10,18
+"305","Lockdown-Travel Surge3",3.44,10,18
+"306","Control",3.48,10,19
+"307","Lockdown-No Surge",2.26,10,19
+"308","Lockdown-Travel Surge2",3.44,10,19
+"309","Lockdown-Travel Surge3",4.3,10,19
+"310","Control",4.86,10,20
+"311","Lockdown-No Surge",2.84,10,20
+"312","Lockdown-Travel Surge2",4.36,10,20
+"313","Lockdown-Travel Surge3",5.4,10,20
+"314","Control",6.26,10,21
+"315","Lockdown-No Surge",3.9,10,21
+"316","Lockdown-Travel Surge2",5.5,10,21
+"317","Lockdown-Travel Surge3",6.56,10,21
+"318","Control",7.48,10,22
+"319","Lockdown-No Surge",4.98,10,22
+"320","Lockdown-Travel Surge2",7.08,10,22
+"321","Lockdown-Travel Surge3",7.98,10,22
+"322","Control",9.04,10,23
+"323","Lockdown-No Surge",6.16,10,23
+"324","Lockdown-Travel Surge2",8.56,10,23
+"325","Lockdown-Travel Surge3",9.78,10,23
+"326","Control",10.74,10,24
+"327","Lockdown-No Surge",7.38,10,24
+"328","Lockdown-Travel Surge2",10.34,10,24
+"329","Lockdown-Travel Surge3",11.56,10,24
+"330","Control",12.94,10,25
+"331","Lockdown-No Surge",9,10,25
+"332","Lockdown-Travel Surge2",11.76,10,25
+"333","Lockdown-Travel Surge3",13.66,10,25
+"334","Control",15.52,10,26
+"335","Lockdown-No Surge",10.78,10,26
+"336","Lockdown-Travel Surge2",13.72,10,26
+"337","Lockdown-Travel Surge3",16.04,10,26
+"338","Control",18.76,10,27
+"339","Lockdown-No Surge",12.44,10,27
+"340","Lockdown-Travel Surge2",16.1,10,27
+"341","Lockdown-Travel Surge3",18.38,10,27
+"342","Control",21.84,10,28
+"343","Lockdown-No Surge",14.14,10,28
+"344","Lockdown-Travel Surge2",18.06,10,28
+"345","Lockdown-Travel Surge3",20.8,10,28
+"346","Control",24.88,10,29
+"347","Lockdown-No Surge",16.04,10,29
+"348","Lockdown-Travel Surge2",20.3,10,29
+"349","Lockdown-Travel Surge3",22.8,10,29
+"350","Control",28.44,10,30
+"351","Lockdown-No Surge",18.34,10,30
+"352","Lockdown-Travel Surge2",22.74,10,30
+"353","Lockdown-Travel Surge3",25.44,10,30
+"354","Lockdown-No Surge",1,25,4
+"355","Control",1,25,5
+"356","Lockdown-No Surge",1,25,5
+"357","Lockdown-Travel Surge2",1,25,5
+"358","Lockdown-Travel Surge3",1,25,5
+"359","Control",1,25,6
+"360","Lockdown-No Surge",1,25,6
+"361","Lockdown-Travel Surge2",1,25,6
+"362","Lockdown-Travel Surge3",1,25,6
+"363","Control",1,25,7
+"364","Lockdown-No Surge",1,25,7
+"365","Lockdown-Travel Surge2",1,25,7
+"366","Lockdown-Travel Surge3",1,25,7
+"367","Control",1,25,8
+"368","Lockdown-No Surge",1,25,8
+"369","Lockdown-Travel Surge2",1,25,8
+"370","Lockdown-Travel Surge3",1,25,8
+"371","Control",1,25,9
+"372","Lockdown-No Surge",1,25,9
+"373","Lockdown-Travel Surge2",1,25,9
+"374","Lockdown-Travel Surge3",1,25,9
+"375","Control",1,25,10
+"376","Lockdown-No Surge",1,25,10
+"377","Lockdown-Travel Surge2",1,25,10
+"378","Lockdown-Travel Surge3",1,25,10
+"379","Control",1,25,11
+"380","Lockdown-No Surge",1,25,11
+"381","Lockdown-Travel Surge2",1,25,11
+"382","Lockdown-Travel Surge3",1,25,11
+"383","Control",1,25,12
+"384","Lockdown-No Surge",1,25,12
+"385","Lockdown-Travel Surge2",1,25,12
+"386","Lockdown-Travel Surge3",1,25,12
+"387","Control",1,25,13
+"388","Lockdown-No Surge",1,25,13
+"389","Lockdown-Travel Surge2",1,25,13
+"390","Lockdown-Travel Surge3",1,25,13
+"391","Control",1,25,14
+"392","Lockdown-No Surge",1,25,14
+"393","Lockdown-Travel Surge2",1,25,14
+"394","Lockdown-Travel Surge3",1,25,14
+"395","Control",1,25,15
+"396","Lockdown-No Surge",1,25,15
+"397","Lockdown-Travel Surge2",1,25,15
+"398","Lockdown-Travel Surge3",1,25,15
+"399","Control",1,25,16
+"400","Lockdown-No Surge",1,25,16
+"401","Lockdown-Travel Surge2",1,25,16
+"402","Lockdown-Travel Surge3",1,25,16
+"403","Control",1.02,25,17
+"404","Lockdown-No Surge",1,25,17
+"405","Lockdown-Travel Surge2",1.04,25,17
+"406","Lockdown-Travel Surge3",1.02,25,17
+"407","Control",1.08,25,18
+"408","Lockdown-No Surge",1.02,25,18
+"409","Lockdown-Travel Surge2",1.06,25,18
+"410","Lockdown-Travel Surge3",1.08,25,18
+"411","Control",1.1,25,19
+"412","Lockdown-No Surge",1.04,25,19
+"413","Lockdown-Travel Surge2",1.18,25,19
+"414","Lockdown-Travel Surge3",1.24,25,19
+"415","Control",1.32,25,20
+"416","Lockdown-No Surge",1.08,25,20
+"417","Lockdown-Travel Surge2",1.38,25,20
+"418","Lockdown-Travel Surge3",1.54,25,20
+"419","Control",1.76,25,21
+"420","Lockdown-No Surge",1.24,25,21
+"421","Lockdown-Travel Surge2",1.74,25,21
+"422","Lockdown-Travel Surge3",2,25,21
+"423","Control",2.22,25,22
+"424","Lockdown-No Surge",1.38,25,22
+"425","Lockdown-Travel Surge2",2.16,25,22
+"426","Lockdown-Travel Surge3",2.52,25,22
+"427","Control",3.3,25,23
+"428","Lockdown-No Surge",1.56,25,23
+"429","Lockdown-Travel Surge2",2.72,25,23
+"430","Lockdown-Travel Surge3",3.3,25,23
+"431","Control",4.24,25,24
+"432","Lockdown-No Surge",2.02,25,24
+"433","Lockdown-Travel Surge2",3.44,25,24
+"434","Lockdown-Travel Surge3",4.04,25,24
+"435","Control",5.22,25,25
+"436","Lockdown-No Surge",2.7,25,25
+"437","Lockdown-Travel Surge2",4.28,25,25
+"438","Lockdown-Travel Surge3",5,25,25
+"439","Control",6.26,25,26
+"440","Lockdown-No Surge",3.58,25,26
+"441","Lockdown-Travel Surge2",5.04,25,26
+"442","Lockdown-Travel Surge3",5.9,25,26
+"443","Control",7.4,25,27
+"444","Lockdown-No Surge",4.38,25,27
+"445","Lockdown-Travel Surge2",6.04,25,27
+"446","Lockdown-Travel Surge3",7.12,25,27
+"447","Control",8.84,25,28
+"448","Lockdown-No Surge",5.42,25,28
+"449","Lockdown-Travel Surge2",7.28,25,28
+"450","Lockdown-Travel Surge3",8.38,25,28
+"451","Control",10.3,25,29
+"452","Lockdown-No Surge",6.64,25,29
+"453","Lockdown-Travel Surge2",8.44,25,29
+"454","Lockdown-Travel Surge3",9.76,25,29
+"455","Control",12.08,25,30
+"456","Lockdown-No Surge",7.84,25,30
+"457","Lockdown-Travel Surge2",10.28,25,30
+"458","Lockdown-Travel Surge3",11.62,25,30

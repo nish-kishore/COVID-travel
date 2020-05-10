@@ -232,3 +232,8 @@ ggplot(summary_results,aes(x=param_sums,y=alpha_beta)) +
        color=element_blank(),
        alpha=element_blank())
 
+
+create_heatmap2(rds_id1,3,1,15) -> alpha1
+create_heatmap2(rds_id3,3,1,15) -> alpha3
+ggarrange(alpha1[[1]],alpha3[[1]])
+
