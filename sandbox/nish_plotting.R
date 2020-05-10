@@ -34,9 +34,9 @@ plot_data_summary %>%
 
 plot_point_comp <- function(day_till, cases_ld){
   plot_data_summary%>%
-    subset(cases_ld_a %in% c(cases_ld)) %>%
+    subset(cases_ld_a %in% c(9999,cases_ld)) %>%
     mutate(sim_type = case_when(
-      #cases_ld_a == 9999 ~ "Control",
+      cases_ld_a == 9999 ~ "Control",
       alpha_inc == 1 ~ "Lockdown-No Surge",
       alpha_inc == 2 ~ "Lockdown-Travel Surge2",
       alpha_inc == 3 ~ "Lockdown-Travel Surge3"
@@ -57,7 +57,7 @@ plot_point_comp <- function(day_till, cases_ld){
     summarise(avg_day_to_n = sum(DayInfected)/50) %>%
     ungroup() -> out_data
 
-  subset(out_data, sim_type == "Lockdown-No Surge") %>%
+  subset(out_data, sim_type == "Control") %>%
     dplyr::select(Community, avg_day_to_n) %>%
     rename("ctrl_day_to_n" = "avg_day_to_n") %>%
     right_join(out_data, by = "Community") %>%
@@ -65,12 +65,12 @@ plot_point_comp <- function(day_till, cases_ld){
     geom_point() +
     geom_smooth(method = "loess", se = F) +
     theme_bw() +
-    labs(x = paste0("Control - Avg days until", day_till, "case(s)"), y = paste0("Comparison - Avg days until", day_till, "case(s)"),
+    labs(x = paste0("Control - Avg days until ", day_till, " case(s)"), y = paste0("Comparison - Avg days until ", day_till, " case(s)"),
          title = paste0("Avg # of days until ",day_till, " case(s) / Lockdown after: ", cases_ld, " cases"),
          color = "Sim Type")
 }
 
-plot_point_comp(1, 30)
+plot_point_comp(10, 30)
 
 
 
