@@ -51,10 +51,9 @@ plot_point_comp <- function(day_till, cases_ld){
       alpha_inc == 2 ~ "Lockdown-Travel Surge2",
       alpha_inc == 3 ~ "Lockdown-Travel Surge3"
     )) %>%
-    mutate(
-      # DayInfected = case_when(
-      # cumulative==0 ~ 60,
-      # TRUE ~ DayInfected),
+    mutate(DayInfected = case_when(
+      cumulative==0 ~ 60,
+      TRUE ~ DayInfected),
     cumulative = case_when(
       cumulative==0 ~ 10000,
       TRUE ~ cumulative
@@ -294,8 +293,6 @@ ggplot(correlations) + geom_point(aes(x=category,y=correlation)) +
   theme_classic() + theme(axis.text.x=element_text(angle=90)) + 
   labs(x=element_blank(),
        y="Correlation") 
-
-
 
 
 
