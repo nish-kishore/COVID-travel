@@ -259,8 +259,11 @@ correlation <- function(plot_data_summary,ld,alpha){
       spread(DayInfected,n) %>%
       ungroup() %>%
       dplyr::select(-(1:4)) %>% 
+      #mutate(sum=rowSums(.)) %>%
+      #subset(sum>0) %>%
+      #dplyr::select(-61) %>%
       as.matrix() %>%
-      mSynch(time_series_sim, resamp=1,na.rm=TRUE) -> Correlations[i]
+      mSynch(resamp=1,na.rm=TRUE) -> Correlations[i]
   }
   
   return(mean(unlist(Correlations),na.rm=TRUE))
@@ -289,6 +292,9 @@ write.csv(correlations,"correlations.csv")
 ggplot(correlations) + geom_point(aes(x=category,y=correlation)) + 
   theme_classic() + theme(axis.text.x=element_text(angle=90)) + 
   labs(x=element_blank(),
-       y="Correlation")
+       y="Correlation") 
+
+
+
 
 
