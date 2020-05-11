@@ -248,16 +248,19 @@ ggsave("epcurve30.png",epcurve30,height=14,width=25)
 correlation <- function(plot_data_summary,ld,alpha){
   plot_data_summary %>%
     filter(cases_ld_a==ld,alpha_inc==alpha) %>%
-    group_by(Simulation) %>%
-    spread(DayInfected,n)-> time_series
+    dplyr::select(-7) -> time_series
   
+
   Correlations <- rep(NA,50)
   for (i in 1:50){
     print(i)
     time_series  %>%
-      subset(Simulation ==i) %>%
+      filter(Simulation ==i) %>%
+      spread(DayInfected,n) %>%
+      ungroup() %>%
+      dplyr::select(-(1:4)) %>% 
       as.matrix() %>%
-      mSynch(resamp=10,na.rm=TRUE) -> Correlations[i]
+      mSynch(time_series_sim, resamp=1,na.rm=TRUE) -> Correlations[i]
   }
   
   return(mean(unlist(Correlations),na.rm=TRUE))
@@ -283,6 +286,9 @@ correlations %>%
 
 write.csv(correlations,"correlations.csv")
 
-ggplot(correlations) + geom_point(aes(x=category,y=correlation))
+ggplot(correlations) + geom_point(aes(x=category,y=correlation)) + 
+  theme_classic() + theme(axis.text.x=element_text(angle=90)) + 
+  labs(x=element_blank(),
+       y="Correlation")
 
 

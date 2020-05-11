@@ -1,0 +1,8 @@
+"","correlation","trigger","increase","category"
+"1",0.559191159788983,10,1,"trigger = 10 travel increase = 1"
+"2",0.549626148178975,10,2,"trigger = 10 travel increase = 2"
+"3",0.538465652877943,10,3,"trigger = 10 travel increase = 3"
+"4",0.45289002651965,30,1,"trigger = 30 travel increase = 1"
+"5",0.438518903178501,30,2,"trigger = 30 travel increase = 2"
+"6",0.42471978876985,30,3,"trigger = 30 travel increase = 3"
+"7",0.99721082078734,9999,1,"trigger = 9999 travel increase = 1"
