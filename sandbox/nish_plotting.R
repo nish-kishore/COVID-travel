@@ -44,19 +44,12 @@ plot_data_summary %>%
 
 plot_point_comp <- function(day_till, cases_ld){
   plot_data_summary%>%
-    subset(cases_ld_a %in% c(9999,cases_ld)) %>%
+    subset(cases_ld_a %in% c(9999,cases_ld) & cumulative >0) %>%
     mutate(sim_type = case_when(
       cases_ld_a == 9999 ~ "Control",
       alpha_inc == 1 ~ "Lockdown-No Surge",
       alpha_inc == 2 ~ "Lockdown-Travel Surge2",
       alpha_inc == 3 ~ "Lockdown-Travel Surge3"
-    )) %>%
-    mutate(DayInfected = case_when(
-      cumulative==0 ~ 60,
-      TRUE ~ DayInfected),
-    cumulative = case_when(
-      cumulative==0 ~ 10000,
-      TRUE ~ cumulative
     )) %>%
     arrange(cumulative) %>%
     subset(cumulative >= day_till) %>%
@@ -64,7 +57,7 @@ plot_point_comp <- function(day_till, cases_ld){
     slice(1) %>%
     ungroup() %>%
     group_by(Community, sim_type) %>%
-    summarise(avg_day_to_n = sum(DayInfected)/50) %>%
+    summarise(avg_day_to_n = mean(DayInfected)) %>%
     ungroup() -> out_data
 
   subset(out_data, sim_type == "Control") %>%
