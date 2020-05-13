@@ -25,8 +25,7 @@ ids <- subset(results_log, unique_id %in% analysis_ids2) %>% dplyr::select(uniqu
 
 
 lapply(1:nrow(ids), function(x) load_merge_vars(results_log, ids[x,], cases_ld_a, beta_inc, alpha_inc, beta_dec, alpha_dec, Nruns)) %>%
-  bind_rows() %>%
-  mutate(n=1)-> plot_data
+  bind_rows() -> plot_data
 
 
 plot_data %>%
@@ -133,25 +132,15 @@ num_comms<- function(day_till,day,cases_ld){
     group_by(sim_type,Simulation) %>%
     summarise(ncomm=length(Community)) %>%
     group_by(sim_type) %>%
-    summarise(mean_comm=mean(ncomm)) -> out_data
+    summarise(mean_comm=mean(ncomm)) %>%
+    bind_cols("case"=rep(day_till,4),"day"=rep(day,4)) -> out_data
   
   return(out_data)
 }
 
-cases <- c(1,5,10,25)
-results10 <- NULL
-for (i in 1:length(cases)){ # cases, day,
-  for (j in 1:60){
-    cat(cases[i],j,"\n")
-    out <- num_comms(cases[i],j,10)
-    results10 <-rbind(results10,cbind(out,
-                            "case"=rep(cases[i],nrow(out)),
-                                "day"=rep(j,nrow(out))))
-  }
-}
-
-
-
+lapply(1:60, function(j) lapply(c(1,5,10,25), function(i) num_comms(i,j,10))) %>%
+  flatten() %>%
+  bind_rows()-> results10
 
 results10 %>%
   #filter(!(sim_type %in% c("Control","Lockdown-Travel Surge2"))) %>%
@@ -165,19 +154,9 @@ results10 %>%
 
 write.csv(results10,"results10_sameld.csv")
 
-
-
-cases <- c(1,5,10,25)
-results30 <- NULL
-for (i in 1:length(cases)){ # cases, day,
-  for (j in 1:30){
-    cat(cases[i],j,"\n")
-    out <- num_comms(cases[i],j,30)
-    results30 <-rbind(results30,cbind(out,
-                                      "case"=rep(cases[i],nrow(out)),
-                                      "day"=rep(j,nrow(out))))
-  }
-}
+lapply(1:60, function(j) lapply(c(1,5,10,25), function(i) num_comms(i,j,30))) %>%
+  flatten() %>%
+  bind_rows()-> results30
 
 write.csv(results30,"results30_sameld.csv")
 
@@ -246,7 +225,7 @@ correlation <- function(plot_data_summary,ld,alpha){
 
   Correlations <- rep(NA,50)
   for (i in 1:50){
-    print(i)
+    #print(i)
     time_series  %>%
       filter(Simulation ==i) %>%
       spread(DayInfected,n) %>%
