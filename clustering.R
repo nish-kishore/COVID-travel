@@ -23,9 +23,17 @@ g <- graph_from_adjacency_matrix(network_total,"directed",weighted=TRUE)
 clusters <- cluster_optimal(g,weights = E(g)$weights)
 bind_cols("province"=clusters$names, "cluster"=clusters$membership) -> clusters_combined_sum
 
+write.csv(clusters_combined_sum,"mod.csv")
+
 clusters_combined_sum %>%
   group_by(cluster) %>%
   summarise(n=n()) -> clusters_combined_summary_sum
+
+g <- graph_from_adjacency_matrix(network_total,"undirected",weighted=TRUE)
+clusters_im <- cluster_infomap(g)
+bind_cols("province"=clusters_im$names, "cluster"=clusters_im$membership) -> clusters_combined_sum_im
+
+write.csv(clusters_combined_sum_im,"im.csv")
 
 
 
@@ -95,4 +103,8 @@ lapply(1:7,function(i){lapply(1:3,function(j){get_clusters(network,dows[i],tods[
 cluster_list %>%
   group_by(cluster,dow,tod) %>%
   summarise(n=n()) -> cluster_summary
+
+
+
+
 
