@@ -25,6 +25,8 @@ a1:
 b1:
  #- 1 # population destination coefficient for gravity model post lockdown announced
  - 0.2698
+clust_mult
+  - 5
 exp_grav1:
   # - 2 # exponent for gravity model post lockdown announced
   #- 1.75
@@ -83,3 +85,4 @@ num_timesteps:
    60
 Nruns:
    50
+

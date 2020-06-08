@@ -45,6 +45,38 @@ get_comm_types <- function(num_communities, comm_version){
     n_suburban <- 2500
     n_rural <- 2500
   }
+  
+  if(comm_version == 4){
+    urban <- c(45)
+    suburban <- c(15,22,29,45,72,79,85)
+    rural <- setdiff(1:num_communities, c(urban, suburban))
+    
+    area_urban <- 4
+    area_suburban <- 7
+    area_rural <- 10
+    
+    n_urban <- 4000
+    n_suburban <- 3500
+    n_rural <- 1000
+    
+    cluster1 <- c(1,2,3,11,12,13,21,22,23,31,32,33,41,42,43)
+    cluster2 <- c(4,5,6,14,15,16,24,25,26)
+    cluster3 <- c(7,8,9,10,17,18,19,20,27,28,29,30,37,38,39,40,47,48,49,50)
+    cluster4 <- c(51,52,53,61,62,63,71,72,73,81,82,83,91,92,93)
+    cluster5 <- c(34,35,36,44,45,46,54,55,56,64,65,66)
+    cluster6 <- c(74,75,76,84,85,86,94,95,96)
+    cluster7 <- c(57,58,59,60,67,68,69,70,77,78,79,80,87,88,89,90,97,98,99,100)
+    
+    bind_rows (
+      bind_cols("cluster"=rep(1,length(cluster1)),"community"=cluster1),
+      bind_cols("cluster"=rep(2,length(cluster2)),"community"=cluster2),
+      bind_cols("cluster"=rep(3,length(cluster3)),"community"=cluster3),
+      bind_cols("cluster"=rep(4,length(cluster4)),"community"=cluster4),
+      bind_cols("cluster"=rep(5,length(cluster5)),"community"=cluster5),
+      bind_cols("cluster"=rep(6,length(cluster6)),"community"=cluster6),
+      bind_cols("cluster"=rep(7,length(cluster7)),"community"=cluster7)) -> clusters
+      
+  }
 
   return(list(urban, suburban, rural,
               area_urban, area_suburban, area_rural,
@@ -107,7 +139,14 @@ init_model_objects <- function(params){
     for (i in 1:num_communities){
       for (j in 1:num_communities){
         if (i!=j){
-          mob_net[i,j] <- ((sum(communities[[i]])^a0)*(sum(communities[[j]])^b0))/
+          cluster.i <- clusters %>% subset(community==i) %>% pull(cluster)
+          cluster.j <- clusters %>% subset(community==j) %>% pull(cluster)
+          if (cluster.i==cluster.j){
+            clust <- clust_mult
+          } else{
+            clust <- 1
+          }
+          mob_net[i,j] <- clust*((sum(communities[[i]])^a0)*(sum(communities[[j]])^b0))/
                                       (abs(row[i]-row[j]) + abs(col[i] - col[j]))^exp_grav0
         }
       }
@@ -122,28 +161,28 @@ init_model_objects <- function(params){
       }
     }
 
-
-    # mobility network post lockdown announcement - increase probabilities further away
-    mob_net2 <- matrix(0,nrow=num_communities,ncol=num_communities)
-    for (i in 1:num_communities){
-      for (j in 1:num_communities){
-        if (i!=j){
-          mob_net2[i,j] <- ((sum(communities[[i]])^a1)*(sum(communities[[j]])^b1))/
-            (abs(row[i]-row[j]) + abs(col[i] - col[j]))^exp_grav1
-        }
-      }
-    }
-
-
-    mob_net2[,start_comm] <- 0 # prevent any travel to urban cities
-    #mob_net2[,suburban] <- 0 # prevent travel to suburban areas
-
-    mob_net_norm2 <- matrix(0,nrow=num_communities,ncol=num_communities)
-    for (i in 1:num_communities){
-      for (j in 1:num_communities){
-        mob_net_norm2[i,j] <- mob_net2[i,j]/sum(mob_net2[i,])
-      }
-    }
+    mob_net_norm2 <- mob_net_norm
+    # # mobility network post lockdown announcement - increase probabilities further away
+    # mob_net2 <- matrix(0,nrow=num_communities,ncol=num_communities)
+    # for (i in 1:num_communities){
+    #   for (j in 1:num_communities){
+    #     if (i!=j){
+    #       mob_net2[i,j] <- ((sum(communities[[i]])^a1)*(sum(communities[[j]])^b1))/
+    #         (abs(row[i]-row[j]) + abs(col[i] - col[j]))^exp_grav1
+    #     }
+    #   }
+    # }
+    # 
+    # 
+    # mob_net2[,start_comm] <- 0 # prevent any travel to urban cities
+    # #mob_net2[,suburban] <- 0 # prevent travel to suburban areas
+    # 
+    # mob_net_norm2 <- matrix(0,nrow=num_communities,ncol=num_communities)
+    # for (i in 1:num_communities){
+    #   for (j in 1:num_communities){
+    #     mob_net_norm2[i,j] <- mob_net2[i,j]/sum(mob_net2[i,])
+    #   }
+    # }
     params$mob_net_norm <- mob_net_norm
     params$mob_net_norm2 <- mob_net_norm2
     params$results <- vector(mode = "list", length = num_timesteps)
