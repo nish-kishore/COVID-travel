@@ -80,7 +80,7 @@ get_comm_types <- function(num_communities, comm_version){
 
   return(list(urban, suburban, rural,
               area_urban, area_suburban, area_rural,
-              n_urban, n_suburban, n_rural))
+              n_urban, n_suburban, n_rural, clusters))
 }
 
 #create the world objects for one set of parameters
@@ -111,6 +111,8 @@ init_model_objects <- function(params){
     communities[urban,"S"] <- com_types_list[[7]] # urban: makes it 1000 people/sq mile
     communities[suburban,"S"] <- com_types_list[[8]] # suburban 500 people/ sq mile
     communities[rural, "S"] <- com_types_list[[9]] #rural 100 people per square mile
+    
+    clusters <- com_types_list[[10]] #get clusters
 
     studypop_size <- sum(communities[,1])
 

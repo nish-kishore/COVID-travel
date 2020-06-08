@@ -25,6 +25,7 @@ a1:
 b1:
  #- 1 # population destination coefficient for gravity model post lockdown announced
  - 0.2698
+ #the multiplicative effect of being in the same network
 clust_mult:
   - 5
 exp_grav1:
@@ -34,7 +35,7 @@ exp_grav1:
 start_comm:
   45 # choose community where outbreak will start
 comm_version:
-  3
+  4
 grav_version:
   1
 num_inf:
