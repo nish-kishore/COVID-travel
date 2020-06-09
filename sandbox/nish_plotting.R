@@ -3,25 +3,26 @@ source("./src/helper_functions.R")
 travel_probs <- read_rds("./testing/travel_probs.rds")
 results_log <- read_csv("./results_log.csv")
 
-# cases_ld_a2 = 1
-analysis_ids <- c("9b6827e0d3c999bd79a48c7622ebcd79",
-                  "e5511f2531fb8f693a548fba6b884984",
-                  "dcf3558c667a1ee8be443d280c8a0130",
-                  "d5f5f2a80db152665949c80ac139d051",
-                  "236d19fad8a7295ec9939d47c0331f88",
-                  "5dcd7cadf92ba0de2099eab0d63a2cf3",
-                  "75994176f2355e1babb8fdb9bf142d26")
+analysis_ids <- c("7e11ce5a8411b748d9a8c6df9dcf909f",
+                    "65f6c2d4e7e59f4b0cd6f0d26e47054a",
+                    "69bd27745ff76dfa32f0b5fbdc620938",
+                    "fa8bfda5751cbd6262d42372d30eefa2",
+                    "dee36535cbe05b77e6cd93590ad79566",
+                    "319af1865c158d2f9d0a5e78b91cf25c",
+                    "e54e790e19f560c78048b2c9d2a055e8",
+                    "87686632deccb07ac6e2131d13e9849e",
+                    "6c7cd8f3fe1272862845c79ca73cb406",
+                    "77bce9494dd8c534faef4f8f5aaf2b82",
+                    "f157f1e419bf274e47cb7589df3d3371",
+                    "43b283a21520eca64f5f5af274f5c774",
+                    "deb9a8960e9a2b113a51f7f8f30e3001",
+                    "7e62cf2cf65ecc49194de71cea895a7e",
+                    "cd558b98e0fe76618fb51b350ae73255",
+                    "786632abfd534b5751a1a9628d77f8ea",
+                    "ba822452f924ab25ddf9f988a64c5d44",
+                    "6d8388210bc607bbb89f77b0d988ae59")
 
-# cases ld_a2 = 10 or 30
-analysis_ids2 <- c("f87e4fb51814c60bc078e8bacb1e5d2d",
-                   "9dc1849e6f738c19d01f45e1582773e1",
-                   "5d355b5fc6f7de68b9fe9d614cc78885",
-                   "941e2b84562f5ead219587b6e366f0a0",
-                   "9cc19d70db79c3b10a9a007c179314ff",
-                   "12624ceb706b40ec9dd408616c5838c0",
-                   "ee25cedea4fb965eaee8ec68ace76166")
-
-ids <- subset(results_log, unique_id %in% analysis_ids2) %>% dplyr::select(unique_id)
+ids <- subset(results_log, unique_id %in% analysis_ids) %>% dplyr::select(unique_id)
 
 
 lapply(1:nrow(ids), function(x) load_merge_vars(results_log, ids[x,], cases_ld_a, beta_inc, alpha_inc, beta_dec, alpha_dec, Nruns)) %>%
@@ -133,7 +134,8 @@ num_comms<- function(day_till,day,cases_ld){
     summarise(ncomm=length(Community)) %>%
     group_by(sim_type) %>%
     summarise(mean_comm=mean(ncomm)) %>%
-    bind_cols("case"=rep(day_till,4),"day"=rep(day,4)) -> out_data
+    add_column("case"=day_till) %>%
+    add_column("day" = day) -> out_data
   
   return(out_data)
 }
@@ -176,9 +178,10 @@ ggsave("numcomms.png",numcomms,height=8.5,width=12)
 
 
 plot_data_summary %>%
-  filter(cases_ld_a %in% c(9999,10)) %>%
+  filter(cases_ld_a %in% c(10)) %>%
+  #filter(cases_ld_a %in% c(9999,10)) %>%
   mutate(sim_type = case_when(
-    cases_ld_a == 9999 ~ "Control",
+    #cases_ld_a == 9999 ~ "Control",
     alpha_inc == 1 ~ "Lockdown-No Surge",
     alpha_inc == 2 ~ "Lockdown-Travel Surge2",
     alpha_inc == 3 ~ "Lockdown-Travel Surge3"
@@ -194,7 +197,8 @@ plot_data_summary %>%
        caption="Trigger = 10 cases") -> epcurve10
 
 plot_data_summary %>%
-  filter(cases_ld_a %in% c(9999,30)) %>%
+  filter(cases_ld_a %in% c(30)) %>%
+  #filter(cases_ld_a %in% c(9999,10)) %>%  
   mutate(sim_type = case_when(
     cases_ld_a == 9999 ~ "Control",
     alpha_inc == 1 ~ "Lockdown-No Surge",
