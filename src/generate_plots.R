@@ -293,7 +293,7 @@ create_heatmap3 <- function(rds_id1,rds_id2,comm_version,threshold,day){
     ungroup() %>%
     group_by(Community, type) %>%
     summarise(prob_epi = round(sum(infections>=threshold)/params1$Nruns,2),
-              av_start_time = round(mean(start - t_ld_a),1)) %>%
+              av_start_time = mean(start)) %>%
     mutate(row = row[Community],
            col = col[Community]) -> summary_stats1
   
@@ -326,7 +326,7 @@ create_heatmap3 <- function(rds_id1,rds_id2,comm_version,threshold,day){
     ungroup() %>%
     group_by(Community, type) %>%
     summarise(prob_epi = round(sum(infections>=threshold)/params1$Nruns,2),
-              av_start_time = round(mean(start - t_ld_a),1)) %>%
+              av_start_time = mean(start)) %>%
     mutate(row = row[Community],
            col = col[Community]) -> summary_stats2
   
@@ -344,9 +344,10 @@ create_heatmap3 <- function(rds_id1,rds_id2,comm_version,threshold,day){
   
   summary_stats2_complete %>%
     right_join(summary_stats1_complete, by="Community") %>%
-    mutate(perc_change= round((prob_epi.x - prob_epi.y)/prob_epi.y*100,1))-> summary_stats
+    mutate(perc_change= round((prob_epi.x - prob_epi.y)/prob_epi.y*100,1),
+           perc_change_time = round((av_start_time.x - av_start_time.y)/av_start_time.y*100,1))-> summary_stats
   
-  heatmap <- ggplot(summary_stats,aes(x=col.x,y=row.x)) +
+  heatmap1 <- ggplot(summary_stats,aes(x=col.x,y=row.x)) +
     geom_tile(aes(fill=perc_change,color=type.x),size=2,width=0.8,height=0.8) +
     #scale_color_brewer(type = "qual", palette = "Dark2") +
     scale_color_grey(start = 1, end = 0)+
@@ -377,8 +378,39 @@ create_heatmap3 <- function(rds_id1,rds_id2,comm_version,threshold,day){
                         "\nRelative beta after restrictions announced = ", params1$beta_inc, "; Relative beta after restrictions in place = ", params1$beta_dec, 
                         "\nInitial movement prob = ",params1$alpha_init, "; Relative travel after restrictions in place = ", params1$alpha_dec))
   
+  heatmap2 <- ggplot(summary_stats,aes(x=col.x,y=row.x)) +
+    geom_tile(aes(fill=perc_change_time,color=type.x),size=2,width=0.8,height=0.8) +
+    #scale_color_brewer(type = "qual", palette = "Dark2") +
+    scale_color_grey(start = 1, end = 0)+
+    geom_text(aes(label = perc_change_time), fontface = "bold",color="black") +
+    #scale_fill_gradient(high = "red", low = muted("green")) +
+    #scale_fill_viridis_c(limits=c(-1,1)) + 
+    scale_fill_gradient2(
+      low = muted("red"),
+      mid = "white",
+      high = muted("blue"),
+      midpoint = 0,
+      space = "Lab",
+      na.value = "blue",
+      guide = "colourbar",
+      aesthetics = "fill"
+    )+
+    theme_classic() +
+    theme(legend.position = "bottom", axis.ticks = element_blank(),
+          axis.title.x = element_blank(),axis.title.y = element_blank(),
+          axis.text.x = element_blank(), axis.text.y = element_blank(),
+          axis.line = element_blank()) + scale_alpha(guide = 'none')+
+    labs(fill=paste0("% change in start time "),
+         color=element_blank(),
+         alpha=element_blank(),
+         caption=paste0("Comparing relative travel after restrictions announced: ", params2$alpha_inc, " to ", params1$alpha_inc,
+                        "\nCases to trigger restrictions = ", params1$cases_ld_a,
+                        "\nDays between restrictions annnounced and begin = ",params1$ld_b, 
+                        "\nRelative beta after restrictions announced = ", params1$beta_inc, "; Relative beta after restrictions in place = ", params1$beta_dec, 
+                        "\nInitial movement prob = ",params1$alpha_init, "; Relative travel after restrictions in place = ", params1$alpha_dec))
   
-  return(heatmap)
+  
+  list(heatmap1,heatmap2)
   
 }
 
@@ -393,5 +425,5 @@ rds_id2 <- "5dcd7cadf92ba0de2099eab0d63a2cf3"
 rds_id1 <- "dee36535cbe05b77e6cd93590ad79566"
 rds_id2 <- "ba822452f924ab25ddf9f988a64c5d44"
 
-create_heatmap3(rds_id1,rds_id2,3,1,30)
+create_heatmap3(rds_id1,rds_id2,3,1,30)[[2]]
 
