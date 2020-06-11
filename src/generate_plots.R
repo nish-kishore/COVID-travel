@@ -391,7 +391,7 @@ create_heatmap3 <- function(rds_id1,rds_id2,comm_version,threshold,day){
       high = muted("blue"),
       midpoint = 0,
       space = "Lab",
-      na.value = "blue",
+      na.value = "red",
       guide = "colourbar",
       aesthetics = "fill"
     )+
@@ -414,16 +414,35 @@ create_heatmap3 <- function(rds_id1,rds_id2,comm_version,threshold,day){
   
 }
 
-#rds_id1 <- "7e11ce5a8411b748d9a8c6df9dcf909f"
-#rds_id2 <- "deb9a8960e9a2b113a51f7f8f30e3001"
 
-# cases_ld_a 10
+# alpha =0.01
+# no cluster 10
 rds_id1 <- "9b6827e0d3c999bd79a48c7622ebcd79"
 rds_id2 <- "5dcd7cadf92ba0de2099eab0d63a2cf3"
 
-# cases_ld_a 30
+# no cluster 30
+rds_id1 <- "e5511f2531fb8f693a548fba6b884984"
+rds_id2 <- "75994176f2355e1babb8fdb9bf142d26"
+
+# cluster 10
+rds_id1 <- "7e11ce5a8411b748d9a8c6df9dcf909f"
+rds_id2 <- "deb9a8960e9a2b113a51f7f8f30e3001"
+
+# cluster 30
 rds_id1 <- "dee36535cbe05b77e6cd93590ad79566"
 rds_id2 <- "ba822452f924ab25ddf9f988a64c5d44"
 
+#alpha=0.001
+# cluster 10
+
+rds_id1 <- "a4589a29bf093bd057dedfda39bfa0f5"
+rds_id2 <- "46ed5902b3ec896db36698a991d8f97b"
+
+# cluster 30
+rds_id1 <- "f67ed343996e8a124a9a48a5a096294c"
+rds_id2 <- "1c041ecdb9287f93a2cd6a119fd9539f"
+
+create_heatmap3(rds_id1,rds_id2,3,1,30)[[1]]
 create_heatmap3(rds_id1,rds_id2,3,1,30)[[2]]
+
 
