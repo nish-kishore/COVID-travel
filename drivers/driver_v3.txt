@@ -1,0 +1,86 @@
+# agents are in five compartments: SEI(A)IR (2 I compartments: asymptomatic, symptomatic)
+# S are susceptible, E are infected but in the latency state, I are infected and infectious and R recovered.
+# S+E+IAS+R move freely on a spatial network
+# IS do not move
+
+# position in list: S=1, E=2, IAS=3, IS=4, R=5
+
+# Connectivity parameters
+# make a list of all communities
+num_communities:
+  100
+size_communities:
+  1000
+a0:
+ - 1 # population origin coefficient for gravity model pre lockdown
+b0:
+ - 1 # population destination coefficient for gravity model pre lockdown
+exp_grav0:
+  - 2 # exponent for gravity model pre lockdown
+  #- 1.75
+  #- 1.817
+a1:
+ - 1 # population origin coefficient for gravity model post lockdown announced
+ #- 0.2707
+b1:
+ - 1 # population destination coefficient for gravity model post lockdown announced
+ #- 0.2698
+ #the multiplicative effect of being in the same network
+clust_mult:
+  - 5
+exp_grav1:
+  - 2 # exponent for gravity model post lockdown announced
+  #- 1.75
+  #- 1.817
+start_comm:
+  45 # choose community where outbreak will start
+comm_version:
+  3
+grav_version:
+  1
+num_inf:
+  - 5 # choose number of initial infections
+# Disease parameters (average 5 day latent and 10 day inf. period)
+lat_per:
+  0.2
+rec_per:
+  0.1
+# Movement parameters
+alpha_init: #moving probability
+  - 0.001
+  - 0.01
+beta_init: # force of infection
+  - 0.0015
+perc_asymp:
+  0.5 # % asymptomatic
+# Lockdown parameters
+t_ld_a:
+  1000 # change below in code once threshold cases reached
+t_ld_b:
+  1000 # change below in code once threshold cases reached
+cases_ld_a:
+  - 10 # number of cases when lockdown announced
+  - 30
+  - 9999
+ld_b:
+  - 3 # days after lockdown announced that it begins
+beta_inc:
+  - 1.0 # relative beta after lockdown announced
+  - 1.5
+  - 2.0
+beta_dec:
+  - 0.5 # relative beta after lockdown begins (relative to initial beta)
+  - 1.0
+alpha_inc:
+  - 1.0 # relative travel after lockdown announced
+  - 1.5
+  - 2.0
+  - 2.5
+  - 3.0
+alpha_dec:
+  - 0.5 # relative travel decreases after lockdown begins (relative to initial travel)
+  - 1.0
+num_timesteps:
+   60
+Nruns:
+   100
