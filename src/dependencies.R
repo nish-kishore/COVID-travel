@@ -6,7 +6,8 @@ package_list <- c(
   "yaml",
   "doParallel", 
   "digest",
-  "ggpubr"
+  "ggpubr",
+  "scales"
 )
 
 

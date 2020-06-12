@@ -1,5 +1,6 @@
 #scripts to generate plots
 source("./src/helper_functions.R")
+source("./src/dependencies.R")
 
 create_heatmap <- function(rds_id,comm_version){
   
@@ -344,14 +345,25 @@ create_heatmap3 <- function(rds_id1,rds_id2,comm_version,threshold,day){
   
   summary_stats2_complete %>%
     right_join(summary_stats1_complete, by="Community") %>%
-    mutate(perc_change= round((prob_epi.x - prob_epi.y)/prob_epi.y*100,1),
-           perc_change_time = round((av_start_time.x - av_start_time.y)/av_start_time.y*100,1))-> summary_stats
+    mutate(av_start_time.x=case_when(is.na(av_start_time.x)~0, TRUE~av_start_time.x),
+           av_start_time.y=case_when(is.na(av_start_time.y)~0, TRUE~av_start_time.y),
+          perc_change_label = round((prob_epi.x - prob_epi.y)/prob_epi.y*100,1),
+           perc_change_time_label = round((av_start_time.x - av_start_time.y)/av_start_time.y*100,1)
+        )-> summary_stats
+  
+  summary_stats$perc_change <- ifelse(is.infinite(summary_stats$perc_change_label), 
+                                      max(summary_stats$perc_change_label[is.finite(summary_stats$perc_change_label)])*1.5,
+                                      summary_stats$perc_change_label)
+  
+  summary_stats$perc_change_time <- ifelse(is.infinite(summary_stats$perc_change_time_label), 
+                                      min(summary_stats$perc_change_time_label[is.finite(summary_stats$perc_change_time_label)])*1.5,
+                                      summary_stats$perc_change_time_label)
   
   heatmap1 <- ggplot(summary_stats,aes(x=col.x,y=row.x)) +
     geom_tile(aes(fill=perc_change,color=type.x),size=2,width=0.8,height=0.8) +
     #scale_color_brewer(type = "qual", palette = "Dark2") +
     scale_color_grey(start = 1, end = 0)+
-    geom_text(aes(label = perc_change), fontface = "bold",color="black") +
+    geom_text(aes(label = perc_change_label), fontface = "bold",color="black") +
     #scale_fill_gradient(high = "red", low = muted("green")) +
     #scale_fill_viridis_c(limits=c(-1,1)) + 
     scale_fill_gradient2(
@@ -360,7 +372,7 @@ create_heatmap3 <- function(rds_id1,rds_id2,comm_version,threshold,day){
       high = muted("red"),
       midpoint = 0,
       space = "Lab",
-      na.value = "red",
+      na.value = "grey",
       guide = "colourbar",
       aesthetics = "fill"
     )+
@@ -382,7 +394,7 @@ create_heatmap3 <- function(rds_id1,rds_id2,comm_version,threshold,day){
     geom_tile(aes(fill=perc_change_time,color=type.x),size=2,width=0.8,height=0.8) +
     #scale_color_brewer(type = "qual", palette = "Dark2") +
     scale_color_grey(start = 1, end = 0)+
-    geom_text(aes(label = perc_change_time), fontface = "bold",color="black") +
+    geom_text(aes(label = perc_change_time_label), fontface = "bold",color="black") +
     #scale_fill_gradient(high = "red", low = muted("green")) +
     #scale_fill_viridis_c(limits=c(-1,1)) + 
     scale_fill_gradient2(
@@ -391,7 +403,7 @@ create_heatmap3 <- function(rds_id1,rds_id2,comm_version,threshold,day){
       high = muted("blue"),
       midpoint = 0,
       space = "Lab",
-      na.value = "red",
+      na.value = "grey",
       guide = "colourbar",
       aesthetics = "fill"
     )+
@@ -416,13 +428,6 @@ create_heatmap3 <- function(rds_id1,rds_id2,comm_version,threshold,day){
 
 
 # alpha =0.01
-# no cluster 10
-rds_id1 <- "9b6827e0d3c999bd79a48c7622ebcd79"
-rds_id2 <- "5dcd7cadf92ba0de2099eab0d63a2cf3"
-
-# no cluster 30
-rds_id1 <- "e5511f2531fb8f693a548fba6b884984"
-rds_id2 <- "75994176f2355e1babb8fdb9bf142d26"
 
 # cluster 10
 rds_id1 <- "7e11ce5a8411b748d9a8c6df9dcf909f"
@@ -431,6 +436,14 @@ rds_id2 <- "deb9a8960e9a2b113a51f7f8f30e3001"
 # cluster 30
 rds_id1 <- "dee36535cbe05b77e6cd93590ad79566"
 rds_id2 <- "ba822452f924ab25ddf9f988a64c5d44"
+
+# no cluster 10
+rds_id1 <- "9b6827e0d3c999bd79a48c7622ebcd79"
+rds_id2 <- "5dcd7cadf92ba0de2099eab0d63a2cf3"
+
+# no cluster 30
+rds_id1 <- "e5511f2531fb8f693a548fba6b884984"
+rds_id2 <- "75994176f2355e1babb8fdb9bf142d26"
 
 #alpha=0.001
 # cluster 10
