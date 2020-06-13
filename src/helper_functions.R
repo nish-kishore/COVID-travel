@@ -217,8 +217,7 @@ pack_and_run_models <- function(params){
 run_models <- function(driver_file_path, cores = NULL, force_run = F){
 
   #reads and expands grid of all possible values
-  params_df <- read_yaml(driver_file_path) %>% expand.grid() %>% as_tibble() %>%
-    subset(beta_inc == 1.5 & beta_dec == 0.5 & alpha_dec == 0.5)
+  params_df <- read_yaml(driver_file_path) %>% expand.grid() %>% as_tibble() 
 
   #creates unique id hash
   params_df$unique_id <- apply(params_df, 1, digest)

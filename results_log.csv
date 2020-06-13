@@ -1,1 +1,1 @@
-date_time,user,num_communities,size_communities,exp_grav0,start_comm,num_inf,lat_per,rec_per,alpha_init,beta_init,perc_asymp,t_ld_a,t_ld_b,cases_ld_a,ld_b,beta_inc,beta_dec,alpha_inc,alpha_dec,num_timesteps,Nruns,comm_version,grav_version,a0,b0,a1,b1,exp_grav1,clust_mult,unique_id
+num_communities,size_communities,a0,b0,exp_grav0,a1,b1,clust_mult,exp_grav1,start_comm,comm_version,grav_version,num_inf,lat_per,rec_per,alpha_init,beta_init,perc_asymp,t_ld_a,t_ld_b,cases_ld_a,ld_b,beta_inc,beta_dec,alpha_inc,alpha_dec,num_timesteps,Nruns,unique_id
