@@ -480,12 +480,12 @@ alpha3.0_beta2.0_time <- output[[2]]
 panel_prob <- ggarrange(baseline_prob,alpha1.5_beta1.0_prob,alpha2.0_beta1.0_prob,alpha2.5_beta1.0_prob,alpha3.0_beta1.0_prob,
                    alpha1.0_beta1.5_prob,alpha1.5_beta1.5_prob,alpha2.0_beta1.5_prob,alpha2.5_beta1.5_prob,alpha3.0_beta1.5_prob,
                    alpha1.0_beta2.0_prob,alpha1.5_beta2.0_prob,alpha2.0_beta2.0_prob,alpha2.5_beta2.0_prob,alpha3.0_beta2.0_prob,
-                   nrow=5)
+                   nrow=3)
 
 panel_time <- ggarrange(baseline_time,alpha1.5_beta1.0_time,alpha2.0_beta1.0_time,alpha2.5_beta1.0_time,alpha3.0_beta1.0_time,
                         alpha1.0_beta1.5_time,alpha1.5_beta1.5_time,alpha2.0_beta1.5_time,alpha2.5_beta1.5_time,alpha3.0_beta1.5_time,
                         alpha1.0_beta2.0_time,alpha1.5_beta2.0_time,alpha2.0_beta2.0_time,alpha2.5_beta2.0_time,alpha3.0_beta2.0_time,
-                        nrow=5)
+                        nrow=3)
 
 
 
