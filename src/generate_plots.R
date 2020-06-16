@@ -413,63 +413,67 @@ rds_id_alpha2.0_beta2.0 <- results %>% subset(alpha_inc==2 & beta_inc==2) %>% pu
 rds_id_alpha2.5_beta2.0 <- results %>% subset(alpha_inc==2.5 & beta_inc==2) %>% pull(unique_id) 
 rds_id_alpha3.0_beta2.0 <- results %>% subset(alpha_inc==3 & beta_inc==2) %>% pull(unique_id) 
 
-baseline <- create_heatmap(rds_id_alpha1.0_beta1.0,3,1,30)
+comm_version <- 3
+threshold <- 1
+day <- 30
+
+baseline <- create_heatmap(rds_id_alpha1.0_beta1.0,comm_version,threshold,day)
 baseline_prob <- baseline[[1]]
 baseline_time <- baseline[[2]]
 
-output <- create_heatmap3(rds_id_alpha1.0_beta1.0,rds_id_alpha1.5_beta1.0,3,1,30)
+output <- create_heatmap3(rds_id_alpha1.0_beta1.0,rds_id_alpha1.5_beta1.0,comm_version,threshold,day)
 alpha1.5_beta1.0_prob <- output[[1]]
 alpha1.5_beta1.0_time <- output[[2]]
 
-output <- create_heatmap3(rds_id_alpha1.0_beta1.0,rds_id_alpha2.0_beta1.0,3,1,30)
+output <- create_heatmap3(rds_id_alpha1.0_beta1.0,rds_id_alpha2.0_beta1.0,comm_version,threshold,day)
 alpha2.0_beta1.0_prob <- output[[1]]
 alpha2.0_beta1.0_time <- output[[2]]
 
-output <- create_heatmap3(rds_id_alpha1.0_beta1.0,rds_id_alpha2.5_beta1.0,3,1,30)
+output <- create_heatmap3(rds_id_alpha1.0_beta1.0,rds_id_alpha2.5_beta1.0,comm_version,threshold,day)
 alpha2.5_beta1.0_prob <- output[[1]]
 alpha2.5_beta1.0_time <- output[[2]]
 
-output <- create_heatmap3(rds_id_alpha1.0_beta1.0,rds_id_alpha3.0_beta1.0,3,1,30)
+output <- create_heatmap3(rds_id_alpha1.0_beta1.0,rds_id_alpha3.0_beta1.0,comm_version,threshold,day)
 alpha3.0_beta1.0_prob <- output[[1]]
 alpha3.0_beta1.0_time <- output[[2]]
 
-output <- create_heatmap3(rds_id_alpha1.0_beta1.0,rds_id_alpha1.0_beta1.5,3,1,30)
+output <- create_heatmap3(rds_id_alpha1.0_beta1.0,rds_id_alpha1.0_beta1.5,comm_version,threshold,day)
 alpha1.0_beta1.5_prob <- output[[1]]
 alpha1.0_beta1.5_time <- output[[2]]
 
-output <- create_heatmap3(rds_id_alpha1.0_beta1.0,rds_id_alpha1.5_beta1.5,3,1,30)
+output <- create_heatmap3(rds_id_alpha1.0_beta1.0,rds_id_alpha1.5_beta1.5,comm_version,threshold,day)
 alpha1.5_beta1.5_prob <- output[[1]]
 alpha1.5_beta1.5_time <- output[[2]]
 
-output <- create_heatmap3(rds_id_alpha1.0_beta1.0,rds_id_alpha2.0_beta1.5,3,1,30)
+output <- create_heatmap3(rds_id_alpha1.0_beta1.0,rds_id_alpha2.0_beta1.5,comm_version,threshold,day)
 alpha2.0_beta1.5_prob <- output[[1]]
 alpha2.0_beta1.5_time <- output[[2]]
 
-output <- create_heatmap3(rds_id_alpha1.0_beta1.0,rds_id_alpha2.5_beta1.5,3,1,30)
+output <- create_heatmap3(rds_id_alpha1.0_beta1.0,rds_id_alpha2.5_beta1.5,comm_version,threshold,day)
 alpha2.5_beta1.5_prob <- output[[1]]
 alpha2.5_beta1.5_time <- output[[2]]
 
-output <- create_heatmap3(rds_id_alpha1.0_beta1.0,rds_id_alpha3.0_beta1.5,3,1,30)
+output <- create_heatmap3(rds_id_alpha1.0_beta1.0,rds_id_alpha3.0_beta1.5,comm_version,threshold,day)
 alpha3.0_beta1.5_prob <- output[[1]]
 alpha3.0_beta1.5_time <- output[[2]]
 
-output <- create_heatmap3(rds_id_alpha1.0_beta1.0,rds_id_alpha1.0_beta2.0,3,1,30)
+output <- create_heatmap3(rds_id_alpha1.0_beta1.0,rds_id_alpha1.0_beta2.0,comm_version,threshold,day)
 alpha1.0_beta2.0_prob <- output[[1]]
 alpha1.0_beta2.0_time <- output[[2]]
 
-output <- create_heatmap3(rds_id_alpha1.0_beta1.0,rds_id_alpha1.5_beta2.0,3,1,30)
+output <- create_heatmap3(rds_id_alpha1.0_beta1.0,rds_id_alpha1.5_beta2.0,comm_version,threshold,day)
 alpha1.5_beta2.0_prob <- output[[1]]
 alpha1.5_beta2.0_time <- output[[2]]
 
-output <- create_heatmap3(rds_id_alpha1.0_beta1.0,rds_id_alpha2.0_beta2.0,3,1,30)
+output <- create_heatmap3(rds_id_alpha1.0_beta1.0,rds_id_alpha2.0_beta2.0,comm_version,threshold,day)
 alpha2.0_beta2.0_prob <- output[[1]]
 alpha2.0_beta2.0_time <- output[[2]]
 
-output <- create_heatmap3(rds_id_alpha1.0_beta1.0,rds_id_alpha2.5_beta2.0,3,1,30)
+output <- create_heatmap3(rds_id_alpha1.0_beta1.0,rds_id_alpha2.5_beta2.0,comm_version,threshold,day)
 alpha2.5_beta2.0_prob <- output[[1]]
 alpha2.5_beta2.0_time <- output[[2]]
 
-output <- create_heatmap3(rds_id_alpha1.0_beta1.0,rds_id_alpha3.0_beta2.0,3,1,30)
+output <- create_heatmap3(rds_id_alpha1.0_beta1.0,rds_id_alpha3.0_beta2.0,comm_version,threshold,day)
 alpha3.0_beta2.0_prob <- output[[1]]
 alpha3.0_beta2.0_time <- output[[2]]
 
