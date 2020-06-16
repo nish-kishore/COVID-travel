@@ -1,5 +1,6 @@
 #scripts to generate plots
 source("./src/helper_functions.R")
+library(scales)
 
 create_heatmap <- function(rds_id){
   
@@ -210,7 +211,7 @@ create_heatmap3 <- function(rds_id1,rds_id2,comm_version,threshold,day){
   type_excluded <- ifelse(excluded %in% city, "City","Non-city")
   
   bind_cols("Community"=excluded,
-            "type"=type_excluded,
+            "type"=type_excluded %>% as.character(),
             "prob_epi"=rep(0,length(excluded)),
             "av_start_time"=rep(NA,length(excluded)),
             "row"=row[excluded],
@@ -243,7 +244,7 @@ create_heatmap3 <- function(rds_id1,rds_id2,comm_version,threshold,day){
   type_excluded <- ifelse(excluded %in% city, "City","Non-city")
   
   bind_cols("Community"=excluded,
-            "type"=type_excluded,
+            "type"=type_excluded %>% as.character(),
             "prob_epi"=rep(0,length(excluded)),
             "av_start_time"=rep(NA,length(excluded)),
             "row"=row[excluded],
@@ -361,8 +362,9 @@ rds_id_alpha3.0_beta2.0 <- results %>% subset(alpha_inc==3 & beta_inc==2) %>% pu
 
 baseline <- create_heatmap2()
 
-create_heatmap3(rds_id_alpha1.0_beta1.0,rds_id_alpha1.5_beta1.0,3,1,30)[[1]] -> alpha1.5_beta1.0_prob
-create_heatmap3(rds_id_alpha1.0_beta1.0,rds_id_alpha1.5_beta1.0,3,1,30)[[2]] -> alpha1.5_beta1.0_time
+output <- create_heatmap3(rds_id1,rds_id2,3,1,30)
+alpha1.5_beta1.0_prob <- output[[1]]
+alpha1.5_beta1.0_time <- output[[2]]
 
 
 
