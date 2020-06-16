@@ -80,7 +80,7 @@ get_comm_types <- function(num_communities, comm_version){
 
   return(list(urban, suburban, rural,
               area_urban, area_suburban, area_rural,
-              n_urban, n_suburban, n_rural, clusters))
+              n_urban, n_suburban, n_rural))
 }
 
 #create the world objects for one set of parameters
@@ -112,7 +112,7 @@ init_model_objects <- function(params){
     communities[suburban,"S"] <- com_types_list[[8]] # suburban 500 people/ sq mile
     communities[rural, "S"] <- com_types_list[[9]] #rural 100 people per square mile
     
-    clusters <- com_types_list[[10]] #get clusters
+    #clusters <- com_types_list[[10]] #get clusters
 
     studypop_size <- sum(communities[,1])
 
@@ -137,23 +137,34 @@ init_model_objects <- function(params){
     row <- c(rep(1:num_edge,each=10))
     col <- c(rep(1:num_edge,times=10))
     # initial mobility network (gravity model)
-    mob_net <- matrix(0,nrow=num_communities,ncol=num_communities)
-    for (i in 1:num_communities){
-      for (j in 1:num_communities){
-        if (i!=j){
-          cluster.i <- clusters %>% subset(community==i) %>% pull(cluster)
-          cluster.j <- clusters %>% subset(community==j) %>% pull(cluster)
-          if (cluster.i==cluster.j){
-            clust <- clust_mult
-          } else{
-            clust <- 1
+    if(comm_version == 4){
+      mob_net <- matrix(0,nrow=num_communities,ncol=num_communities)
+      for (i in 1:num_communities){
+        for (j in 1:num_communities){
+          if (i!=j){
+            cluster.i <- clusters %>% subset(community==i) %>% pull(cluster)
+            cluster.j <- clusters %>% subset(community==j) %>% pull(cluster)
+            if (cluster.i==cluster.j){
+              clust <- clust_mult
+            } else{
+              clust <- 1
+            }
+            mob_net[i,j] <- clust*((sum(communities[[i]])^a0)*(sum(communities[[j]])^b0))/
+              (abs(row[i]-row[j]) + abs(col[i] - col[j]))^exp_grav0
           }
-          mob_net[i,j] <- clust*((sum(communities[[i]])^a0)*(sum(communities[[j]])^b0))/
-                                      (abs(row[i]-row[j]) + abs(col[i] - col[j]))^exp_grav0
+        }
+      }
+    }else{
+      mob_net <- matrix(0,nrow=num_communities,ncol=num_communities)
+      for (i in 1:num_communities){
+        for (j in 1:num_communities){
+          if (i!=j){
+            mob_net[i,j] <- ((sum(communities[[i]])^a0)*(sum(communities[[j]])^b0))/
+              (abs(row[i]-row[j]) + abs(col[i] - col[j]))^exp_grav0
+          }
         }
       }
     }
-
 
 
     mob_net_norm <- matrix(0,nrow=num_communities,ncol=num_communities)
@@ -217,8 +228,7 @@ pack_and_run_models <- function(params){
 run_models <- function(driver_file_path, cores = NULL, force_run = F){
 
   #reads and expands grid of all possible values
-  params_df <- read_yaml(driver_file_path) %>% expand.grid() %>% as_tibble() %>%
-    subset(beta_inc == 1.5 & beta_dec == 0.5 & alpha_dec == 0.5)
+  params_df <- read_yaml(driver_file_path) %>% expand.grid() %>% as_tibble() 
 
   #creates unique id hash
   params_df$unique_id <- apply(params_df, 1, digest)
