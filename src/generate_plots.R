@@ -1,5 +1,6 @@
 #scripts to generate plots
 source("./src/helper_functions.R")
+library(scales)
 
 create_heatmap <- function(rds_id){
   
@@ -210,7 +211,7 @@ create_heatmap3 <- function(rds_id1,rds_id2,comm_version,threshold,day){
   type_excluded <- ifelse(excluded %in% city, "City","Non-city")
   
   bind_cols("Community"=excluded,
-            "type"=type_excluded,
+            "type"=type_excluded %>% as.character(),
             "prob_epi"=rep(0,length(excluded)),
             "av_start_time"=rep(NA,length(excluded)),
             "row"=row[excluded],
@@ -243,7 +244,7 @@ create_heatmap3 <- function(rds_id1,rds_id2,comm_version,threshold,day){
   type_excluded <- ifelse(excluded %in% city, "City","Non-city")
   
   bind_cols("Community"=excluded,
-            "type"=type_excluded,
+            "type"=type_excluded %>% as.character(),
             "prob_epi"=rep(0,length(excluded)),
             "av_start_time"=rep(NA,length(excluded)),
             "row"=row[excluded],
@@ -340,8 +341,9 @@ require(googledrive)
 rds_id1 <- "e7dcae7fec4ccad9dda1e1484a2bbb1b"
 rds_id2 <- "6e489021a5ea5508cbf920a6a6b45511"
 
-create_heatmap3(rds_id1,rds_id2,3,1,30)[[1]]
-create_heatmap3(rds_id1,rds_id2,3,1,30)[[2]]
+output <- create_heatmap3(rds_id1,rds_id2,3,1,30)
+heatmap1 <- output[[1]]
+heatmap2 <- output[[2]]
 
 
 
