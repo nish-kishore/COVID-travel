@@ -336,12 +336,33 @@ create_heatmap3 <- function(rds_id1,rds_id2,comm_version,threshold,day){
 
 require(googledrive)
 
+results_log <- read_csv("./results_log.csv")
 
-rds_id1 <- "e7dcae7fec4ccad9dda1e1484a2bbb1b"
-rds_id2 <- "6e489021a5ea5508cbf920a6a6b45511"
+# high alpha_init, 10 trigger cases
 
-create_heatmap3(rds_id1,rds_id2,3,1,30)[[1]]
-create_heatmap3(rds_id1,rds_id2,3,1,30)[[2]]
+results_log %>%
+  subset(alpha_init == 0.01 & cases_ld_a==10 & alpha_dec == 0.5 & beta_dec == 0.5) -> results
+
+rds_id_alpha1.0_beta1.0 <- results %>% subset(alpha_inc==1 & beta_inc==1) %>% pull(unique_id) # should baseline be beta_inc == 1.5? 
+rds_id_alpha1.5_beta1.0 <- results %>% subset(alpha_inc==1.5 & beta_inc==1) %>% pull(unique_id) 
+rds_id_alpha2.0_beta1.0 <- results %>% subset(alpha_inc==2 & beta_inc==1) %>% pull(unique_id) 
+rds_id_alpha2.5_beta1.0 <- results %>% subset(alpha_inc==2.5 & beta_inc==1) %>% pull(unique_id) 
+rds_id_alpha3.0_beta1.0 <- results %>% subset(alpha_inc==3 & beta_inc==1) %>% pull(unique_id) 
+rds_id_alpha1.0_beta1.5 <- results %>% subset(alpha_inc==1 & beta_inc==1.5) %>% pull(unique_id) 
+rds_id_alpha1.5_beta1.5 <- results %>% subset(alpha_inc==1.5 & beta_inc==1.5) %>% pull(unique_id) 
+rds_id_alpha2.0_beta1.5 <- results %>% subset(alpha_inc==2 & beta_inc==1.5) %>% pull(unique_id) 
+rds_id_alpha2.5_beta1.5 <- results %>% subset(alpha_inc==2.5 & beta_inc==1.5) %>% pull(unique_id) 
+rds_id_alpha3.0_beta1.5 <- results %>% subset(alpha_inc==3 & beta_inc==1.5) %>% pull(unique_id) 
+rds_id_alpha1.0_beta2.0 <- results %>% subset(alpha_inc==1 & beta_inc==2) %>% pull(unique_id) 
+rds_id_alpha1.5_beta2.0 <- results %>% subset(alpha_inc==1.5 & beta_inc==2) %>% pull(unique_id) 
+rds_id_alpha2.0_beta2.0 <- results %>% subset(alpha_inc==2 & beta_inc==2) %>% pull(unique_id) 
+rds_id_alpha2.5_beta2.0 <- results %>% subset(alpha_inc==2.5 & beta_inc==2) %>% pull(unique_id) 
+rds_id_alpha3.0_beta2.0 <- results %>% subset(alpha_inc==3 & beta_inc==2) %>% pull(unique_id) 
+
+baseline <- create_heatmap2()
+
+create_heatmap3(rds_id_alpha1.0_beta1.0,rds_id_alpha1.5_beta1.0,3,1,30)[[1]] -> alpha1.5_beta1.0_prob
+create_heatmap3(rds_id_alpha1.0_beta1.0,rds_id_alpha1.5_beta1.0,3,1,30)[[2]] -> alpha1.5_beta1.0_time
 
 
 
