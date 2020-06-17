@@ -18,14 +18,14 @@ create_heatmap <- function(rds_id,comm_version,threshold,day){
     mutate(cumulative=cumsum(n)) %>%
     ungroup() -> data1
   
-  comm_type_list <- get_comm_types(params1$num_communities,comm_version)
+  comm_type_list <- get_comm_types(params$num_communities,comm_version)
   
   city <- comm_type_list[[1]]
   noncity <- c(comm_type_list[[2]],comm_type_list[[3]])
   
   data1$type <- ifelse(data1$Community %in% city, "City","Non-city")
 
-  num_edge <- sqrt(params1$num_communities)
+  num_edge <- sqrt(params$num_communities)
   row <- c(rep(1:num_edge,each=10))
   col <- c(rep(1:num_edge,times=10))
   
@@ -47,7 +47,7 @@ create_heatmap <- function(rds_id,comm_version,threshold,day){
               t_ld_a = min(t_ld_a)) %>%
     ungroup() %>%
     group_by(Community, type) %>%
-    summarise(prob_epi = round(sum(infections>=threshold)/params1$Nruns,2),
+    summarise(prob_epi = round(sum(infections>=threshold)/params$Nruns,2),
               av_start_time = mean(start)) %>%
     mutate(row = row[Community],
            col = col[Community]) -> summary_stats1
@@ -124,7 +124,7 @@ create_heatmap <- function(rds_id,comm_version,threshold,day){
     #                     "\nInitial movement prob = ",params1$alpha_init, "; Relative travel after restrictions in place = ", params1$alpha_dec))
     # 
     # 
-  list(heatmap1,heatmap2)
+  list(heatmap1,heatmap2, summary_stats1_complete)
   
 }
 
@@ -387,15 +387,20 @@ create_heatmap3 <- function(rds_id1,rds_id2,comm_version,threshold,day){
                         "\nRelative beta after restrictions announced = ", params1$beta_inc, "; Relative beta after restrictions in place = ", params1$beta_dec, 
                         "\nInitial movement prob = ",params1$alpha_init, "; Relative travel after restrictions in place = ", params1$alpha_dec))
   
+  summary_stats <- summary_stats %>%
+    mutate(alpha_inc1 = params1$alpha_inc, 
+           beta_inc1 = params1$beta_inc, 
+           alpha_inc2 = params2$alpha_inc, 
+           beta_inc2 = params2$beta_inc)
   
-  list(heatmap1,heatmap2)
+  list(heatmap1,heatmap2, summary_stats)
   
 }
 
 results_log <- read_csv("./results_log.csv")
 
 results_log %>%
-  subset(alpha_init == 0.01 & cases_ld_a==10 & alpha_dec == 0.5 & beta_dec == 0.5) -> results
+  subset(alpha_init == 0.01 & cases_ld_a==30 & alpha_dec == 0.5 & beta_dec == 0.5) -> results
 
 rds_id_alpha1.0_beta1.0 <- results %>% subset(alpha_inc==1 & beta_inc==1) %>% pull(unique_id) # should baseline be beta_inc == 1.5? 
 rds_id_alpha1.5_beta1.0 <- results %>% subset(alpha_inc==1.5 & beta_inc==1) %>% pull(unique_id) 
@@ -418,74 +423,147 @@ threshold <- 1
 day <- 30
 
 baseline <- create_heatmap(rds_id_alpha1.0_beta1.0,comm_version,threshold,day)
-baseline_prob <- baseline[[1]]
-baseline_time <- baseline[[2]]
+#baseline_prob <- baseline[[1]]
+#baseline_time <- baseline[[2]]
+baseline_data <- baseline[[3]]
 
 output <- create_heatmap3(rds_id_alpha1.0_beta1.0,rds_id_alpha1.5_beta1.0,comm_version,threshold,day)
-alpha1.5_beta1.0_prob <- output[[1]]
-alpha1.5_beta1.0_time <- output[[2]]
+# alpha1.5_beta1.0_prob <- output[[1]]
+# alpha1.5_beta1.0_time <- output[[2]]
+data <- output[[3]]
 
 output <- create_heatmap3(rds_id_alpha1.0_beta1.0,rds_id_alpha2.0_beta1.0,comm_version,threshold,day)
-alpha2.0_beta1.0_prob <- output[[1]]
-alpha2.0_beta1.0_time <- output[[2]]
+# alpha2.0_beta1.0_prob <- output[[1]]
+# alpha2.0_beta1.0_time <- output[[2]]
+data <- rbind(data,output[[3]])
 
 output <- create_heatmap3(rds_id_alpha1.0_beta1.0,rds_id_alpha2.5_beta1.0,comm_version,threshold,day)
-alpha2.5_beta1.0_prob <- output[[1]]
-alpha2.5_beta1.0_time <- output[[2]]
+# alpha2.5_beta1.0_prob <- output[[1]]
+# alpha2.5_beta1.0_time <- output[[2]]
+data <- rbind(data,output[[3]])
 
 output <- create_heatmap3(rds_id_alpha1.0_beta1.0,rds_id_alpha3.0_beta1.0,comm_version,threshold,day)
-alpha3.0_beta1.0_prob <- output[[1]]
-alpha3.0_beta1.0_time <- output[[2]]
+# alpha3.0_beta1.0_prob <- output[[1]]
+# alpha3.0_beta1.0_time <- output[[2]]
+data <- rbind(data,output[[3]])
 
 output <- create_heatmap3(rds_id_alpha1.0_beta1.0,rds_id_alpha1.0_beta1.5,comm_version,threshold,day)
-alpha1.0_beta1.5_prob <- output[[1]]
-alpha1.0_beta1.5_time <- output[[2]]
+# alpha1.0_beta1.5_prob <- output[[1]]
+# alpha1.0_beta1.5_time <- output[[2]]
+data <- rbind(data,output[[3]])
 
 output <- create_heatmap3(rds_id_alpha1.0_beta1.0,rds_id_alpha1.5_beta1.5,comm_version,threshold,day)
-alpha1.5_beta1.5_prob <- output[[1]]
-alpha1.5_beta1.5_time <- output[[2]]
+# alpha1.5_beta1.5_prob <- output[[1]]
+# alpha1.5_beta1.5_time <- output[[2]]
+data <- rbind(data,output[[3]])
 
 output <- create_heatmap3(rds_id_alpha1.0_beta1.0,rds_id_alpha2.0_beta1.5,comm_version,threshold,day)
-alpha2.0_beta1.5_prob <- output[[1]]
-alpha2.0_beta1.5_time <- output[[2]]
+# alpha2.0_beta1.5_prob <- output[[1]]
+# alpha2.0_beta1.5_time <- output[[2]]
+data <- rbind(data,output[[3]])
 
 output <- create_heatmap3(rds_id_alpha1.0_beta1.0,rds_id_alpha2.5_beta1.5,comm_version,threshold,day)
-alpha2.5_beta1.5_prob <- output[[1]]
-alpha2.5_beta1.5_time <- output[[2]]
+# alpha2.5_beta1.5_prob <- output[[1]]
+# alpha2.5_beta1.5_time <- output[[2]]
+data <- rbind(data,output[[3]])
 
 output <- create_heatmap3(rds_id_alpha1.0_beta1.0,rds_id_alpha3.0_beta1.5,comm_version,threshold,day)
-alpha3.0_beta1.5_prob <- output[[1]]
-alpha3.0_beta1.5_time <- output[[2]]
+# alpha3.0_beta1.5_prob <- output[[1]]
+# alpha3.0_beta1.5_time <- output[[2]]
+data <- rbind(data,output[[3]])
 
 output <- create_heatmap3(rds_id_alpha1.0_beta1.0,rds_id_alpha1.0_beta2.0,comm_version,threshold,day)
-alpha1.0_beta2.0_prob <- output[[1]]
-alpha1.0_beta2.0_time <- output[[2]]
+# alpha1.0_beta2.0_prob <- output[[1]]
+# alpha1.0_beta2.0_time <- output[[2]]
+data <- rbind(data,output[[3]])
 
 output <- create_heatmap3(rds_id_alpha1.0_beta1.0,rds_id_alpha1.5_beta2.0,comm_version,threshold,day)
-alpha1.5_beta2.0_prob <- output[[1]]
-alpha1.5_beta2.0_time <- output[[2]]
+# alpha1.5_beta2.0_prob <- output[[1]]
+# alpha1.5_beta2.0_time <- output[[2]]
+data <- rbind(data,output[[3]])
 
 output <- create_heatmap3(rds_id_alpha1.0_beta1.0,rds_id_alpha2.0_beta2.0,comm_version,threshold,day)
-alpha2.0_beta2.0_prob <- output[[1]]
-alpha2.0_beta2.0_time <- output[[2]]
+# alpha2.0_beta2.0_prob <- output[[1]]
+# alpha2.0_beta2.0_time <- output[[2]]
+data <- rbind(data,output[[3]])
 
 output <- create_heatmap3(rds_id_alpha1.0_beta1.0,rds_id_alpha2.5_beta2.0,comm_version,threshold,day)
-alpha2.5_beta2.0_prob <- output[[1]]
-alpha2.5_beta2.0_time <- output[[2]]
+# alpha2.5_beta2.0_prob <- output[[1]]
+# alpha2.5_beta2.0_time <- output[[2]]
+data <- rbind(data,output[[3]])
 
 output <- create_heatmap3(rds_id_alpha1.0_beta1.0,rds_id_alpha3.0_beta2.0,comm_version,threshold,day)
-alpha3.0_beta2.0_prob <- output[[1]]
-alpha3.0_beta2.0_time <- output[[2]]
+# alpha3.0_beta2.0_prob <- output[[1]]
+# alpha3.0_beta2.0_time <- output[[2]]
+data <- rbind(data,output[[3]])
 
-panel_prob <- ggarrange(baseline_prob,alpha1.5_beta1.0_prob,alpha2.0_beta1.0_prob,alpha2.5_beta1.0_prob,alpha3.0_beta1.0_prob,
-                   alpha1.0_beta1.5_prob,alpha1.5_beta1.5_prob,alpha2.0_beta1.5_prob,alpha2.5_beta1.5_prob,alpha3.0_beta1.5_prob,
-                   alpha1.0_beta2.0_prob,alpha1.5_beta2.0_prob,alpha2.0_beta2.0_prob,alpha2.5_beta2.0_prob,alpha3.0_beta2.0_prob,
-                   nrow=3)
+# panel_prob <- ggarrange(baseline_prob,alpha1.5_beta1.0_prob,alpha2.0_beta1.0_prob,alpha2.5_beta1.0_prob,alpha3.0_beta1.0_prob,
+#                    alpha1.0_beta1.5_prob,alpha1.5_beta1.5_prob,alpha2.0_beta1.5_prob,alpha2.5_beta1.5_prob,alpha3.0_beta1.5_prob,
+#                    alpha1.0_beta2.0_prob,alpha1.5_beta2.0_prob,alpha2.0_beta2.0_prob,alpha2.5_beta2.0_prob,alpha3.0_beta2.0_prob,
+#                    nrow=3)
+# 
+# panel_time <- ggarrange(baseline_time,alpha1.5_beta1.0_time,alpha2.0_beta1.0_time,alpha2.5_beta1.0_time,alpha3.0_beta1.0_time,
+#                         alpha1.0_beta1.5_time,alpha1.5_beta1.5_time,alpha2.0_beta1.5_time,alpha2.5_beta1.5_time,alpha3.0_beta1.5_time,
+#                         alpha1.0_beta2.0_time,alpha1.5_beta2.0_time,alpha2.0_beta2.0_time,alpha2.5_beta2.0_time,alpha3.0_beta2.0_time,
+#                         nrow=3)
 
-panel_time <- ggarrange(baseline_time,alpha1.5_beta1.0_time,alpha2.0_beta1.0_time,alpha2.5_beta1.0_time,alpha3.0_beta1.0_time,
-                        alpha1.0_beta1.5_time,alpha1.5_beta1.5_time,alpha2.0_beta1.5_time,alpha2.5_beta1.5_time,alpha3.0_beta1.5_time,
-                        alpha1.0_beta2.0_time,alpha1.5_beta2.0_time,alpha2.0_beta2.0_time,alpha2.5_beta2.0_time,alpha3.0_beta2.0_time,
-                        nrow=3)
+baseline[[1]]
 
+data %>%
+  mutate(alpha_inc2 = paste0("Alpha Inc: ", alpha_inc2), 
+         beta_inc2 = paste0("Beta Inc: ", beta_inc2)) %>%
+  ggplot(aes(x=col.x,y=row.x)) +
+  geom_tile(aes(fill=perc_change,color=type.x),size=0.5,width=0.8,height=0.8) +
+  #scale_color_brewer(type = "qual", palette = "Dark2") +
+  scale_color_grey(start = 1, end = 0)+
+  geom_text(aes(label = perc_change_label),color="black", size = 2) +
+  #scale_fill_gradient(high = "red", low = muted("green")) +
+  #scale_fill_viridis_c(limits=c(-1,1)) + 
+  scale_fill_gradient2(
+    low = muted("blue"),
+    mid = "white",
+    high = muted("red"),
+    midpoint = 0,
+    space = "Lab",
+    na.value = "grey",
+    guide = "colourbar",
+    aesthetics = "fill"
+  )+
+  theme_classic() +
+  theme(legend.position = "bottom", axis.ticks = element_blank(),
+        axis.title.x = element_blank(),axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.text.y = element_blank(),
+        axis.line = element_blank()) + scale_alpha(guide = 'none') + 
+  facet_grid(alpha_inc2~beta_inc2) + 
+  labs(fill = "Percent Change in Probability of 1 case by 30 days - Trigger: 30 ")
 
+baseline[[2]]
+
+data %>%
+  mutate(alpha_inc2 = paste0("Alpha Inc: ", alpha_inc2), 
+         beta_inc2 = paste0("Beta Inc: ", beta_inc2)) %>%
+  ggplot(aes(x=col.x,y=row.x)) +
+  geom_tile(aes(fill=perc_change_time,color=type.x),size=0.5,width=0.8,height=0.8) +
+  #scale_color_brewer(type = "qual", palette = "Dark2") +
+  scale_color_grey(start = 1, end = 0)+
+  geom_text(aes(label = perc_change_time_label),color="black", size = 2) +
+  #scale_fill_gradient(high = "red", low = muted("green")) +
+  #scale_fill_viridis_c(limits=c(-1,1)) + 
+  scale_fill_gradient2(
+    low = muted("red"),
+    mid = "white",
+    high = muted("blue"),
+    midpoint = 0,
+    space = "Lab",
+    na.value = "grey",
+    guide = "colourbar",
+    aesthetics = "fill"
+  )+
+  theme_classic() +
+  theme(legend.position = "bottom", axis.ticks = element_blank(),
+        axis.title.x = element_blank(),axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.text.y = element_blank(),
+        axis.line = element_blank()) + scale_alpha(guide = 'none') + 
+  facet_grid(alpha_inc2~beta_inc2) + 
+  labs(fill = "Percent Change in time to first case - Trigger: 30")
 
