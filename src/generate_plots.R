@@ -567,3 +567,15 @@ data %>%
   facet_grid(alpha_inc2~beta_inc2) + 
   labs(fill = "Percent Change in time to first case - Trigger: 30")
 
+
+num_edge <- sqrt(num_communities)
+row <- c(rep(1:num_edge,each=10))
+col <- c(rep(1:num_edge,times=10))
+# Get distance from city
+data %>%
+  mutate("distance" = abs(row.x-row[45]) + abs(col.x - col[45])) %>%
+  ggplot() + 
+  geom_point(aes(x=distance,y=prob_epi))
+
+
+
