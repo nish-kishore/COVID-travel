@@ -571,11 +571,30 @@ data %>%
 num_edge <- sqrt(num_communities)
 row <- c(rep(1:num_edge,each=10))
 col <- c(rep(1:num_edge,times=10))
+id <- 1:100
 # Get distance from city
 data %>%
   mutate("distance" = abs(row.x-row[45]) + abs(col.x - col[45])) %>%
   ggplot() + 
   geom_point(aes(x=distance,y=prob_epi))
 
+#probability of epidemic by x date 
 
+tibble("id" = id, "row" = row, "col" = col) %>% 
+  mutate(distance = abs(row - 5) + abs(col - 5)) -> dist
 
+results %>% 
+  subset(alpha_inc==1 & beta_inc==1) %>% 
+  pull(unique_id) %>%
+  load_run_results() %>%
+  group_by(Simulation, Community) %>%
+  mutate(indexday = min(DayInfected)) %>%
+  ungroup() %>%
+  subset(DayInfected == indexday) %>%
+  group_by(Community) %>%
+  summarize(avg_day = mean(DayInfected)) %>%
+  left_join(dist, by = c("Community" = "id")) %>%
+  ggplot(aes(x = distance, y = avg_day)) +
+  geom_point() + 
+  theme_bw() + 
+  labs(x = "Distance from initial outbreak", y = "Average day of first infection")
