@@ -3,6 +3,7 @@ source("./src/models.R")
 source("./src/optim_funcs.R")
 
 #specify rural/suburban/rural
+
 get_comm_types <- function(num_communities, comm_version){
   if(comm_version == 1){
     urban <- c(45,57)
@@ -45,20 +46,20 @@ get_comm_types <- function(num_communities, comm_version){
     n_suburban <- 2500
     n_rural <- 2500
   }
-  
+
   if(comm_version == 4){
     urban <- c(45)
     suburban <- c(15,22,29,45,72,79,85)
     rural <- setdiff(1:num_communities, c(urban, suburban))
-    
+
     area_urban <- 4
     area_suburban <- 7
     area_rural <- 10
-    
+
     n_urban <- 4000
     n_suburban <- 3500
     n_rural <- 1000
-    
+
     cluster1 <- c(1,2,3,11,12,13,21,22,23,31,32,33,41,42,43)
     cluster2 <- c(4,5,6,14,15,16,24,25,26)
     cluster3 <- c(7,8,9,10,17,18,19,20,27,28,29,30,37,38,39,40,47,48,49,50)
@@ -66,7 +67,7 @@ get_comm_types <- function(num_communities, comm_version){
     cluster5 <- c(34,35,36,44,45,46,54,55,56,64,65,66)
     cluster6 <- c(74,75,76,84,85,86,94,95,96)
     cluster7 <- c(57,58,59,60,67,68,69,70,77,78,79,80,87,88,89,90,97,98,99,100)
-    
+
     bind_rows (
       bind_cols("cluster"=rep(1,length(cluster1)),"community"=cluster1),
       bind_cols("cluster"=rep(2,length(cluster2)),"community"=cluster2),
@@ -75,7 +76,7 @@ get_comm_types <- function(num_communities, comm_version){
       bind_cols("cluster"=rep(5,length(cluster5)),"community"=cluster5),
       bind_cols("cluster"=rep(6,length(cluster6)),"community"=cluster6),
       bind_cols("cluster"=rep(7,length(cluster7)),"community"=cluster7)) -> clusters
-      
+
   }
 
   return(list(urban, suburban, rural,
@@ -111,7 +112,7 @@ init_model_objects <- function(params){
     communities[urban,"S"] <- com_types_list[[7]] # urban: makes it 1000 people/sq mile
     communities[suburban,"S"] <- com_types_list[[8]] # suburban 500 people/ sq mile
     communities[rural, "S"] <- com_types_list[[9]] #rural 100 people per square mile
-    
+
     #clusters <- com_types_list[[10]] #get clusters
 
     studypop_size <- sum(communities[,1])
@@ -185,11 +186,11 @@ init_model_objects <- function(params){
     #     }
     #   }
     # }
-    # 
-    # 
+    #
+    #
     # mob_net2[,start_comm] <- 0 # prevent any travel to urban cities
     # #mob_net2[,suburban] <- 0 # prevent travel to suburban areas
-    # 
+    #
     # mob_net_norm2 <- matrix(0,nrow=num_communities,ncol=num_communities)
     # for (i in 1:num_communities){
     #   for (j in 1:num_communities){
@@ -228,7 +229,7 @@ pack_and_run_models <- function(params){
 run_models <- function(driver_file_path, cores = NULL, force_run = F){
 
   #reads and expands grid of all possible values
-  params_df <- read_yaml(driver_file_path) %>% expand.grid() %>% as_tibble() 
+  params_df <- read_yaml(driver_file_path) %>% expand.grid() %>% as_tibble()
 
   #creates unique id hash
   params_df$unique_id <- apply(params_df, 1, digest)
