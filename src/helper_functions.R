@@ -280,7 +280,8 @@ run_models <- function(driver_file_path, cores = NULL, force_run = F){
 
 #reads in results from a given run
 load_run_results <- function(unique_id){
-  return(read_rds(paste0("./cache/results/",unique_id,".rds")))
+  return(read_rds(paste0("./cache/results/",unique_id,".rds")) %>%
+           mutate(id = unique_id))
 }
 
 #attached vars from results into data

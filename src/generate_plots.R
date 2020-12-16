@@ -1,6 +1,7 @@
 #scripts to generate plots
 source("./src/helper_functions.R")
 library(scales)
+library(latex2exp)
 
 create_heatmap <- function(rds_id,comm_version,threshold,day){
   
@@ -400,7 +401,9 @@ create_heatmap3 <- function(rds_id1,rds_id2,comm_version,threshold,day){
 results_log <- read_csv("./results_log.csv")
 
 results_log %>%
-  subset(alpha_init == 0.01 & cases_ld_a==30 & alpha_dec == 0.5 & beta_dec == 0.5) -> results
+  subset(alpha_init == 0.01 & cases_ld_a==30 & alpha_dec == 1 & beta_dec == 1 & ld_b == 0) -> results
+
+#alpha_init, cases_ld_a, ld_b, beta_inc, beta_dec, alpha_inc, alpha_dec
 
 rds_id_alpha1.0_beta1.0 <- results %>% subset(alpha_inc==1 & beta_inc==1) %>% pull(unique_id) # should baseline be beta_inc == 1.5? 
 rds_id_alpha1.5_beta1.0 <- results %>% subset(alpha_inc==1.5 & beta_inc==1) %>% pull(unique_id) 
@@ -507,68 +510,78 @@ data <- rbind(data,output[[3]])
 #                         alpha1.0_beta2.0_time,alpha1.5_beta2.0_time,alpha2.0_beta2.0_time,alpha2.5_beta2.0_time,alpha3.0_beta2.0_time,
 #                         nrow=3)
 
-baseline[[1]]
+#baseline[[1]]
 
 data %>%
   mutate(alpha_inc2 = paste0("Alpha Inc: ", alpha_inc2), 
-         beta_inc2 = paste0("Beta Inc: ", beta_inc2)) %>%
+         beta_inc2 = paste0("Beta Inc: ", beta_inc2),
+         perc_change_cat = cut(data$perc_change,c(-Inf,0,25,50,75,100,Inf), include.lowest = T)) %>%
   ggplot(aes(x=col.x,y=row.x)) +
-  geom_tile(aes(fill=perc_change,color=type.x),size=0.5,width=0.8,height=0.8) +
-  #scale_color_brewer(type = "qual", palette = "Dark2") +
-  scale_color_grey(start = 1, end = 0)+
-  geom_text(aes(label = perc_change_label),color="black", size = 2) +
+  geom_tile(aes(fill=perc_change_cat),color = "gray") +
+  scale_fill_manual(values = c("#d1e5f0", "#fddbc7", "#f4a582", "#d6604d", "#b2182b", "#67001f"), drop = F) +
+  #scale_color_grey(start = 1, end = 0)+
+  #geom_text(aes(label = perc_change_label),color="black", size = 2) +
   #scale_fill_gradient(high = "red", low = muted("green")) +
   #scale_fill_viridis_c(limits=c(-1,1)) + 
-  scale_fill_gradient2(
-    low = muted("blue"),
-    mid = "white",
-    high = muted("red"),
-    midpoint = 0,
-    space = "Lab",
-    na.value = "grey",
-    guide = "colourbar",
-    aesthetics = "fill"
-  )+
+  # scale_fill_gradient2(
+  #   low = muted("blue"),
+  #   mid = "white",
+  #   high = muted("red"),
+  #   midpoint = 0,
+  #   space = "Lab",
+  #   na.value = "grey",
+  #   guide = "colourbar",
+  #   aesthetics = "fill"
+  # )+
   theme_classic() +
   theme(legend.position = "bottom", axis.ticks = element_blank(),
         axis.title.x = element_blank(),axis.title.y = element_blank(),
         axis.text.x = element_blank(), axis.text.y = element_blank(),
         axis.line = element_blank()) + scale_alpha(guide = 'none') + 
   facet_grid(alpha_inc2~beta_inc2) + 
-  labs(fill = "Percent Change in Probability of 1 case by 30 days - Trigger: 30 ")
+  labs(fill = "Percent Change in Probability of 1 case by 30 days - Trigger: 30 ", 
+       title = "0 day delay between anouncement and implementation - No Decrease") -> p
 
-baseline[[2]]
+ggsave("figs/prob_1_case_0days_no_dec.png", dpi = 300, plot = p)
+
+#baseline[[2]]
 
 data %>%
   mutate(alpha_inc2 = paste0("Alpha Inc: ", alpha_inc2), 
-         beta_inc2 = paste0("Beta Inc: ", beta_inc2)) %>%
+         beta_inc2 = paste0("Beta Inc: ", beta_inc2),
+         perc_change_time_cat = cut(perc_change_time,c(-Inf,-20,-10,0,10,20,Inf), include.lowest = T)) %>%
   ggplot(aes(x=col.x,y=row.x)) +
-  geom_tile(aes(fill=perc_change_time,color=type.x),size=0.5,width=0.8,height=0.8) +
+  geom_tile(aes(fill=perc_change_time_cat), color = "gray") +
+  scale_fill_manual(values = c("#b2182b","#d6604d", "#f4a582","#d1e5f0","#92c5de","#4393c3"), drop = F) +
   #scale_color_brewer(type = "qual", palette = "Dark2") +
-  scale_color_grey(start = 1, end = 0)+
-  geom_text(aes(label = perc_change_time_label),color="black", size = 2) +
+  #scale_color_grey(start = 1, end = 0)+
+  #geom_text(aes(label = perc_change_time_label),color="black", size = 2) +
   #scale_fill_gradient(high = "red", low = muted("green")) +
   #scale_fill_viridis_c(limits=c(-1,1)) + 
-  scale_fill_gradient2(
-    low = muted("red"),
-    mid = "white",
-    high = muted("blue"),
-    midpoint = 0,
-    space = "Lab",
-    na.value = "grey",
-    guide = "colourbar",
-    aesthetics = "fill"
-  )+
+  # scale_fill_gradient2(
+  #   low = muted("red"),
+  #   mid = "white",
+  #   high = muted("blue"),
+  #   midpoint = 0,
+  #   space = "Lab",
+  #   na.value = "grey",
+  #   guide = "colourbar",
+  #   aesthetics = "fill"
+  # )+
   theme_classic() +
   theme(legend.position = "bottom", axis.ticks = element_blank(),
         axis.title.x = element_blank(),axis.title.y = element_blank(),
         axis.text.x = element_blank(), axis.text.y = element_blank(),
         axis.line = element_blank()) + scale_alpha(guide = 'none') + 
   facet_grid(alpha_inc2~beta_inc2) + 
-  labs(fill = "Percent Change in time to first case - Trigger: 30")
+  labs(fill = "Percent Change in time to first case - Trigger: 30", 
+       title = "7 day delay between announcement and implementation") -> p
+
+ggsave("figs/timeto1case_7days.png", dpi = 300, plot = p)
 
 
-num_edge <- sqrt(num_communities)
+
+num_edge <- sqrt(100)
 row <- c(rep(1:num_edge,each=10))
 col <- c(rep(1:num_edge,times=10))
 id <- 1:100
@@ -583,18 +596,95 @@ data %>%
 tibble("id" = id, "row" = row, "col" = col) %>% 
   mutate(distance = abs(row - 5) + abs(col - 5)) -> dist
 
-results %>% 
-  subset(alpha_inc==1 & beta_inc==1) %>% 
+time_to_epi_data <- results_log %>%
+  subset(alpha_init == 0.01 & cases_ld_a==30 & alpha_dec == 0.5 & beta_dec == 0.5) %>% 
+  #subset(alpha_inc==1 & beta_inc==1) %>% 
   pull(unique_id) %>%
-  load_run_results() %>%
-  group_by(Simulation, Community) %>%
+  lapply(load_run_results) %>%
+  bind_rows()
+
+time_to_epi_data %>%
+  left_join(dplyr::select(results_log, unique_id, ld_b, alpha_inc, beta_inc), by = c("id" = "unique_id")) %>%
+  subset(ld_b == 7) %>%
+  group_by(Simulation, Community, alpha_inc, beta_inc) %>%
   mutate(indexday = min(DayInfected)) %>%
   ungroup() %>%
   subset(DayInfected == indexday) %>%
-  group_by(Community) %>%
+  group_by(Community, alpha_inc, beta_inc) %>%
   summarize(avg_day = mean(DayInfected)) %>%
   left_join(dist, by = c("Community" = "id")) %>%
+  mutate(alpha_inc2 = paste0("Alpha Inc: ", alpha_inc), 
+         beta_inc2 = paste0("Beta Inc: ", beta_inc)) %>%
   ggplot(aes(x = distance, y = avg_day)) +
-  geom_point() + 
+  geom_point(alpha = 0.5) +
+  geom_smooth() + 
   theme_bw() + 
-  labs(x = "Distance from initial outbreak", y = "Average day of first infection")
+  labs(x = "Distance from initial outbreak", y = "Average day of first infection", 
+       title = "Communities that are further away get the outbreak later - 7 day diff") + 
+  facet_grid(alpha_inc2~beta_inc2)
+
+#epidemic size by parameter
+
+calc_tot_epi_size <- function(id){
+  load_run_results(id) %>%
+    group_by(Simulation) %>%
+    summarise(epi_size = sum(Symptoms), dplyr.summarise.inform = F) %>%
+    ungroup() %>%
+    summarise(mean_epi_size = mean(epi_size), 
+              ll = quantile(epi_size, 0.05), 
+              ul = quantile(epi_size, 0.95), dplyr.summarise.inform = F) %>%
+    mutate(unique_id = id) %>%
+    return()
+}
+
+tot_epi_size_data <- results_log %>%
+  subset(alpha_init == 0.01 & cases_ld_a == 30 & alpha_dec == beta_dec) %>%
+  pull(unique_id) %>%
+  lapply(calc_tot_epi_size) %>%
+  bind_rows()
+  
+tot_epi_size_data %>%
+  left_join(dplyr::select(results_log, unique_id, ld_b, alpha_inc, beta_inc, alpha_dec, beta_dec), by = c("unique_id")) %>%
+  mutate(dec = ifelse(alpha_dec == 0.5 & beta_dec == 0.5, "Decrease", "No Decrease"), 
+         type = paste("Alpha:",alpha_inc,", Beta:",beta_inc),
+         alpha_inc2 = paste("Alpha Inc =",alpha_inc),
+         beta_inc2 = paste("Beta Inc =", beta_inc), 
+         delay = factor(ld_b)) %>%
+  dplyr::select(mean_epi_size, ll, ul, ld_b, type, dec, alpha_inc2, beta_inc2, delay) %>%
+  ggplot(aes(x = delay, y = mean_epi_size)) + 
+  geom_point(aes(shape = dec)) + 
+  geom_errorbar(aes(ymin=ll, ymax=ul), colour="black", width=.1) +
+  facet_grid(alpha_inc2 ~ beta_inc2) + 
+  theme_bw() + 
+  labs(x = "Days of Delay between announcement and implementation", y = "Average Epidemic Size", shape = "Post Implementation")
+
+ggsave("figs/epidemic_size.png", dpi = 300)
+
+#baseline structure fig 
+baseline[[3]] %>%
+  ggplot(aes(x = col, y = row)) + 
+  geom_tile(aes(fill=av_start_time), color = "gray") + 
+  geom_tile(data = baseline[[3]] %>% subset(type == "City"), aes(fill = av_start_time), color = "black", size = 1.5) + 
+  scale_fill_viridis_c(direction = -1) + 
+  theme_classic() +
+  theme(legend.position = "bottom", axis.ticks = element_blank(),
+        axis.title.x = element_blank(),axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.text.y = element_blank(),
+        axis.line = element_blank()) + scale_alpha(guide = 'none') +
+  labs(fill = "Average day of first case")
+
+ggsave("figs/av_day_first_case.png", dpi = 300)
+
+baseline[[3]] %>%
+  ggplot(aes(x = col, y = row)) + 
+  geom_tile(aes(fill=prob_epi), color = "gray") + 
+  geom_tile(data = baseline[[3]] %>% subset(type == "City"), aes(fill = prob_epi), color = "black", size = 1.5) + 
+  scale_fill_viridis_c() + 
+  theme_classic() +
+  theme(legend.position = "bottom", axis.ticks = element_blank(),
+        axis.title.x = element_blank(),axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.text.y = element_blank(),
+        axis.line = element_blank()) + scale_alpha(guide = 'none') +
+  labs(fill = "Probability of having at least 1 case") 
+
+ggsave("figs/prob_epi.png", dpi = 300)

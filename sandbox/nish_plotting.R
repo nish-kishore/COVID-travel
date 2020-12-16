@@ -117,4 +117,39 @@ results %>%
        color=element_blank(),
        caption="Trigger: 30 cases")
 
+#KM Curves
+int_results_log <- results_log %>%
+  mutate(flag  = case_when(
+    alpha_inc == 1 & beta_inc == 1 & alpha_dec == 1 & beta_dec == 1 & ld_b == 3 ~ "No Lockdown", 
+    alpha_inc == 3 & beta_inc == 2 & alpha_dec < 1 & beta_dec < 1 & ld_b == 3 ~ "Large Surge", 
+    alpha_inc == 2 & beta_inc == 1.5 & alpha_dec < 1 & beta_dec < 1 & ld_b == 3 ~ "Small Surge", 
+    alpha_inc == 1 & beta_inc == 1 & alpha_dec < 1 & beta_dec < 1 & ld_b == 0 ~ "Lockdown - no Surge", 
+    T ~ "Other")
+    ) %>%
+  subset(flag != "Other" & alpha_init == 0.01 & cases_ld_a == 30)
 
+lapply(int_results_log$unique_id, function(x) load_merge_vars(int_results_log, x, Nruns, flag)) %>%
+  bind_rows() -> km_plot_data
+
+
+x <- km_plot_data %>%
+  arrange(flag, Simulation, DayInfected) %>%
+  group_by(flag, Simulation, Community) %>%
+  slice(1) %>%
+  ungroup() %>%
+  group_by(flag, Simulation, DayInfected) %>%
+  summarise(comm_inf = n())
+
+x %>%
+  mutate(tot_inf = cumsum(comm_inf)/100) %>%
+  mutate(flag = factor(flag, levels = c("No Lockdown", "Large Surge", "Small Surge", "Lockdown - no Surge"))) %>%
+  ungroup() %>%
+  group_by(DayInfected, flag) %>%
+  summarise(prop_inf = mean(tot_inf)) %>%
+  subset(DayInfected <= 30) %>%
+  ggplot(aes(x = DayInfected, y = prop_inf, group = flag, color = flag)) + 
+  geom_line(size = 1.05) + 
+  theme_bw() + 
+  labs(x = "Day", y = "Proportion of communities with an imported case", color = "Type of Lockdown")
+
+ggsave("./figs/prop_comm_import.png", dpi = 300)

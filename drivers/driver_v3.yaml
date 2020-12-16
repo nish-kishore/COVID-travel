@@ -64,6 +64,8 @@ cases_ld_a:
   - 9999
 ld_b:
   - 3 # days after lockdown announced that it begins
+  - 0
+  - 7
 beta_inc:
   - 1.0 # relative beta after lockdown announced
   - 1.5
