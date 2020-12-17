@@ -1,20 +1,33 @@
-update_mob_data <- function(params,t,num_symp){
+update_mob_data <- function(params,t,num_symp,comm_version){
   with(params, {
+
+    if (comm_version!=5){
     # if lockdown hasn't been announced yet check if it should be
-    if (t_ld_a==1000){
-      # track symptomatic infections
-      if (num_symp >= cases_ld_a){
-        t_ld_a <- t
-        t_ld_b <- t + ld_b
+      if (t_ld_a==1000){
+        # track symptomatic infections
+        if (num_symp >= cases_ld_a){
+          t_ld_a <- t
+          t_ld_b <- t + ld_b
+        }
+        mob_net <- mob_net_norm
+      } else {
+        mob_net <- case_when(
+          t >= t_ld_b ~ mob_net_norm2,
+          # for now leaving same but could have a third one if want
+          t >= t_ld_a & t <t_ld_b ~ mob_net_norm2
+        )
+        mob_net <- mob_net %>% matrix(nrow = 100, ncol = 100)
       }
-      mob_net <- mob_net_norm
-    } else {
-      mob_net <- case_when(
-        t >= t_ld_b ~ mob_net_norm2,
-        # for now leaving same but could have a third one if want
-        t >= t_ld_a & t <t_ld_b ~ mob_net_norm2
-      )
-      mob_net <- mob_net %>% matrix(nrow = 100, ncol = 100)
+    } else{
+      if (t_ld_a==1000){
+        # track symptomatic infections
+        if (num_symp >= cases_ld_a){
+          t_ld_a <- t
+          t_ld_b <- t + ld_b
+        }
+      } 
+      mob_net <- mob_net_norm[[t]]
+      mob_net <- mob_net %>% matrix(nrow = 100, ncol = 100) # not sure if will still need this line? 
     }
 
     return(list(t_ld_a, t_ld_b, mob_net))

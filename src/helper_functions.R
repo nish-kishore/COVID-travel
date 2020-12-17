@@ -77,6 +77,18 @@ get_comm_types <- function(num_communities, comm_version){
       bind_cols("cluster"=rep(6,length(cluster6)),"community"=cluster6),
       bind_cols("cluster"=rep(7,length(cluster7)),"community"=cluster7)) -> clusters
 
+  if(comm_version == 5){ # if we want to update based on Spain data
+    urban <- c(45)
+    suburban <- c(23:27,33:39,43:44,46:49,53:56,58:59,63:69,76:79)
+    rural <- setdiff(1:num_communities, c(urban, suburban))
+    
+    area_urban <- 4
+    area_suburban <- 10
+    area_rural <- 10
+    
+    n_urban <- 4000
+    n_suburban <- 2500
+    n_rural <- 2500
   }
 
   return(list(urban, suburban, rural,
@@ -155,7 +167,9 @@ init_model_objects <- function(params){
           }
         }
       }
-    }else{
+    } else if(comm_version == 5){
+      mob_net_norm <- list() # load list - assume normalized, but if not add code to normalize
+    } else{
       mob_net <- matrix(0,nrow=num_communities,ncol=num_communities)
       for (i in 1:num_communities){
         for (j in 1:num_communities){
@@ -176,6 +190,8 @@ init_model_objects <- function(params){
     }
 
     mob_net_norm2 <- mob_net_norm
+  
+    
     # # mobility network post lockdown announcement - increase probabilities further away
     # mob_net2 <- matrix(0,nrow=num_communities,ncol=num_communities)
     # for (i in 1:num_communities){
@@ -200,7 +216,8 @@ init_model_objects <- function(params){
     params$mob_net_norm <- mob_net_norm
     params$mob_net_norm2 <- mob_net_norm2
     params$results <- vector(mode = "list", length = num_timesteps)
-
+    
+    # list of mob_nets
     params$urban <- urban
     params$suburban <- suburban
     params$rural <- rural
@@ -208,6 +225,7 @@ init_model_objects <- function(params){
     params$area_urban <- area_urban
     params$area_suburban <- area_suburban
     params$area_rural <- area_rural
+    
 
     return(params)
   })
