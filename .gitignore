@@ -45,3 +45,4 @@ docs/
 /figs/*.*
 *.zip
 *.rds
+!resources/mob_net/*.rds
