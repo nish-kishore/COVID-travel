@@ -1,4 +1,4 @@
-update_mob_data <- function(params,t,num_symp,comm_version){
+update_mob_data <- function(params,t,num_symp){
   with(params, {
 
     if (comm_version!=5){
