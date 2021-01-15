@@ -35,7 +35,9 @@ exp_grav1:
 start_comm:
   66 # choose community where outbreak will start
 comm_version:
-  3
+  5
+mob_net_name: 
+  ''
 grav_version:
   1
 num_inf:

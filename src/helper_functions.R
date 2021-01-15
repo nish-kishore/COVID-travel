@@ -170,7 +170,8 @@ init_model_objects <- function(params){
         }
       }
     } else if(comm_version == 5){
-      mob_net_norm <- read_rds('./resources/mob_net/mob_net_list_test.rds') # load list - assume normalized, but if not add code to normalize
+      mob_net_norm <- read_rds(paste0("./resources/mob_net/",params$mob_net_name,".rds"))
+      # load list - assume normalized, but if not add code to normalize
       mob_net_norm2 <- NA
     } else{
       mob_net <- matrix(0,nrow=num_communities,ncol=num_communities)
