@@ -37,7 +37,7 @@ start_comm:
 comm_version:
   5
 mob_net_name:
-  'mob_net_spain'
+  "mob_net_spain"
 grav_version:
   1
 num_inf:

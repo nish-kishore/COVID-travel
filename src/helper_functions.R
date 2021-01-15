@@ -249,7 +249,10 @@ pack_and_run_models <- function(params){
 run_models <- function(driver_file_path, cores = NULL, force_run = F){
 
   #reads and expands grid of all possible values
-  params_df <- read_yaml(driver_file_path) %>% expand.grid() %>% as_tibble()
+  params_df <- read_yaml(driver_file_path) %>% 
+    expand.grid() %>% 
+    as_tibble() %>% 
+    mutate(mob_net_name = as.character(mob_net_name))
 
   #creates unique id hash
   params_df$unique_id <- apply(params_df, 1, digest)
