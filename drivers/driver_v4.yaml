@@ -49,7 +49,6 @@ rec_per:
   0.1
 # Movement parameters
 alpha_init: #moving probability
-  - 0.001
   - 0.01
 beta_init: # force of infection
   - 0.0015
@@ -60,14 +59,10 @@ t_ld_a:
   1000 # change below in code once threshold cases reached
 t_ld_b:
   1000 # change below in code once threshold cases reached
-cases_ld_a:
-  - 10 # number of cases when lockdown announced
-  - 30
+cases_ld_a: # number of cases when lockdown announced
   - 9999
 ld_b:
   - 3 # days after lockdown announced that it begins
-  - 0
-  - 7
 beta_inc:
   - 1.0 # relative beta after lockdown announced
   - 1.5
