@@ -80,8 +80,8 @@ get_comm_types <- function(num_communities, comm_version){
     }
 
   if(comm_version == 5){ # if we want to update based on Spain data
-    urban <- c(45)
-    suburban <- c(23:27,33:39,43:44,46:49,53:56,58:59,63:69,76:79)
+    urban <- c(66)
+    suburban <- c(23:27,33:39,43:44,46:49,53:56,58:59,63:65,67:69,76:79)
     rural <- setdiff(1:num_communities, c(urban, suburban))
 
     area_urban <- 4
@@ -170,7 +170,8 @@ init_model_objects <- function(params){
         }
       }
     } else if(comm_version == 5){
-      mob_net_norm <- list() # load list - assume normalized, but if not add code to normalize
+      mob_net_norm <- readRDS(file = "C:/Users/Nishant/Documents/gitrepos/hsph/COVID-travel/resources/mob_net/mob_net_spain.rds")
+      # load list - assume normalized, but if not add code to normalize
     } else{
       mob_net <- matrix(0,nrow=num_communities,ncol=num_communities)
       for (i in 1:num_communities){
@@ -184,11 +185,15 @@ init_model_objects <- function(params){
     }
 
 
-    mob_net_norm <- matrix(0,nrow=num_communities,ncol=num_communities)
-    for (i in 1:num_communities){
-      for (j in 1:num_communities){
-        mob_net_norm[i,j] <- mob_net[i,j]/sum(mob_net[i,])
+    if(!(length(mob_net_norm) > 1)){
+      mob_net_norm <- matrix(0,nrow=num_communities,ncol=num_communities)
+      for (i in 1:num_communities){
+        for (j in 1:num_communities){
+          mob_net_norm[i,j] <- mob_net[i,j]/sum(mob_net[i,])
+        }
       }
+    }else{
+      mob_net_norm <- mob_net_norm
     }
 
     mob_net_norm2 <- mob_net_norm

@@ -25,9 +25,9 @@ update_mob_data <- function(params,t,num_symp,comm_version){
           t_ld_a <- t
           t_ld_b <- t + ld_b
         }
-      } 
+      }
       mob_net <- mob_net_norm[[t]]
-      mob_net <- mob_net %>% matrix(nrow = 100, ncol = 100) # not sure if will still need this line? 
+      mob_net <- mob_net %>% matrix(nrow = 100, ncol = 100) # not sure if will still need this line?
     }
 
     return(list(t_ld_a, t_ld_b, mob_net))

@@ -33,7 +33,7 @@ exp_grav1:
   #- 1.75
   #- 1.817
 start_comm:
-  45 # choose community where outbreak will start
+  66 # choose community where outbreak will start
 comm_version:
   3
 grav_version:
