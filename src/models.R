@@ -165,7 +165,7 @@ model_a_optim <- function(params){
       #cat(t,"\n")
 
       #update mobility information
-      mob_list <- update_mob_data(int_params, t, start_comm_cum_symp,comm_version)
+      mob_list <- update_mob_data(int_params, t, start_comm_cum_symp)
       int_params$t_ld_a <- mob_list[[1]]
       int_params$t_ld_b <- mob_list[[2]]
       mob_net <- mob_list[[3]]
