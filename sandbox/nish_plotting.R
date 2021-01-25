@@ -153,3 +153,58 @@ x %>%
   labs(x = "Day", y = "Proportion of communities with an imported case", color = "Type of Lockdown")
 
 ggsave("./figs/prop_comm_import.png", dpi = 300)
+
+#Spain results
+ids <- subset(results_log, comm_version == 5 & 
+                mob_net_name %in% c("mob_net_spain", "mob_net_control") & 
+                beta_dec == 0.5 & 
+                alpha_dec == 0.5) %>% dplyr::select(unique_id)
+
+lapply(1:nrow(ids), function(x) load_merge_vars(results_log, ids[x,], beta_inc, alpha_inc, beta_dec, alpha_dec, mob_net_name)) %>%
+  bind_rows() -> plot_data
+
+plot_data %>%
+  dplyr::select(Simulation, Community, DayInfected, Symptoms, beta_inc, alpha_inc, mob_net_name) %>%
+  group_by(Simulation, Community, DayInfected, beta_inc, alpha_inc, mob_net_name) %>%
+  summarize(tot_inf = sum(Symptoms)) %>%
+  ungroup() %>%
+  group_by(Community, DayInfected, beta_inc, alpha_inc, mob_net_name) %>%
+  summarise(tot_inf = mean(tot_inf)) %>%
+  ungroup() %>%
+  group_by(DayInfected, beta_inc, alpha_inc, mob_net_name) %>%
+  summarise(tot_inf = sum(tot_inf)) -> x
+
+x %>%
+  mutate(type = ifelse(mob_net_name == "mob_net_control", "Control", "Intervention")) %>%
+  ggplot(aes(x = DayInfected, y = tot_inf, group = type, color = type)) + 
+  geom_line() + 
+  facet_grid(beta_inc ~ alpha_inc)
+
+
+
+
+
+  group_by(Community, alpha_inc, beta_dec) %>%
+  arrange(cumulative) %>%
+  subset(cumulative >= day_till) %>%
+  group_by(Community,Simulation, sim_type) %>%
+  slice(1) %>%
+  ungroup() %>%
+  group_by(Community) %>%
+  mutate(nsims=length(n)) %>%
+  ungroup() %>%
+  group_by(Community, sim_type) %>%
+  summarise(avg_day_to_n = sum(DayInfected)/mean(nsims)) %>%
+  ungroup() -> out_data
+
+subset(out_data, sim_type == "Control") %>%
+  dplyr::select(Community, avg_day_to_n) %>%
+  rename("ctrl_day_to_n" = "avg_day_to_n") %>%
+  right_join(out_data, by = "Community") %>%
+  ggplot(aes(x = ctrl_day_to_n, y = avg_day_to_n, color = sim_type)) +
+  geom_point() + 
+  geom_smooth(method = "loess", se = F) + 
+  theme_bw() + 
+  labs(x = "Control - Avg days till X cases", y = "Comparison - Avg days till X cases",
+       title = paste0("Avg # of days till ",day_till, " cases / Lockdown after: ", cases_ld, " cases"), 
+       color = "Sim Type")

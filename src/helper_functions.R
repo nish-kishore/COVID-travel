@@ -292,7 +292,7 @@ run_models <- function(driver_file_path, cores = NULL, force_run = F){
           .packages = c("tidyverse"),
           .combine = rbind) %dopar% {pack_and_run_models(list_of_params[[i]])} -> out_results
 
-  results_log <- rbind(results_log, out_results)
+  results_log <- bind_rows(results_log, out_results)
 
   write_csv(results_log, "./results_log.csv")
 
